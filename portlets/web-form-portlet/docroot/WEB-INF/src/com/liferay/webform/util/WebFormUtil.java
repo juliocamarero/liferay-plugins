@@ -221,7 +221,7 @@ public class WebFormUtil {
 		}
 
 		sb.append("function validation(currentFieldValue, fieldsMap) {\n");
-		sb.append(validationScript);
+		sb.append(HtmlUtil.escapeJSSource(validationScript));
 		sb.append("}\n");
 		sb.append("internalValidationResult = ");
 		sb.append("validation(currentFieldValue, fieldsMap);");
