@@ -20,41 +20,51 @@
 <%@ include file="/sites/init.jsp" %>
 
 <%
-String keywords = ParamUtil.getString(request, "keywords");
-boolean userSites = ParamUtil.getBoolean(request, "userSites");
+String tabs1 = ParamUtil.getString(request, "tabs1");
 
+String keywords = ParamUtil.getString(request, "keywords");
 String searchKeywords = DAOParamUtil.getLike(request, "keywords");
 
-LinkedHashMap<String, Object> params = new LinkedHashMap<String, Object>();
+List<Group> groups = null;
+int groupsCount = 0;
 
-if (userSites) {
-	params.put("usersGroups", themeDisplay.getUserId());
+if (tabs1.equals("my-favorites")) {
+	groups = SitesUtil.getFavoriteSitesGroups(themeDisplay.getUserId(), keywords, 0, maxResultSize);
+	groupsCount = SitesUtil.getFavoriteSitesGroupsCount(themeDisplay.getUserId(), keywords);
 }
 else {
-	List<Integer> types = new ArrayList<Integer>();
+	LinkedHashMap<String, Object> params = new LinkedHashMap<String, Object>();
 
-	types.add(GroupConstants.TYPE_SITE_OPEN);
-	types.add(GroupConstants.TYPE_SITE_RESTRICTED);
+	if (tabs1.equals("my-sites")) {
+		params.put("usersGroups", themeDisplay.getUserId());
+	}
+	else {
+		List<Integer> types = new ArrayList<Integer>();
 
-	params.put("types", types);
+		types.add(GroupConstants.TYPE_SITE_OPEN);
+		types.add(GroupConstants.TYPE_SITE_RESTRICTED);
+
+		params.put("types", types);
+	}
+
+	groups = GroupLocalServiceUtil.search(themeDisplay.getCompanyId(), searchKeywords, null, params, 0, maxResultSize, new GroupNameComparator(true));
+	groupsCount = GroupLocalServiceUtil.searchCount(themeDisplay.getCompanyId(), searchKeywords, null, params);
 }
-
-List<Group> groups = GroupLocalServiceUtil.search(themeDisplay.getCompanyId(), searchKeywords, null, params, 0, maxResultSize, new GroupNameComparator(true));
-
-int groupsCount = GroupLocalServiceUtil.searchCount(themeDisplay.getCompanyId(), searchKeywords, null, params);
 %>
 
-<div id="<portlet:namespace />directory" class="so-sites-directory">
+<div class="so-sites-directory" id="<portlet:namespace />directory">
 	<liferay-ui:header title="directory" />
 
 	<div class="search">
 		<div class="buttons-left">
 			<input id="<portlet:namespace />dialogKeywords" size="30" type="text" value="<%= HtmlUtil.escape(keywords) %>" />
 
-			<span>
-				<input <%= userSites ? "checked" : StringPool.BLANK %> id="<portlet:namespace />userSites" name="<portlet:namespace />userSites" type="checkbox" />
-
-				<label for="<portlet:namespace />userSites"><liferay-ui:message key="my-sites" /></label>
+			<span class="sites-tabs">
+				<aui:select label="" name="tabs1">
+					<aui:option label="all-sites" selected='<%= tabs1.equals("all-sites") %>' value="all-sites" />
+					<aui:option label="my-sites" selected='<%= tabs1.equals("my-sites") %>' value="my-sites" />
+					<aui:option label="my-favorites" selected='<%= tabs1.equals("my-favorites") %>' value="my-favorites" />
+				</aui:select>
 			</span>
 		</div>
 
@@ -124,7 +134,7 @@ int groupsCount = GroupLocalServiceUtil.searchCount(themeDisplay.getCompanyId(),
 
 				<c:if test="<%= !member && group.getType() == GroupConstants.TYPE_SITE_OPEN %>">
 					<span class="action join">
-						<liferay-portlet:actionURL windowState="<%= WindowState.NORMAL.toString() %>" portletName="<%= PortletKeys.SITES_ADMIN %>" var="joinURL">
+						<liferay-portlet:actionURL portletName="<%= PortletKeys.SITES_ADMIN %>" var="joinURL" windowState="<%= WindowState.NORMAL.toString() %>">
 							<portlet:param name="struts_action" value="/sites_admin/edit_site_assignments" />
 							<portlet:param name="<%= Constants.CMD %>" value="group_users" />
 							<portlet:param name="redirect" value="<%= currentURL %>" />
@@ -138,7 +148,7 @@ int groupsCount = GroupLocalServiceUtil.searchCount(themeDisplay.getCompanyId(),
 
 				<c:if test="<%= member %>">
 					<span class="action leave">
-						<liferay-portlet:actionURL windowState="<%= WindowState.NORMAL.toString() %>" portletName="<%= PortletKeys.SITES_ADMIN %>" var="leaveURL">
+						<liferay-portlet:actionURL portletName="<%= PortletKeys.SITES_ADMIN %>" var="leaveURL" windowState="<%= WindowState.NORMAL.toString() %>">
 							<portlet:param name="struts_action" value="/sites_admin/edit_site_assignments" />
 							<portlet:param name="<%= Constants.CMD %>" value="group_users" />
 							<portlet:param name="redirect" value="<%= currentURL %>" />
@@ -153,7 +163,7 @@ int groupsCount = GroupLocalServiceUtil.searchCount(themeDisplay.getCompanyId(),
 				<c:choose>
 					<c:when test="<%= GroupPermissionUtil.contains(permissionChecker, group.getGroupId(), ActionKeys.DELETE) %>">
 						<span class="action delete">
-							<liferay-portlet:actionURL windowState="<%= WindowState.NORMAL.toString() %>" portletName="<%= PortletKeys.SITES_ADMIN %>" var="deleteURL">
+							<liferay-portlet:actionURL portletName="<%= PortletKeys.SITES_ADMIN %>" var="deleteURL" windowState="<%= WindowState.NORMAL.toString() %>">
 								<portlet:param name="struts_action" value="/sites_admin/edit_site" />
 								<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.DELETE %>" />
 								<portlet:param name="redirect" value="<%= currentURL %>" />
@@ -171,7 +181,7 @@ int groupsCount = GroupLocalServiceUtil.searchCount(themeDisplay.getCompanyId(),
 				<span class="name">
 					<c:choose>
 						<c:when test="<%= group.hasPrivateLayouts() || group.hasPublicLayouts() %>">
-							<liferay-portlet:actionURL windowState="<%= LiferayWindowState.NORMAL.toString() %>" portletName="<%= PortletKeys.MY_SITES %>" var="siteURL">
+							<liferay-portlet:actionURL portletName="<%= PortletKeys.MY_SITES %>" var="siteURL" windowState="<%= LiferayWindowState.NORMAL.toString() %>">
 								<portlet:param name="struts_action" value="/my_sites/view" />
 								<portlet:param name="groupId" value="<%= String.valueOf(group.getGroupId()) %>" />
 								<portlet:param name="privateLayout" value="<%= String.valueOf(!group.hasPublicLayouts()) %>" />
@@ -217,7 +227,7 @@ int groupsCount = GroupLocalServiceUtil.searchCount(themeDisplay.getCompanyId(),
 	var keywordsInput = directoryContainer.one('#<portlet:namespace />dialogKeywords');
 	var nextButton = directoryContainer.one('.search .next');
 	var previousButton = directoryContainer.one('.search .previous');
-	var userGroupsCheckbox = directoryContainer.one('#<portlet:namespace />userSites');
+	var sitesTabsSelect = directoryContainer.one('select[name=<portlet:namespace />tabs1]');
 
 	var directoryList = new Liferay.SO.SiteList(
 		{
@@ -226,8 +236,8 @@ int groupsCount = GroupLocalServiceUtil.searchCount(themeDisplay.getCompanyId(),
 					directory: true,
 					end: <%= maxResultSize %>,
 					keywords: query,
-					start: 0,
-					userGroups: userGroupsCheckbox.get('checked')
+					searchTab: sitesTabsSelect.get('value'),
+					start: 0
 				}
 			},
 
@@ -343,11 +353,18 @@ int groupsCount = GroupLocalServiceUtil.searchCount(themeDisplay.getCompanyId(),
 				directory: true,
 				end: end,
 				keywords: query,
-				start: start,
-				userGroups: userGroupsCheckbox.get('checked')
+				searchTab: sitesTabsSelect.get('value'),
+				start: start
 			}
 		};
 	};
+
+	sitesTabsSelect.on(
+		'change',
+		function(event) {
+			directoryList.sendRequest();
+		}
+	);
 
 	nextButton.on(
 		'click',
@@ -377,13 +394,6 @@ int groupsCount = GroupLocalServiceUtil.searchCount(themeDisplay.getCompanyId(),
 			}
 
 			directoryList.sendRequest(keywordsInput.get('value'), getRequestTemplate(targetPage));
-		}
-	);
-
-	userGroupsCheckbox.on(
-		'change',
-		function() {
-			directoryList.sendRequest();
 		}
 	);
 

@@ -34,8 +34,10 @@ page import="com.liferay.portal.kernel.dao.search.SearchContainer" %><%@
 page import="com.liferay.portal.kernel.json.JSONFactoryUtil" %><%@
 page import="com.liferay.portal.kernel.json.JSONObject" %><%@
 page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
+page import="com.liferay.portal.kernel.notifications.Channel" %><%@
 page import="com.liferay.portal.kernel.notifications.ChannelHubManagerUtil" %><%@
 page import="com.liferay.portal.kernel.notifications.NotificationEvent" %><%@
+page import="com.liferay.portal.kernel.notifications.UnknownChannelException" %><%@
 page import="com.liferay.portal.kernel.portlet.LiferayPortletResponse" %><%@
 page import="com.liferay.portal.kernel.portlet.LiferayWindowState" %><%@
 page import="com.liferay.portal.kernel.servlet.SessionMessages" %><%@
@@ -58,6 +60,7 @@ page import="com.liferay.portal.model.Layout" %><%@
 page import="com.liferay.portal.model.LayoutSetPrototype" %><%@
 page import="com.liferay.portal.model.Portlet" %><%@
 page import="com.liferay.portal.model.Role" %><%@
+page import="com.liferay.portal.model.RoleConstants" %><%@
 page import="com.liferay.portal.model.Team" %><%@
 page import="com.liferay.portal.model.User" %><%@
 page import="com.liferay.portal.model.UserNotificationEvent" %><%@
@@ -92,8 +95,7 @@ page import="com.liferay.so.model.impl.ProjectsEntryImpl" %><%@
 page import="com.liferay.so.service.MemberRequestLocalServiceUtil" %><%@
 page import="com.liferay.so.service.ProjectsEntryLocalServiceUtil" %><%@
 page import="com.liferay.so.sites.util.SitesUtil" %><%@
-page import="com.liferay.so.util.PortletKeys" %><%@
-page import="com.liferay.so.util.RoleConstants" %>
+page import="com.liferay.so.util.PortletKeys" %>
 
 <%@ page import="java.text.Format" %>
 
@@ -116,6 +118,6 @@ page import="javax.portlet.WindowState" %>
 <%
 String currentURL = PortalUtil.getCurrentURL(request);
 
-Format dateFormatDate = FastDateFormatFactoryUtil.getSimpleDateFormat("MMM yyyy", locale, timeZone);
+Format dateFormatDate = FastDateFormatFactoryUtil.getSimpleDateFormat("dd MMM yyyy", locale, timeZone);
 Format timeFormatDate = FastDateFormatFactoryUtil.getTime(locale, timeZone);
 %>

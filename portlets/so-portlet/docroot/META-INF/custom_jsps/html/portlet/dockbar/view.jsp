@@ -20,11 +20,11 @@
 <%@ include file="/html/portlet/dockbar/init.jsp" %>
 
 <%
-Role role = RoleLocalServiceUtil.fetchRole(themeDisplay.getCompanyId(), "Social Office User");
+UserGroup userGroup = UserGroupLocalServiceUtil.getUserGroup(themeDisplay.getCompanyId(), "Social Office Users");
 %>
 
 <c:choose>
-	<c:when test="<%= (role == null) || !UserLocalServiceUtil.hasRoleUser(role.getRoleId(), themeDisplay.getUserId()) %>">
+	<c:when test="<%= (userGroup == null) || !UserLocalServiceUtil.hasUserGroupUser(userGroup.getUserGroupId(), themeDisplay.getUserId()) %>">
 		<liferay-util:include page="/html/portlet/dockbar/view.portal.jsp" />
 	</c:when>
 	<c:otherwise>
@@ -77,7 +77,7 @@ Role role = RoleLocalServiceUtil.fetchRole(themeDisplay.getCompanyId(), "Social 
 
 				<li class="has-submenu user-avatar" id="<portlet:namespace />userMenu">
 					<a class="menu-button user-fullname user-portrait" href="javascript:;">
-						<img style="width: 18px" src="<%= HtmlUtil.escape(user.getPortraitURL(themeDisplay)) %>" />
+						<img src="<%= HtmlUtil.escape(user.getPortraitURL(themeDisplay)) %>" style="width: 18px" />
 
 						<%= HtmlUtil.escape(user.getFullName()) %>
 					</a>

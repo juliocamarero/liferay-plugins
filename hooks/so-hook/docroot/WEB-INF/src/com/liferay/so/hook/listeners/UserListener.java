@@ -18,17 +18,18 @@
 package com.liferay.so.hook.listeners;
 
 import com.liferay.portal.ModelListenerException;
+import com.liferay.portal.NoSuchGroupException;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.model.BaseModelListener;
 import com.liferay.portal.model.Group;
-import com.liferay.portal.model.Role;
 import com.liferay.portal.model.User;
+import com.liferay.portal.model.UserGroup;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetLocalServiceUtil;
-import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.UserGroupLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
-import com.liferay.so.util.RoleConstants;
+import com.liferay.so.util.UserGroupConstants;
 
 /**
  * @author Jonathan Lee
@@ -42,16 +43,21 @@ public class UserListener extends BaseModelListener<User> {
 		throws ModelListenerException {
 
 		try {
-			if (!associationClassName.equals(Role.class.getName())) {
+			if (!associationClassName.equals(UserGroup.class.getName())) {
 				return;
 			}
 
-			Role role = RoleLocalServiceUtil.getRole((Long)associationClassPK);
+			long userGroupId = (Long)associationClassPK;
 
-			String name = role.getName();
+			UserGroup userGroup = UserGroupLocalServiceUtil.getUserGroup(
+				userGroupId);
 
-			if (name.equals(RoleConstants.SOCIAL_OFFICE_USER)) {
-				updateUserLayoutSets((Long)classPK);
+			String name = userGroup.getName();
+
+			if (name.equals(UserGroupConstants.SOCIAL_OFFICE_USERS)) {
+				long userId = (Long)classPK;
+
+				updateUserLayoutSets(userId);
 			}
 		}
 		catch (Exception e) {
@@ -60,27 +66,31 @@ public class UserListener extends BaseModelListener<User> {
 	}
 
 	protected void updateUserLayoutSets(long userId) throws Exception {
-		User user = UserLocalServiceUtil.getUser(userId);
+		try {
+			User user = UserLocalServiceUtil.getUser(userId);
 
-		Group group = user.getGroup();
+			Group group = user.getGroup();
 
-		ServiceContext serviceContext = new ServiceContext();
+			ServiceContext serviceContext = new ServiceContext();
 
-		LayoutSetLocalServiceUtil.deleteLayoutSet(
-			group.getGroupId(), false, serviceContext);
-		LayoutSetLocalServiceUtil.deleteLayoutSet(
-			group.getGroupId(), true, serviceContext);
+			LayoutSetLocalServiceUtil.deleteLayoutSet(
+				group.getGroupId(), false, serviceContext);
+			LayoutSetLocalServiceUtil.deleteLayoutSet(
+				group.getGroupId(), true, serviceContext);
 
-		LayoutSetLocalServiceUtil.addLayoutSet(group.getGroupId(), false);
-		LayoutSetLocalServiceUtil.addLayoutSet(group.getGroupId(), true);
+			LayoutSetLocalServiceUtil.addLayoutSet(group.getGroupId(), false);
+			LayoutSetLocalServiceUtil.addLayoutSet(group.getGroupId(), true);
 
-		UnicodeProperties typeSettingsProperties =
-			group.getTypeSettingsProperties();
+			UnicodeProperties typeSettingsProperties =
+				group.getTypeSettingsProperties();
 
-		typeSettingsProperties.remove("customJspServletContextName");
+			typeSettingsProperties.remove("customJspServletContextName");
 
-		GroupLocalServiceUtil.updateGroup(
-			group.getGroupId(), typeSettingsProperties.toString());
+			GroupLocalServiceUtil.updateGroup(
+				group.getGroupId(), typeSettingsProperties.toString());
+		}
+		catch (NoSuchGroupException nsge) {
+		}
 	}
 
 }

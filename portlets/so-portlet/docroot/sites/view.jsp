@@ -29,8 +29,8 @@ List<Group> groups = null;
 int groupsCount = 0;
 
 if (tabs1.equals("my-sites")) {
-	groups = SitesUtil.getFavoriteSitesGroups(themeDisplay.getUserId(), searchName, maxResultSize);
-	groupsCount = SitesUtil.getFavoriteSitesGroupsCount(themeDisplay.getUserId(), searchName);
+	groups = SitesUtil.getVisibleSites(themeDisplay.getCompanyId(), themeDisplay.getUserId(), searchName, true, maxResultSize);
+	groupsCount = SitesUtil.getVisibleSitesCount(themeDisplay.getCompanyId(), themeDisplay.getUserId(), searchName, true);
 
 	if (groupsCount == 0) {
 		tabs1 = "all-sites";
@@ -38,6 +38,10 @@ if (tabs1.equals("my-sites")) {
 		groups = SitesUtil.getVisibleSites(themeDisplay.getCompanyId(), themeDisplay.getUserId(), searchName, false, maxResultSize);
 		groupsCount = SitesUtil.getVisibleSitesCount(themeDisplay.getCompanyId(), themeDisplay.getUserId(), searchName, false);
 	}
+}
+else if (tabs1.equals("my-favorites")) {
+	groups = SitesUtil.getFavoriteSitesGroups(themeDisplay.getUserId(), searchName, 0, maxResultSize);
+	groupsCount = SitesUtil.getFavoriteSitesGroupsCount(themeDisplay.getUserId(), searchName);
 }
 else {
 	groups = SitesUtil.getVisibleSites(themeDisplay.getCompanyId(), themeDisplay.getUserId(), searchName, false, maxResultSize);
@@ -58,6 +62,7 @@ pageContext.setAttribute("portletURL", portletURL);
 	<aui:select label="" name="tabs1">
 		<aui:option label="all-sites" selected='<%= tabs1.equals("all-sites") %>' value="all-sites" />
 		<aui:option label="my-sites" selected='<%= tabs1.equals("my-sites") %>' value="my-sites" />
+		<aui:option label="my-favorites" selected='<%= tabs1.equals("my-favorites") %>' value="my-favorites" />
 	</aui:select>
 </div>
 
@@ -75,7 +80,7 @@ pageContext.setAttribute("portletURL", portletURL);
 
 	<c:if test="<%= !hideNotice %>">
 		<div class="portlet-msg-info favorite-msg-info <%= hideNotice %>">
-			<liferay-ui:message key="favorite-some-sites-to-customize-your-sites-list" />
+			<liferay-ui:message key="favorite-some-sites-to-customize-this-list" />
 
 			<span class="hide-notice">
 				<liferay-portlet:actionURL name="hideNotice" var="hideNoticeURL">
@@ -145,7 +150,7 @@ pageContext.setAttribute("portletURL", portletURL);
 						<span class="name">
 							<c:choose>
 								<c:when test="<%= group.hasPrivateLayouts() || group.hasPublicLayouts() %>">
-									<liferay-portlet:actionURL windowState="<%= LiferayWindowState.NORMAL.toString() %>" portletName="<%= PortletKeys.MY_SITES %>" var="siteURL">
+									<liferay-portlet:actionURL portletName="<%= PortletKeys.MY_SITES %>" var="siteURL" windowState="<%= LiferayWindowState.NORMAL.toString() %>">
 										<portlet:param name="struts_action" value="/my_sites/view" />
 										<portlet:param name="groupId" value="<%= String.valueOf(group.getGroupId()) %>" />
 										<portlet:param name="privateLayout" value="<%= String.valueOf(!group.hasPublicLayouts()) %>" />
@@ -216,7 +221,7 @@ pageContext.setAttribute("portletURL", portletURL);
 						label: '<liferay-ui:message key="add-site" />',
 						on: {
 							click: function(event) {
-								<liferay-portlet:renderURL windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>" var="addSiteURL">
+								<liferay-portlet:renderURL var="addSiteURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
 									<portlet:param name="mvcPath" value="/sites/edit_site.jsp" />
 								</liferay-portlet:renderURL>
 
@@ -229,7 +234,7 @@ pageContext.setAttribute("portletURL", portletURL);
 					label: '<liferay-ui:message key="more-sites" />',
 					on: {
 						click: function(event) {
-							<liferay-portlet:renderURL windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>" var="viewSitesURL">
+							<liferay-portlet:renderURL var="viewSitesURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
 								<portlet:param name="mvcPath" value="/sites/view_sites.jsp" />
 							</liferay-portlet:renderURL>
 
@@ -274,10 +279,10 @@ pageContext.setAttribute("portletURL", portletURL);
 
 			var data = {
 				keywords: keywords,
-				userSites: <%= tabs1.equals("my-sites") %>
+				tabs1: sitesTabsSelect.get('value')
 			};
 
-			<liferay-portlet:renderURL windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>" var="viewSitesURL">
+			<liferay-portlet:renderURL var="viewSitesURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
 				<portlet:param name="mvcPath" value="/sites/view_sites.jsp" />
 			</liferay-portlet:renderURL>
 
