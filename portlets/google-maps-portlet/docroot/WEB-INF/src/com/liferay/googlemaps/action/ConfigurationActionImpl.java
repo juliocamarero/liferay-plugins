@@ -24,6 +24,7 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletSession;
 
 /**
+ * @author Manuel de la Peña
  * @author Mark Wong
  */
 public class ConfigurationActionImpl extends DefaultConfigurationAction {

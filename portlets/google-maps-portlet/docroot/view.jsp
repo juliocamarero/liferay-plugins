@@ -16,153 +16,230 @@
 
 <%@ include file="/init.jsp" %>
 
+<%
+mapAddress = GetterUtil.getString((String)portletSession.getAttribute("mapAddress"), mapAddress);
+directionsAddress = GetterUtil.getString((String)portletSession.getAttribute("directionsAddress"), directionsAddress);
+%>
+
+<style>
+	#map {
+		height: 100%;
+	}
+
+	.ie6 .maps-content img {
+			behavior: expression(this.pngSet=true);
+	}
+</style>
+
 <c:choose>
-	<c:when test="<%= Validator.isNotNull(license) %>">
-
-		<%
-		mapAddress = GetterUtil.getString((String)portletSession.getAttribute("mapAddress"), mapAddress);
-		directionsAddress = GetterUtil.getString((String)portletSession.getAttribute("directionsAddress"), directionsAddress);
-		%>
-
-		<style>
-			.ie6 .maps-content img {
- 				behavior: expression(this.pngSet=true);
-			}
-		</style>
-
-		<script src="https://www.google.com/jsapi?key=<%= license %>" type="text/javascript"></script>
-
-		<form name="<portlet:namespace />fm">
-
-		<c:if test="<%= mapInputEnabled %>">
-			<input class="lfr-input-text" name="<portlet:namespace />mapAddress" onKeyPress="if (event.keyCode == 13) { <portlet:namespace />getMap(); return false; }" type="text" value="<%= mapAddress %>" />
-
-			<input type="button" value="<liferay-ui:message key="get-map" />" onClick="<portlet:namespace />getMap();" />
-		</c:if>
-
-		<c:if test="<%= directionsInputEnabled %>">
-			<input class="lfr-input-text" name="<portlet:namespace />directionsAddress" onKeyPress="if (event.keyCode == 13) { <portlet:namespace />getDirections(); return false; }" type="text" value="<%= directionsAddress %>" />
-
-			<input type="button" value="<liferay-ui:message key="get-directions" />" onClick="<portlet:namespace />getDirections();" />
-		</c:if>
-
-		<c:if test="<%= mapInputEnabled || directionsInputEnabled %>">
-			<div style="padding-top: 5px;"></div>
-		</c:if>
-
-		<div class="maps-content" id="<portlet:namespace />map" style="height: <%= height %>px; width: 100%;"></div>
-
-		</form>
-
-		<aui:script>
-			var <portlet:namespace />map;
-			var <portlet:namespace />geocoder;
-
-			function <portlet:namespace />load() {
-				if (GBrowserIsCompatible()) {
-					<portlet:namespace />map = new GMap2(document.getElementById("<portlet:namespace />map"));
-
-					<portlet:namespace />map.addControl(new GSmallMapControl());
-					<portlet:namespace />map.addControl(new GMapTypeControl());
-
-					<portlet:namespace />geocoder = new GClientGeocoder();
-
-					<portlet:namespace />getAddress("<%= mapAddress %>");
-				}
-			}
-
-			google.load("maps", "2", {"callback" : <portlet:namespace />load});
-
-			function <portlet:namespace />getAddress(address) {
-				<portlet:namespace />geocoder.getLatLng(
-					address,
-					function(point) {
-						if (!point) {
-							//alert(address + " not found");
-						}
-						else {
-							<portlet:namespace />map.setCenter(point, 13);
-
-							var marker = new GMarker(point);
-
-							<portlet:namespace />map.addOverlay(marker);
-
-							marker.openInfoWindowHtml(address);
-						}
-					}
-				);
-			}
-
-			function <portlet:namespace />getDirections() {
-				var mapAddress = <portlet:namespace />getMapAddress();
-				var directionsAddress = document.<portlet:namespace />fm.<portlet:namespace />directionsAddress.value;
-
-				<portlet:namespace />saveDirectionsAddress(directionsAddress);
-
-				window.open("http://maps.google.com/maps?f=q&hl=en&q=" + encodeURIComponent(document.<portlet:namespace />fm.<portlet:namespace />directionsAddress.value) + "+to+" + encodeURIComponent(mapAddress));
-			}
-
-			function <portlet:namespace />getMap() {
-				var mapAddress = <portlet:namespace />getMapAddress();
-
-				<portlet:namespace />getAddress(mapAddress);
-				<portlet:namespace />saveMapAddress(mapAddress);
-
-				return mapAddress;
-			}
-
-			function <portlet:namespace />getMapAddress() {
-				var mapAddress = "<%= mapAddress %>";
-
-				<c:if test="<%= mapInputEnabled %>">
-					mapAddress = document.<portlet:namespace />fm.<portlet:namespace />mapAddress.value;
-				</c:if>
-
-				return mapAddress;
-			}
-
-			Liferay.provide(
-				window,
-				'<portlet:namespace />saveDirectionsAddress',
-				function(address) {
-					var A = AUI();
-
-					A.io.request(
-						'<portlet:actionURL><portlet:param name="<%= Constants.CMD %>" value="saveDirectionsAddress" /></portlet:actionURL>',
-						{
-							data: {
-								directionsAddress: address
-							}
-						}
-					);
-				},
-				['aui-io-request']
-			);
-
-			Liferay.provide(
-				window,
-				'<portlet:namespace />saveMapAddress',
-				function(address) {
-					var A = AUI();
-
-					A.io.request(
-						'<portlet:actionURL><portlet:param name="<%= Constants.CMD %>" value="saveMapAddress" /></portlet:actionURL>',
-						{
-							data: {
-								mapAddress: address
-							}
-						}
-					);
-				},
-				['aui-io-request']
-			);
-		</aui:script>
-
-		<aui:script use="aui-base">
-			A.getWin().on('unload', GUnload);
-		</aui:script>
+	<c:when test="<%= PortalUtil.isSecure(request) %>">
+		<script src="https://maps-api-ssl.google.com/maps/api/js?v=3&sensor=true" type="text/javascript"></script>
 	</c:when>
 	<c:otherwise>
-		<liferay-util:include page="/html/portal/portlet_not_setup.jsp" />
+		<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true"></script>
 	</c:otherwise>
 </c:choose>
+
+<form name="<portlet:namespace />fm">
+
+	<c:if test="<%= mapInputEnabled %>">
+		<input class="lfr-input-text" id="<portlet:namespace />mapAddress" name="<portlet:namespace />mapAddress" onKeyPress="if (event.keyCode == 13) { <portlet:namespace />getMap(); return false; }" type="text" value="<%= mapAddress %>" />
+
+		<input type="button" value="<liferay-ui:message key="get-map" />" onClick="<portlet:namespace />getMap();" />
+	</c:if>
+
+	<c:if test="<%= directionsInputEnabled %>">
+		<input class="lfr-input-text" id="<portlet:namespace />directionsAddress" name="<portlet:namespace />directionsAddress" onKeyPress="if (event.keyCode == 13) { <portlet:namespace />calcRoute(); return false; }" type="text" value="<%= directionsAddress %>" />
+
+		<select id="<portlet:namespace />travellingMode">
+			<option value="DRIVING"><liferay-ui:message key="driving" /></option>
+			<option value="WALKING"><liferay-ui:message key="walking" /></option>
+			<option value="BICYCLING"><liferay-ui:message key="bicycling" /></option>
+		</select>
+
+		<input type="button" value="<liferay-ui:message key="get-directions" />" onClick="<portlet:namespace />calcRoute();" />
+	</c:if>
+
+	<c:if test="<%= mapInputEnabled || directionsInputEnabled %>">
+		<div style="padding-top: 5px;"></div>
+	</c:if>
+
+	<div class="maps-content" id="<portlet:namespace />map" style="height: <%= height %>px; width: 100%;"></div>
+
+	<c:if test="<%= directionsInputEnabled %>">
+		<div style="padding-top: 5px;">
+			<a id="<portlet:namespace />google-maps-view" onClick="<portlet:namespace />openInGoogleMaps();"><liferay-ui:message key="open-in-google-maps" /></a>
+		</div>
+	</c:if>
+
+	<div id="<portlet:namespace />warnings_panel"></div>
+</form>
+
+<aui:script>
+	var <portlet:namespace />directionDisplay;
+	var <portlet:namespace />directionsService;
+	var <portlet:namespace />googleMap;
+	var <portlet:namespace />geocoder;
+	var <portlet:namespace />markerArray = [];
+	var <portlet:namespace />stepDisplay;
+
+	function <portlet:namespace />initMap() {
+
+		<portlet:namespace />geocoder = new google.maps.Geocoder();
+
+		<portlet:namespace />directionsService = new google.maps.DirectionsService();
+		
+		var myOptions = {
+			zoom: 8,
+			mapTypeId: google.maps.MapTypeId.ROADMAP
+  		}
+
+		/* Create a map and center it on default address */
+
+		<portlet:namespace />googleMap = new google.maps.Map(document.getElementById("<portlet:namespace />map"), myOptions);
+
+		/* Create a renderer for directions and bind it to the map. */
+
+		var rendererOptions = {
+			map: <portlet:namespace />googleMap
+		}
+		<portlet:namespace />directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+
+		/* Instantiate an info window to hold step text. */
+
+		<portlet:namespace />stepDisplay = new google.maps.InfoWindow();
+	}
+
+	<portlet:namespace />codeAddress();
+
+	function <portlet:namespace />attachInstructionText(marker, text) {
+		google.maps.event.addListener(marker, 'click', function() {
+			<portlet:namespace />stepDisplay.setContent(text);
+			<portlet:namespace />stepDisplay.open(<portlet:namespace />googleMap, marker);
+		});
+	}
+
+	function <portlet:namespace />calcRoute() {
+		<portlet:namespace />initMap();
+		var fromAddress = <portlet:namespace />getMapAddress();
+		var toAddress = document.<portlet:namespace />fm.<portlet:namespace />directionsAddress.value;
+		var travellingMode = document.getElementById("<portlet:namespace />travellingMode").value;
+
+		var request = {
+			origin: fromAddress,
+			destination: toAddress,
+			travelMode: google.maps.TravelMode[travellingMode]
+		};
+
+		<portlet:namespace />directionsService.route(request, function(response, status) {
+			if (status == google.maps.DirectionsStatus.OK) {
+				var warnings = document.getElementById("<portlet:namespace />warnings_panel");
+				warnings.innerHTML = "" + response.routes[0].warnings + "";
+				<portlet:namespace />directionsDisplay.setDirections(response);
+				<portlet:namespace />showSteps(response);
+
+				<portlet:namespace />saveDirectionsAddress(toAddress);
+			}
+		});
+	}
+
+	function <portlet:namespace />codeAddress() {
+		<portlet:namespace />initMap();
+		var address = <portlet:namespace />getMapAddress();
+		<portlet:namespace />geocoder.geocode( {'address': address}, function(results, status) {
+			if (status == google.maps.GeocoderStatus.OK) {
+				<portlet:namespace />googleMap.setCenter(results[0].geometry.location);
+				var marker = new google.maps.Marker({
+					map: <portlet:namespace />googleMap,
+					position: results[0].geometry.location
+				});
+			} else {
+				alert("Geocode was not successful for the following reason: " + status);
+			}
+		});
+	}
+
+	function <portlet:namespace />getMap() {
+		var mapAddress = <portlet:namespace />getMapAddress();
+
+		<portlet:namespace />codeAddress(mapAddress);
+		<portlet:namespace />saveMapAddress(mapAddress);
+
+		return mapAddress;
+	}
+
+	function <portlet:namespace />getMapAddress() {
+		var mapAddress = "<%= mapAddress %>";
+
+		<c:if test="<%= mapInputEnabled %>">
+			mapAddress = document.<portlet:namespace />fm.<portlet:namespace />mapAddress.value;
+		</c:if>
+
+		return mapAddress;
+	}
+
+	<c:if test="<%= directionsInputEnabled %>">
+		function <portlet:namespace />openInGoogleMaps() {
+			var fromAddress = <portlet:namespace />getMapAddress();
+			var toAddress = document.<portlet:namespace />fm.<portlet:namespace />directionsAddress.value;
+			var travellingMode = document.getElementById("<portlet:namespace />travellingMode").value;
+
+			window.open("http://maps.google.com/maps?f=q&hl=en&q=" + encodeURIComponent(fromAddress) + "+to+" + encodeURIComponent(toAddress));
+		}
+	</c:if>
+
+	function <portlet:namespace />showSteps(directionResult) {
+
+		/* For each step, place a marker, and add the text to the marker's
+		info window. Also attach the marker to an array so we
+		can keep track of it and remove it when calculating new
+		routes.*/
+
+		var myRoute = directionResult.routes[0].legs[0];
+
+		for (var i = 0; i < myRoute.steps.length; i++) {
+			var marker = new google.maps.Marker({
+				position: myRoute.steps[i].start_point,
+				map: <portlet:namespace />googleMap
+			});
+			<portlet:namespace />attachInstructionText(marker, myRoute.steps[i].instructions);
+			<portlet:namespace />markerArray[i] = marker;
+		}
+	}
+
+	Liferay.provide(
+		window,
+		'<portlet:namespace />saveDirectionsAddress',
+		function(address) {
+			var A = AUI();
+
+			A.io.request(
+				'<portlet:actionURL><portlet:param name="<%= Constants.CMD %>" value="saveDirectionsAddress" /></portlet:actionURL>',
+				{
+					data: {
+						directionsAddress: address
+					}
+				}
+			);
+		},
+		['aui-io-request']
+	);
+
+	Liferay.provide(
+		window,
+		'<portlet:namespace />saveMapAddress',
+		function(address) {
+			var A = AUI();
+
+			A.io.request(
+				'<portlet:actionURL><portlet:param name="<%= Constants.CMD %>" value="saveMapAddress" /></portlet:actionURL>',
+				{
+					data: {
+						mapAddress: address
+					}
+				}
+			);
+		},
+		['aui-io-request']
+	);
+</aui:script>
