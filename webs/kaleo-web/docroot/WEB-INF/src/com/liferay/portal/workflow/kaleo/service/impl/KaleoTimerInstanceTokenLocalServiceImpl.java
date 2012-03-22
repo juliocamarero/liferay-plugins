@@ -284,6 +284,7 @@ public class KaleoTimerInstanceTokenLocalServiceImpl
 			new SchedulerEventMessageListenerWrapper();
 
 		schedulerEventListenerWrapper.setGroupName(groupName);
+		schedulerEventListenerWrapper.setJobName(groupName);
 		schedulerEventListenerWrapper.setMessageListener(timerMessageListener);
 
 		schedulerEventListenerWrapper.afterPropertiesSet();
