@@ -24,6 +24,14 @@ directionsAddress = GetterUtil.getString((String)portletSession.getAttribute("di
 <c:choose>
 	<c:when test="<%= Validator.isNotNull(mapAddress) %>">
 		<style>
+			#<portlet:namespace />map {
+				height: 100%;
+			}
+
+			#<portlet:namespace />google-maps-view{
+				cursor: pointer;
+			}
+
 			.ie6 .maps-content img {
 				behavior: expression(this.pngSet=true);
 			}
@@ -40,87 +48,150 @@ directionsAddress = GetterUtil.getString((String)portletSession.getAttribute("di
 
 		<form name="<portlet:namespace />fm">
 
-		<c:if test="<%= mapInputEnabled %>">
-			<input class="lfr-input-text" name="<portlet:namespace />mapAddress" onKeyPress="if (event.keyCode == 13) { <portlet:namespace />getMap(); return false; }" type="text" value="<%= mapAddress %>" />
+			<c:if test="<%= mapInputEnabled %>">
+				<input class="lfr-input-text" id="<portlet:namespace />mapAddress" name="<portlet:namespace />mapAddress" onKeyPress="if (event.keyCode == 13) { <portlet:namespace />getMap(); return false; }" type="text" value="<%= mapAddress %>" />
 
-			<input type="button" value="<liferay-ui:message key="get-map" />" onClick="<portlet:namespace />getMap();" />
-		</c:if>
+				<input type="button" value="<liferay-ui:message key="get-map" />" onClick="<portlet:namespace />getMap();" />
+			</c:if>
 
-		<c:if test="<%= directionsInputEnabled %>">
-			<input class="lfr-input-text" name="<portlet:namespace />directionsAddress" onKeyPress="if (event.keyCode == 13) { <portlet:namespace />getDirections(); return false; }" type="text" value="<%= directionsAddress %>" />
+			<c:if test="<%= directionsInputEnabled %>">
+				<input class="lfr-input-text" id="<portlet:namespace />directionsAddress" name="<portlet:namespace />directionsAddress" onKeyPress="if (event.keyCode == 13) { <portlet:namespace />calcRoute(); return false; }" type="text" value="<%= directionsAddress %>" />
 
-			<input type="button" value="<liferay-ui:message key="get-directions" />" onClick="<portlet:namespace />getDirections();" />
-		</c:if>
+				<select id="<portlet:namespace />travellingMode">
+					<option value="<%= GoogleMapsConstants.DRIVING %>"><liferay-ui:message key="driving" /></option>
+					<option value="<%= GoogleMapsConstants.WALKING %>"><liferay-ui:message key="walking" /></option>
+					<option value="<%= GoogleMapsConstants.BICYCLING %>"><liferay-ui:message key="bicycling" /></option>
+				</select>
 
-		<c:if test="<%= mapInputEnabled || directionsInputEnabled %>">
-			<div style="padding-top: 5px;"></div>
-		</c:if>
+				<input type="button" value="<liferay-ui:message key="get-directions" />" onClick="<portlet:namespace />calcRoute();" />
+			</c:if>
 
-		<div class="maps-content" id="<portlet:namespace />map" style="height: <%= height %>px; width: 100%;"></div>
+			<c:if test="<%= mapInputEnabled || directionsInputEnabled %>">
+				<div style="padding-top: 5px;"></div>
+			</c:if>
 
+			<div class="maps-content" id="<portlet:namespace />map" style="height: <%= height %>px; width: 100%;"></div>
+
+			<c:if test="<%= directionsInputEnabled %>">
+				<div style="padding-top: 5px;">
+					<a id="<portlet:namespace />google-maps-view" onClick="<portlet:namespace />openInGoogleMaps();"><liferay-ui:message key="open-in-google-maps" /></a>
+				</div>
+			</c:if>
+
+			<div id="<portlet:namespace />warnings_panel"></div>
 		</form>
 
 		<aui:script>
-			var <portlet:namespace />map;
+			var <portlet:namespace />directionDisplay;
+			var <portlet:namespace />directionsService;
 			var <portlet:namespace />geocoder;
+			var <portlet:namespace />map;
+			var <portlet:namespace />markerArray = [];
+			var <portlet:namespace />stepDisplay;
 
-			function <portlet:namespace />load() {
+			function <portlet:namespace />initMap() {
+				<portlet:namespace />geocoder = new google.maps.Geocoder();
+
+				<portlet:namespace />directionsService = new google.maps.DirectionsService();
+
 				var myOptions = {
 					mapTypeId: google.maps.MapTypeId.ROADMAP,
 					zoom: 8
-		  		}
+				}
+
+				/* Create a map and center it on default address */
 
 				<portlet:namespace />map = new google.maps.Map(document.getElementById("<portlet:namespace />map"), myOptions);
 
-				<portlet:namespace />geocoder = new google.maps.Geocoder();
+				/* Create a renderer for directions and bind it to the map. */
 
-				<portlet:namespace />getAddress("<%= mapAddress %>");
+				var rendererOptions = {
+					map: <portlet:namespace />map
+				}
+				<portlet:namespace />directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+
+				/* Instantiate an info window to hold step text. */
+
+				<portlet:namespace />stepDisplay = new google.maps.InfoWindow();
 			}
 
-			<portlet:namespace />load();
+			<c:if test="<%= mapInputEnabled || directionsInputEnabled %>">
+				<c:choose>
+					<c:when test="<%= directionsInputEnabled %>">
+						<portlet:namespace />calcRoute();
+					</c:when>
+					<c:otherwise>
+						<portlet:namespace />getAddress();
+					</c:otherwise>
+				</c:choose>
+			</c:if>
 
-			function <portlet:namespace />getAddress(address) {
+			function <portlet:namespace />attachInstructionText(marker, text) {
+				google.maps.event.addListener(
+					marker,
+					'click',
+					function() {
+						<portlet:namespace />stepDisplay.setContent(text);
+
+						<portlet:namespace />stepDisplay.open(<portlet:namespace />map, marker);
+					}
+				);
+			}
+
+			function <portlet:namespace />calcRoute() {
+				<portlet:namespace />initMap();
+
+				var fromAddress = <portlet:namespace />getMapAddress();
+
+				var toAddress = document.<portlet:namespace />fm.<portlet:namespace />directionsAddress.value;
+
+				var travellingMode = document.getElementById("<portlet:namespace />travellingMode").value;
+
+				var request = {
+					destination: toAddress,
+					origin: fromAddress,
+					travelMode: google.maps.TravelMode[travellingMode]
+				};
+
+				<portlet:namespace />directionsService.route(request, function(response, status) {
+
+					if (status == google.maps.DirectionsStatus.OK) {
+						var warnings = document.getElementById("<portlet:namespace />warnings_panel");
+						warnings.innerHTML = "" + response.routes[0].warnings + "";
+
+						<portlet:namespace />directionsDisplay.setDirections(response);
+
+						<portlet:namespace />showSteps(response);
+
+						<portlet:namespace />saveDirectionsAddress(toAddress);
+					}
+				});
+			}
+
+			function <portlet:namespace />getAddress() {
+				<portlet:namespace />initMap();
+
+				var address = <portlet:namespace />getMapAddress();
+
 				<portlet:namespace />geocoder.geocode(
 					{
 						'address': address
 					},
 					function(results, status) {
 						if (status == google.maps.GeocoderStatus.OK) {
-							var location = results[0].geometry.location;
-
-							<portlet:namespace />map.setCenter(location);
+							<portlet:namespace />map.setCenter(results[0].geometry.location);
 
 							var marker = new google.maps.Marker(
 								{
 									map: <portlet:namespace />map,
-									position: location
+									position: results[0].geometry.location
 								}
 							);
-
-							var infowindow = new google.maps.InfoWindow(
-								{
-									content: address
-								}
-							);
-
-							infowindow.setPosition(location);
-
-							infowindow.open(<portlet:namespace />map, marker);
-						}
-						else {
+						} else {
 							//alert(status);
 						}
 					}
 				);
-			}
-
-			function <portlet:namespace />getDirections() {
-				var mapAddress = <portlet:namespace />getMapAddress();
-				var directionsAddress = document.<portlet:namespace />fm.<portlet:namespace />directionsAddress.value;
-
-				<portlet:namespace />saveDirectionsAddress(directionsAddress);
-
-				window.open("http://maps.google.com/maps?f=q&hl=en&q=" + encodeURIComponent(document.<portlet:namespace />fm.<portlet:namespace />directionsAddress.value) + "+to+" + encodeURIComponent(mapAddress));
 			}
 
 			function <portlet:namespace />getMap() {
@@ -140,6 +211,41 @@ directionsAddress = GetterUtil.getString((String)portletSession.getAttribute("di
 				</c:if>
 
 				return mapAddress;
+			}
+
+			<c:if test="<%= directionsInputEnabled %>">
+				function <portlet:namespace />openInGoogleMaps() {
+					var fromAddress = <portlet:namespace />getMapAddress();
+
+					var toAddress = document.<portlet:namespace />fm.<portlet:namespace />directionsAddress.value;
+
+					var travellingMode = document.getElementById("<portlet:namespace />travellingMode").value;
+
+					window.open("http://maps.google.com/maps?f=q&hl=en&q=" + encodeURIComponent(fromAddress) + "+to+" + encodeURIComponent(toAddress));
+				}
+			</c:if>
+
+			function <portlet:namespace />showSteps(directionResult) {
+
+				/* For each step, place a marker, and add the text to the marker's
+				info window. Also attach the marker to an array so we
+				can keep track of it and remove it when calculating new
+				routes.*/
+
+				var myRoute = directionResult.routes[0].legs[0];
+
+				for (var i = 0; i < myRoute.steps.length; i++) {
+					var marker = new google.maps.Marker(
+						{
+							position: myRoute.steps[i].start_point,
+							map: <portlet:namespace />map
+						}
+					);
+
+					<portlet:namespace />attachInstructionText(marker, myRoute.steps[i].instructions);
+
+					<portlet:namespace />markerArray[i] = marker;
+				}
 			}
 
 			Liferay.provide(
