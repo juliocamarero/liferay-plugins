@@ -49,13 +49,13 @@ List<BaseModel<?>> contacts = null;
 int contactsCount = 0;
 
 if (userPublicPage || showOnlySiteMembers || !filterBy.equals(ContactsConstants.FILTER_BY_DEFAULT)) {
-	List<User> users = UserLocalServiceUtil.search(company.getCompanyId(), name, WorkflowConstants.STATUS_APPROVED, params, 0, maxResultCount, new UserLastNameComparator(true));
+	List<User> users = UserLocalServiceUtil.search(company.getCompanyId(), name, WorkflowConstants.STATUS_APPROVED, params, 0, ContactsConstants.MAX_RESULT_COUNT, new UserLastNameComparator(true));
 
 	contacts = new ArrayList<BaseModel<?>>(users);
 	contactsCount = UserLocalServiceUtil.searchCount(themeDisplay.getCompanyId(), name, WorkflowConstants.STATUS_APPROVED, params);
 }
 else {
-	contacts = EntryLocalServiceUtil.searchUsersAndContacts(themeDisplay.getCompanyId(), user.getUserId(), name, 0, maxResultCount);
+	contacts = EntryLocalServiceUtil.searchUsersAndContacts(themeDisplay.getCompanyId(), user.getUserId(), name, 0, ContactsConstants.MAX_RESULT_COUNT);
 	contactsCount = EntryLocalServiceUtil.searchUsersAndContactsCount(themeDisplay.getCompanyId(), user.getUserId(), name);
 }
 
@@ -269,9 +269,9 @@ portletURL.setWindowState(WindowState.NORMAL);
 						}
 						%>
 
-						<c:if test="<%= contactsCount > maxResultCount %>">
+						<c:if test="<%= contactsCount > ContactsConstants.MAX_RESULT_COUNT %>">
 							<div class="more-results">
-								<a data-end="<%= maxResultCount %>" data-lastNameAnchor="<%= lastNameAnchor %>" href="javascript:;"><liferay-ui:message key="view-more" /> (<%= contactsCount - maxResultCount %>)</a>
+								<a data-end="<%= ContactsConstants.MAX_RESULT_COUNT %>" data-lastNameAnchor="<%= lastNameAnchor %>" href="javascript:;"><liferay-ui:message key="view-more" /> (<%= contactsCount - ContactsConstants.MAX_RESULT_COUNT %>)</a>
 							</div>
 						</c:if>
 					</aui:layout>
@@ -369,6 +369,7 @@ portletURL.setWindowState(WindowState.NORMAL);
 					contactsSearchInput: '#<portlet:namespace />name',
 					defaultMessageError: '<liferay-ui:message key="an-error-occurred-while-retrieving-the-users-information" unicode="<%= true %>" />',
 					defaultMessageSuccess: '<liferay-ui:message key="your-request-completed-successfully" unicode="<%= true %>" />',
+					maxResultCount: <%= ContactsConstants.MAX_RESULT_COUNT %>,
 					namespace: '<portlet:namespace />',
 					showIcon: '<%= showIcon %>'
 				}
@@ -419,7 +420,7 @@ portletURL.setWindowState(WindowState.NORMAL);
 					var node = event.currentTarget;
 
 					var start = A.DataType.Number.parse(node.getAttribute('data-end'));
-					var end = start + <%= maxResultCount %>;
+					var end = start + <%= ContactsConstants.MAX_RESULT_COUNT %>;
 
 					var lastNameAnchor = node.getAttribute('data-lastNameAnchor');
 
@@ -514,6 +515,8 @@ portletURL.setWindowState(WindowState.NORMAL);
 			);
 
 			<c:if test="<%= !userPublicPage %>">
+				var contactsCenterHome = A.one('.contacts-portlet .contacts-center-home');
+
 				<c:if test="<%= !showOnlySiteMembers %>">
 					A.one('.contacts-portlet .add-contact').on(
 						'click',
@@ -521,19 +524,17 @@ portletURL.setWindowState(WindowState.NORMAL);
 							contactsCenter.showPopup('<%= LanguageUtil.get(pageContext, "add-contact") %>', '<portlet:renderURL windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>"><portlet:param name="mvcPath" value="/contacts_center/edit_entry.jsp" /><portlet:param name="redirect" value="<%= currentURL %>" /></portlet:renderURL>');
 						}
 					);
+
+					contactsCenterHome.one('.contacts').on(
+						'click',
+						function(event) {
+							contactFilterSelect.set('value', '<%= ContactsConstants.FILTER_BY_TYPE_MY_CONTACTS %>');
+
+							contactsCenter.updateContacts(searchInput.get('value'), contactFilterSelect.get('value'));
+						},
+						'a'
+					);
 				</c:if>
-
-				var contactsCenterHome = A.one('.contacts-portlet .contacts-center-home');
-
-				contactsCenterHome.one('.contacts').on(
-					'click',
-					function(event) {
-						contactFilterSelect.set('value', '<%= ContactsConstants.FILTER_BY_TYPE_MY_CONTACTS %>');
-
-						contactsCenter.updateContacts(searchInput.get('value'), contactFilterSelect.get('value'));
-					},
-					'a'
-				);
 
 				contactsCenterHome.one('.connections').on(
 					'click',
