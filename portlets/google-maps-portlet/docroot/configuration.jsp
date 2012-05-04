@@ -19,6 +19,8 @@
 <liferay-portlet:actionURL portletConfiguration="true" var="actionURL" />
 
 <aui:form action="<%= actionURL %>" method="post" name="fm">
+	<liferay-ui:error key="directionsAddress" message="please-enter-a-destination-address" />
+
 	<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.UPDATE %>" />
 
 	<aui:fieldset>
@@ -26,9 +28,11 @@
 
 		<aui:input name="preferences--mapInputEnabled--" type="checkbox" value="<%= mapInputEnabled %>" />
 
-		<aui:input cssClass="lfr-input-text-container" name="preferences--directionsAddress--" type="text" value="<%= directionsAddress %>" />
+		<aui:input name="preferences--enableRouteCalculation--" type="checkbox" value="<%= enableRouteCalculation %>" />
 
-		<aui:input name="preferences--directionsInputEnabled--" type="checkbox" value="<%= directionsInputEnabled %>" />
+		<aui:input name="preferences--allowChangeTravellingMode--" type="checkbox" value="<%= allowChangeTravellingMode %>" />
+
+		<aui:input cssClass="lfr-input-text-container" name="preferences--directionsAddress--" showRequiredLabel="<%= enableRouteCalculation %>" type="text" value="<%= directionsAddress %>" />
 
 		<aui:input name="preferences--height--" size="4" suffix="px" type="text" value="<%= height %>" />
 	</aui:fieldset>

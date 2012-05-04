@@ -15,7 +15,9 @@
 package com.liferay.googlemaps.action;
 
 import com.liferay.portal.kernel.portlet.DefaultConfigurationAction;
+import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.util.PortalUtil;
 
 import javax.portlet.ActionRequest;
@@ -25,6 +27,7 @@ import javax.portlet.PortletSession;
 
 /**
  * @author Mark Wong
+ * @author Manuel de la Peña
  */
 public class ConfigurationActionImpl extends DefaultConfigurationAction {
 
@@ -39,6 +42,8 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 
 		PortletSession portletSession = actionRequest.getPortletSession();
 
+		validateConfiguration(actionRequest);
+
 		portletSession.removeAttribute(
 			PortalUtil.getPortletNamespace(portletResource) + "mapAddress",
 			PortletSession.APPLICATION_SCOPE);
@@ -49,6 +54,33 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 			PortletSession.APPLICATION_SCOPE);
 
 		super.processAction(portletConfig, actionRequest, actionResponse);
+	}
+
+	protected void validateConfiguration(ActionRequest actionRequest)
+			throws Exception {
+
+		String allowChangeTravellingMode = getParameter(
+			actionRequest, "allowChangeTravellingMode");
+		String enableRouteCalculation = getParameter(
+			actionRequest, "enableRouteCalculation");
+		String mapInputEnabled = getParameter(actionRequest, "mapInputEnabled");
+
+		boolean bAllowChangeTravellingMode = false;
+		boolean bEnableRouteConfiguration = Boolean.valueOf(
+			enableRouteCalculation);
+		boolean bMapInputEnabled = Boolean.valueOf(mapInputEnabled);
+
+		if (bEnableRouteConfiguration) {
+			bAllowChangeTravellingMode = Boolean.valueOf(
+				allowChangeTravellingMode);
+		}
+
+		String directionsAddress = getParameter(
+			actionRequest, "directionsAddress");
+
+		if (bEnableRouteConfiguration && Validator.isNull(directionsAddress)) {
+			SessionErrors.add(actionRequest, "directionsAddress");
+		}
 	}
 
 }
