@@ -30,7 +30,13 @@
 
 		<aui:input name="preferences--directionsInputEnabled--" type="checkbox" value="<%= directionsInputEnabled %>" />
 
+		<aui:input name="preferences--showDirectionSteps--" type="checkbox" value="<%= showDirectionSteps %>" />
+
+		<aui:input name="preferences--enableChangingTravellingMode--" type="checkbox" value="<%= enableChangingTravellingMode %>" />
+
 		<aui:input name="preferences--height--" size="4" suffix="px" type="text" value="<%= height %>" />
+
+		<aui:input name="preferences--showGoogleMapsLink--" type="checkbox" value="<%= showGoogleMapsLink %>" />
 	</aui:fieldset>
 
 	<aui:button-row>

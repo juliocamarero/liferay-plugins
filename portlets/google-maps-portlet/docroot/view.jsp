@@ -16,167 +16,95 @@
 
 <%@ include file="/init.jsp" %>
 
-<%
-mapAddress = GetterUtil.getString((String)portletSession.getAttribute("mapAddress"), mapAddress);
-directionsAddress = GetterUtil.getString((String)portletSession.getAttribute("directionsAddress"), directionsAddress);
-%>
-
 <c:choose>
 	<c:when test="<%= Validator.isNotNull(mapAddress) %>">
-		<style>
-			.ie6 .maps-content img {
-				behavior: expression(this.pngSet=true);
-			}
-		</style>
+		<aui:form name="fm">
+			<aui:fieldset>
+				<div class='address-container <%= (directionsInputEnabled || Validator.isNotNull(directionsAddress)) ? "two-lines" : StringPool.BLANK %>'>
+					<c:choose>
+						<c:when test="<%= mapInputEnabled %>">
+							<aui:input cssClass="address-field" inlineField="<%= true %>" label="from" name="mapAddress" type="text" value="<%= mapAddress %>" />
+						</c:when>
+						<c:otherwise>
+							<c:if test="<%= Validator.isNotNull(mapAddress) && (Validator.isNotNull(directionsAddress) || directionsInputEnabled) %>">
+								<aui:field-wrapper inlineField="<%= true %>" label="from"><%= mapAddress %></aui:field-wrapper>
+							</c:if>
 
-		<c:choose>
-			<c:when test="<%= PortalUtil.isSecure(request) %>">
-				<script src="https://maps-api-ssl.google.com/maps/api/js?v=3&sensor=true" type="text/javascript"></script>
-			</c:when>
-			<c:otherwise>
-				<script src="http://maps.google.com/maps/api/js?sensor=true" type="text/javascript"></script>
-			</c:otherwise>
-		</c:choose>
+							<aui:input name="mapAddress" type="hidden" value="<%= mapAddress %>" />
+						</c:otherwise>
+					</c:choose>
+				</div>
 
-		<form name="<portlet:namespace />fm">
+				<div class="address-container">
+					<c:choose>
+						<c:when test="<%= directionsInputEnabled %>">
+							<aui:input cssClass="address-field" inlineField="<%= true %>" label="to" name="directionsAddress" type="text" value="<%= directionsAddress %>" />
+						</c:when>
+						<c:otherwise>
+							<c:if test="<%= Validator.isNotNull(directionsAddress) %>">
+								<aui:field-wrapper inlineField="<%= true %>" label="to"><%= directionsAddress %></aui:field-wrapper>
+							</c:if>
 
-		<c:if test="<%= mapInputEnabled %>">
-			<input class="lfr-input-text" name="<portlet:namespace />mapAddress" onKeyPress="if (event.keyCode == 13) { <portlet:namespace />getMap(); return false; }" type="text" value="<%= mapAddress %>" />
+							<aui:input name="directionsAddress" type="hidden" value="<%= directionsAddress %>" />
+						</c:otherwise>
+					</c:choose>
+				</div>
 
-			<input type="button" value="<liferay-ui:message key="get-map" />" onClick="<portlet:namespace />getMap();" />
-		</c:if>
+				<div class="button-container">
+					<c:choose>
+						<c:when test="<%= directionsInputEnabled || (mapInputEnabled && (Validator.isNotNull(directionsAddress))) %>">
+							<aui:button name="getDirectionsButton" value="get-directions" />
+						</c:when>
+						<c:when test="<%= mapInputEnabled %>">
+							<aui:button name="getMapButton" value="get-map" />
+						</c:when>
+					</c:choose>
+				</div>
 
-		<c:if test="<%= directionsInputEnabled %>">
-			<input class="lfr-input-text" name="<portlet:namespace />directionsAddress" onKeyPress="if (event.keyCode == 13) { <portlet:namespace />getDirections(); return false; }" type="text" value="<%= directionsAddress %>" />
+				<c:choose>
+					<c:when test="<%= enableChangingTravellingMode %>">
+						<aui:select inlineField="<%= true %>" label="" name="travellingMode">
+							<aui:option label="<%= GoogleMapsConstants.DRIVING %>" />
+							<aui:option label="<%= GoogleMapsConstants.WALKING %>" />
+							<aui:option label="<%= GoogleMapsConstants.BICYCLING %>" />
+						</aui:select>
+					</c:when>
+					<c:otherwise>
+						<aui:input name="travellingMode" type="hidden" value="<%= GoogleMapsConstants.DRIVING %>" />
+					</c:otherwise>
+				</c:choose>
 
-			<input type="button" value="<liferay-ui:message key="get-directions" />" onClick="<portlet:namespace />getDirections();" />
-		</c:if>
+				<div style="padding-top: 5px;"></div>
 
-		<c:if test="<%= mapInputEnabled || directionsInputEnabled %>">
-			<div style="padding-top: 5px;"></div>
-		</c:if>
+				<div class="maps-content" id="<portlet:namespace />map" style="height: <%= height %>px; width: 100%;"></div>
 
-		<div class="maps-content" id="<portlet:namespace />map" style="height: <%= height %>px; width: 100%;"></div>
+				<div id="<portlet:namespace />warningsPanel"></div>
 
-		</form>
-
-		<aui:script>
-			var <portlet:namespace />map;
-			var <portlet:namespace />geocoder;
-
-			function <portlet:namespace />load() {
-				var myOptions = {
-					mapTypeId: google.maps.MapTypeId.ROADMAP,
-					zoom: 8
-		  		}
-
-				<portlet:namespace />map = new google.maps.Map(document.getElementById("<portlet:namespace />map"), myOptions);
-
-				<portlet:namespace />geocoder = new google.maps.Geocoder();
-
-				<portlet:namespace />getAddress("<%= mapAddress %>");
-			}
-
-			<portlet:namespace />load();
-
-			function <portlet:namespace />getAddress(address) {
-				<portlet:namespace />geocoder.geocode(
-					{
-						'address': address
-					},
-					function(results, status) {
-						if (status == google.maps.GeocoderStatus.OK) {
-							var location = results[0].geometry.location;
-
-							<portlet:namespace />map.setCenter(location);
-
-							var marker = new google.maps.Marker(
-								{
-									map: <portlet:namespace />map,
-									position: location
-								}
-							);
-
-							var infowindow = new google.maps.InfoWindow(
-								{
-									content: address
-								}
-							);
-
-							infowindow.setPosition(location);
-
-							infowindow.open(<portlet:namespace />map, marker);
-						}
-						else {
-							//alert(status);
-						}
-					}
-				);
-			}
-
-			function <portlet:namespace />getDirections() {
-				var mapAddress = <portlet:namespace />getMapAddress();
-				var directionsAddress = document.<portlet:namespace />fm.<portlet:namespace />directionsAddress.value;
-
-				<portlet:namespace />saveDirectionsAddress(directionsAddress);
-
-				window.open("http://maps.google.com/maps?f=q&hl=en&q=" + encodeURIComponent(document.<portlet:namespace />fm.<portlet:namespace />directionsAddress.value) + "+to+" + encodeURIComponent(mapAddress));
-			}
-
-			function <portlet:namespace />getMap() {
-				var mapAddress = <portlet:namespace />getMapAddress();
-
-				<portlet:namespace />getAddress(mapAddress);
-				<portlet:namespace />saveMapAddress(mapAddress);
-
-				return mapAddress;
-			}
-
-			function <portlet:namespace />getMapAddress() {
-				var mapAddress = "<%= mapAddress %>";
-
-				<c:if test="<%= mapInputEnabled %>">
-					mapAddress = document.<portlet:namespace />fm.<portlet:namespace />mapAddress.value;
+				<c:if test="<%= showGoogleMapsLink %>">
+					<div class="google-maps-link">
+						<aui:a href="javascript:;" id="openInGoogleMapsLink" label="open-in-google-maps" target="_blank" />
+					</div>
 				</c:if>
+			</aui:fieldset>
+		</aui:form>
 
-				return mapAddress;
-			}
+		<aui:script use="liferay-google-maps">
+			new Liferay.Portlet.GoogleMaps(
+				{
+					directionsAddress: '<%= directionsAddress %>',
+					
+					<c:if test="<%= PortalUtil.isSecure(request) %>">
+					googleMapsURL: 'https://maps-api-ssl.google.com/maps/api/js',
+					</c:if>
 
-			Liferay.provide(
-				window,
-				'<portlet:namespace />saveDirectionsAddress',
-				function(address) {
-					var A = AUI();
-
-					A.io.request(
-						'<portlet:actionURL><portlet:param name="<%= Constants.CMD %>" value="saveDirectionsAddress" /></portlet:actionURL>',
-						{
-							data: {
-								directionsAddress: address
-							}
-						}
-					);
-				},
-				['aui-io-request']
-			);
-
-			Liferay.provide(
-				window,
-				'<portlet:namespace />saveMapAddress',
-				function(address) {
-					var A = AUI();
-
-					A.io.request(
-						'<portlet:actionURL><portlet:param name="<%= Constants.CMD %>" value="saveMapAddress" /></portlet:actionURL>',
-						{
-							data: {
-								mapAddress: address
-							}
-						}
-					);
-				},
-				['aui-io-request']
-			);
+					languageId: '<%= themeDisplay.getLanguageId() %>',
+					mapAddress: '<%= mapAddress %>',
+					mapInputEnabled: <%= mapInputEnabled %>,
+					namespace: '<portlet:namespace />',
+					portletId: '<%= portletDisplay.getId() %>',
+					showDirectionSteps: <%= showDirectionSteps %>
+				}
+			).render();
 		</aui:script>
 	</c:when>
 	<c:otherwise>
