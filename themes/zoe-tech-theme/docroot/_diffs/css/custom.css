@@ -10,16 +10,19 @@ $default-box-shadow-v-offset: 1px;
 
 /* -------- Global -------- */
 
-#breadcrumbs, #heading .page-title, #navigation .child-menu, #navigation h1, #skip-to-content, .portlet-journal-content-search .lfr-search-button, .portlet-journal-content-search .lfr-search-keywords
-{
+#breadcrumbs, #heading .page-title, #navigation .child-menu, #navigation h1, #skip-to-content, .portlet-journal-content-search .lfr-search-button, .portlet-journal-content-search .lfr-search-keywords {
 	clip: rect(0 0 0 0);
 	position: absolute;
 }
 
 body {
 	background: url(../images/custom/background.png) 0 0;
-	border-top: 10px solid #193441;
+	border-top: 10px solid #142933;
 	font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+	&.html-editor {
+		background: #FFF;
+	}
 
 	&.portal-popup {
 		background-image: none;
@@ -30,8 +33,16 @@ body {
 		}
 	}
 
-	&.html-editor {
-		background: #FFF;
+	&.show-footer {
+		background: #142933;
+
+		&.aui-dialog-iframe-popup {
+			background: #FFF;
+		}
+
+		#wrapper {
+			background: url(../images/custom/background.png) 0 0;
+		}
 	}
 }
 
@@ -42,6 +53,28 @@ body {
 #banner, #content {
 	margin: 0 auto;
 	width: 960px;
+}
+
+#banner {
+	position: relative;
+}
+
+#sign-in {
+	background: #142933;
+	color: #FFF;
+	display: block;
+	font-size: 1em;
+	font-weight: bold;
+	padding: 0 15px 5px;
+	position: absolute;
+	right: 0;
+	text-decoration: none;
+	text-transform: uppsercase;
+	top: 0;
+
+	&:hover {
+		color: #EE9F44;
+	}
 }
 
 ul.hide-bullets {
@@ -163,24 +196,21 @@ hr {
 /* -------- Search Bar -------- */
 
 #pageSearch {
-	#keywords, .lfr-search-keywords, .lfr-search-button {
-		background-image: url(../images/custom/search_sprite.png);
+		background-image: url(../images/custom/page_search.png);
 		background-repeat: no-repeat;
-	}
 
 	#keywords {
-		background-position: 0 -37px;
-		background-repeat: repeat-x;
+		background-image: none;
+		background-color: transparent;
 		border-width: 0;
 		color: #9A9A9A;
 		font-size: 12px;
 		height: 14px;
-		margin-left: 10px;
-		padding: 10px 0;
+		padding: 10px 0 10px 10px;
+		width: 170px
 	}
 
 	.lfr-search-keywords {
-		background-position: 0 0;
 		height: 36px;
 		margin-right: -10px;
 		margin-top: 3px;
@@ -192,16 +222,12 @@ hr {
 		}
 	}
 
-	.lfr-search-button {
-		background-position: 100% -107px;
-
-		.aui-field-content {
-			background: url(../images/custom/search_sprite.png) 0 -72px;
-			margin-right: 12px;
-		}
+	.lfr-search-button .aui-field-content {
+		margin-right: 12px;
 	}
 
 	#search {
+		margin-left: 3px;
 		padding: 6px 0 6px 12px;
 	}
 }
@@ -478,7 +504,7 @@ ul.arrow {
 /* -------- Footer -------- */
 
 #footerWrapper {
-	background: #142933;
+	background-color: #142933;
 
 	#footerContent {
 		margin: 0 auto;
@@ -554,45 +580,14 @@ ul.arrow {
 /* ------- Browser Specific Rules ------ */
 
 .ie6 {
-	#pageSearch #search {
-		background-color: #132832;
-		height: 21px;
-	}
-
 	.aui-carousel-menu-active {
 		background-image: url(../images/custom/tab.png);
 	}
-
-	.carousel-container #tabs .divider {
-		display: none;
-	}
 }
 
-.ie7 {
-	#pageSearch #keywords {
-		margin-top: -1px;
-	}
-
+.ie6, .ie7 {
 	.carousel-container #tabs .divider {
 		background: none;
-	}
-}
-
-.ie8 #pageSearch {
-	#keywords {
-		display: block;
-	}
-
-	.lfr-search-button {
-		background-position-y: -106px;
-	}
-}
-
-.firefox #pageSearch .lfr-search-keywords {
-	margin-top: -2px;
-
-	.aui-field-content {
-		margin-top: -1px;
 	}
 }
 
@@ -602,6 +597,11 @@ ul.arrow {
 	@include background(linear-gradient(top left, #132832, #193340));
 	@include box-shadow(inset 0 0 5px rgba(0, 0, 0, 0.8), 1px 1px 1px white);
 	@include text-shadow(1px 1px rgba(0, 0, 0, 0.5));
+}
+
+#sign-in {
+	@include border-bottom-radius(3px);
+	@include box-shadow(1px 2px 3px 0px #999);
 }
 
 .carousel-container #carousel .aui-carousel-item {
