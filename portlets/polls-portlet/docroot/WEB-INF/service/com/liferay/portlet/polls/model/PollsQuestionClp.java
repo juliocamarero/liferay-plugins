@@ -14,9 +14,9 @@
 
 package com.liferay.portlet.polls.model;
 
+import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
@@ -322,13 +322,8 @@ public class PollsQuestionClp extends BaseModelImpl<PollsQuestion>
 				currentThread.setContextClassLoader(portalClassLoader);
 			}
 
-			Locale[] locales = LanguageUtil.getAvailableLocales();
-
-			for (Locale locale : locales) {
-				String title = titleMap.get(locale);
-
-				setTitle(title, locale, defaultLocale);
-			}
+			setTitle(LocalizationUtil.updateLocalization(titleMap, getTitle(),
+					"Title", LocaleUtil.toLanguageId(defaultLocale)));
 		}
 		finally {
 			if (contextClassLoader != portalClassLoader) {
@@ -425,13 +420,9 @@ public class PollsQuestionClp extends BaseModelImpl<PollsQuestion>
 				currentThread.setContextClassLoader(portalClassLoader);
 			}
 
-			Locale[] locales = LanguageUtil.getAvailableLocales();
-
-			for (Locale locale : locales) {
-				String description = descriptionMap.get(locale);
-
-				setDescription(description, locale, defaultLocale);
-			}
+			setDescription(LocalizationUtil.updateLocalization(descriptionMap,
+					getDescription(), "Description",
+					LocaleUtil.toLanguageId(defaultLocale)));
 		}
 		finally {
 			if (contextClassLoader != portalClassLoader) {
@@ -456,6 +447,24 @@ public class PollsQuestionClp extends BaseModelImpl<PollsQuestion>
 		_lastVoteDate = lastVoteDate;
 	}
 
+	public java.util.List<com.liferay.portlet.polls.model.PollsChoice> getChoices() {
+		throw new UnsupportedOperationException();
+	}
+
+	public boolean isExpired() {
+		throw new UnsupportedOperationException();
+	}
+
+	public int getVotesCount() {
+		throw new UnsupportedOperationException();
+	}
+
+	public boolean isExpired(
+		com.liferay.portal.service.ServiceContext serviceContext,
+		java.util.Date defaultCreateDate) {
+		throw new UnsupportedOperationException();
+	}
+
 	public BaseModel<?> getPollsQuestionRemoteModel() {
 		return _pollsQuestionRemoteModel;
 	}
@@ -472,6 +481,15 @@ public class PollsQuestionClp extends BaseModelImpl<PollsQuestion>
 		else {
 			PollsQuestionLocalServiceUtil.updatePollsQuestion(this);
 		}
+	}
+
+	@SuppressWarnings("unused")
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException {
+		setTitle(getTitle(defaultImportLocale), defaultImportLocale,
+			defaultImportLocale);
+		setDescription(getDescription(defaultImportLocale),
+			defaultImportLocale, defaultImportLocale);
 	}
 
 	@Override

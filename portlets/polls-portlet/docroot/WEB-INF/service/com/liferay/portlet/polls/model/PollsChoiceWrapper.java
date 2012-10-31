@@ -341,6 +341,12 @@ public class PollsChoiceWrapper implements PollsChoice,
 		_pollsChoice.setExpandoBridgeAttributes(serviceContext);
 	}
 
+	public void prepareLocalizedFieldsForImport(
+		java.util.Locale defaultImportLocale)
+		throws com.liferay.portal.LocaleException {
+		_pollsChoice.prepareLocalizedFieldsForImport(defaultImportLocale);
+	}
+
 	@Override
 	public java.lang.Object clone() {
 		return new PollsChoiceWrapper((PollsChoice)_pollsChoice.clone());
@@ -376,6 +382,11 @@ public class PollsChoiceWrapper implements PollsChoice,
 	public void persist()
 		throws com.liferay.portal.kernel.exception.SystemException {
 		_pollsChoice.persist();
+	}
+
+	public int getVotesCount()
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _pollsChoice.getVotesCount();
 	}
 
 	/**

@@ -14,9 +14,9 @@
 
 package com.liferay.portlet.polls.model;
 
+import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
@@ -233,19 +233,19 @@ public class PollsChoiceClp extends BaseModelImpl<PollsChoice>
 				currentThread.setContextClassLoader(portalClassLoader);
 			}
 
-			Locale[] locales = LanguageUtil.getAvailableLocales();
-
-			for (Locale locale : locales) {
-				String description = descriptionMap.get(locale);
-
-				setDescription(description, locale, defaultLocale);
-			}
+			setDescription(LocalizationUtil.updateLocalization(descriptionMap,
+					getDescription(), "Description",
+					LocaleUtil.toLanguageId(defaultLocale)));
 		}
 		finally {
 			if (contextClassLoader != portalClassLoader) {
 				currentThread.setContextClassLoader(contextClassLoader);
 			}
 		}
+	}
+
+	public int getVotesCount() {
+		throw new UnsupportedOperationException();
 	}
 
 	public BaseModel<?> getPollsChoiceRemoteModel() {
@@ -263,6 +263,13 @@ public class PollsChoiceClp extends BaseModelImpl<PollsChoice>
 		else {
 			PollsChoiceLocalServiceUtil.updatePollsChoice(this);
 		}
+	}
+
+	@SuppressWarnings("unused")
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException {
+		setDescription(getDescription(defaultImportLocale),
+			defaultImportLocale, defaultImportLocale);
 	}
 
 	@Override

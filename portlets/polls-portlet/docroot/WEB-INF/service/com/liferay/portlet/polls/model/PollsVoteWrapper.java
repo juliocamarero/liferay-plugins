@@ -387,6 +387,12 @@ public class PollsVoteWrapper implements PollsVote, ModelWrapper<PollsVote> {
 		_pollsVote.persist();
 	}
 
+	public com.liferay.portlet.polls.model.PollsChoice getChoice()
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _pollsVote.getChoice();
+	}
+
 	/**
 	 * @deprecated Renamed to {@link #getWrappedModel}
 	 */
