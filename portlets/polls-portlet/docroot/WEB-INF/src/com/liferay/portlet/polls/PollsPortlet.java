@@ -15,7 +15,7 @@
  * Liferay Social Office. If not, see http://www.gnu.org/licenses/agpl-3.0.html.
  */
 
-package com.liferay.polls.portlet;
+package com.liferay.portlet.polls;
 
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
