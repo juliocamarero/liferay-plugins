@@ -19,7 +19,9 @@
 <%
 String redirect = ParamUtil.getString(request, "redirect");
 
-PollsQuestion question = (PollsQuestion)request.getAttribute(WebKeys.POLLS_QUESTION);
+long questionId = ParamUtil.getLong(request, "questionId");
+
+PollsQuestion question = PollsQuestionServiceUtil.getQuestion(questionId);
 
 question = question.toEscapedModel();
 
@@ -97,7 +99,7 @@ if (viewResults && !PollsQuestionPermission.contains(permissionChecker, question
 				</c:if>
 
 				<aui:button-row>
-					<aui:button type="submit" value="vote[action]" />
+					<aui:button type="submit" value="vote" />
 
 					<aui:button href="<%= redirect %>" type="cancel" />
 				</aui:button-row>

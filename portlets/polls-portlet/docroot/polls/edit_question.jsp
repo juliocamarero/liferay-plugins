@@ -21,9 +21,13 @@ String redirect = ParamUtil.getString(request, "redirect");
 
 String referringPortletResource = ParamUtil.getString(request, "referringPortletResource");
 
-PollsQuestion question = (PollsQuestion)request.getAttribute(WebKeys.POLLS_QUESTION);
+long questionId = ParamUtil.getLong(request, "questionId");
 
-long questionId = BeanParamUtil.getLong(question, request, "questionId");
+PollsQuestion question = null;
+
+if (questionId > 0) {
+	question = PollsQuestionLocalServiceUtil.getQuestion(questionId);
+}
 
 boolean neverExpire = ParamUtil.getBoolean(request, "neverExpire", true);
 
@@ -157,6 +161,7 @@ if (choiceName > 0) {
 	function <portlet:namespace />addPollChoice() {
 		<liferay-portlet:renderURL allowEmptyParam="<%= true %>" var="addPollChoiceURL">
 			<liferay-portlet:param name="jspPage" value="/polls/edit_question.jsp" />
+			<liferay-portlet:param name="redirect" value="<%= redirect %>" />
 			<liferay-portlet:param name="<%= PollsKeys.CHOICE_DESCRIPTION_PREFIX + (char)(96 + choicesCount + 1) %>" value="" />
 		</liferay-portlet:renderURL>
 
