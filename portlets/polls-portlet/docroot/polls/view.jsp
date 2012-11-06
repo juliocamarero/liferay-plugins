@@ -67,7 +67,8 @@
 			/>
 
 			<%
-            // Number of votes
+
+			// Number of votes
 
 			int votesCount = PollsVoteLocalServiceUtil.getQuestionVotesCount(question.getQuestionId());
 			%>
@@ -80,7 +81,8 @@
 			/>
 
 			<%
-            // Last vote date
+
+			// Last vote date
 
 			String lastVoteDate = StringPool.BLANK;
 
@@ -100,7 +102,8 @@
 			/>
 
 			<%
-            // Expiration date
+
+			// Expiration date
 
 			String expirationDate = StringPool.BLANK;
 
