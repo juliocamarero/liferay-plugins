@@ -25,9 +25,18 @@ import com.liferay.portal.kernel.util.CookieKeys;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
+<<<<<<< HEAD:portlets/polls-portlet/docroot/WEB-INF/src/com/liferay/polls/util/PollsUtil.java
 import com.liferay.portal.util.WebKeys;
+=======
+import com.liferay.portlet.polls.NoSuchVoteException;
+import com.liferay.portlet.polls.model.PollsChoice;
+import com.liferay.portlet.polls.model.PollsQuestion;
+import com.liferay.portlet.polls.service.PollsChoiceLocalServiceUtil;
+import com.liferay.portlet.polls.service.PollsVoteLocalServiceUtil;
+>>>>>>> 44af6e1... LPS-30029 Update Imports:portlets/polls-portlet/docroot/WEB-INF/src/com/liferay/portlet/polls/util/PollsUtil.java
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
