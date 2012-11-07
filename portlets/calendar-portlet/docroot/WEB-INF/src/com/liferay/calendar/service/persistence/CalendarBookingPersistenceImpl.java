@@ -47,6 +47,9 @@ import com.liferay.portal.model.ModelListener;
 import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
+import com.liferay.portlet.asset.service.persistence.AssetEntryPersistence;
+import com.liferay.portlet.asset.service.persistence.AssetLinkPersistence;
+
 import java.io.Serializable;
 
 import java.util.ArrayList;
@@ -485,7 +488,9 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 						calendarBooking.getPrimaryKeyObj());
 			}
 
-			session.delete(calendarBooking);
+			if (calendarBooking != null) {
+				session.delete(calendarBooking);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -494,7 +499,9 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 			closeSession(session);
 		}
 
-		clearCache(calendarBooking);
+		if (calendarBooking != null) {
+			clearCache(calendarBooking);
+		}
 
 		return calendarBooking;
 	}
@@ -5457,6 +5464,10 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 	protected CalendarResourcePersistence calendarResourcePersistence;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
+	@BeanReference(type = AssetEntryPersistence.class)
+	protected AssetEntryPersistence assetEntryPersistence;
+	@BeanReference(type = AssetLinkPersistence.class)
+	protected AssetLinkPersistence assetLinkPersistence;
 	private static final String _SQL_SELECT_CALENDARBOOKING = "SELECT calendarBooking FROM CalendarBooking calendarBooking";
 	private static final String _SQL_SELECT_CALENDARBOOKING_WHERE = "SELECT calendarBooking FROM CalendarBooking calendarBooking WHERE ";
 	private static final String _SQL_COUNT_CALENDARBOOKING = "SELECT COUNT(calendarBooking) FROM CalendarBooking calendarBooking";
