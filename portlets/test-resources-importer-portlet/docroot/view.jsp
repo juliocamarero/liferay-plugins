@@ -26,24 +26,26 @@ if (!themeDisplay.isSignedIn()) {
 	return;
 }
 
-ServletContext servletContext = getServletContext();
+Group group = null;
 
 String[] importers = {"custom", "lar", "resource"};
 
 for (String importer : importers) {
-	Group group = GroupLocalServiceUtil.fetchGroup(themeDisplay.getCompanyId(), "Test Resources Importer Portlet");
+	if (group == null) {
+		group = GroupLocalServiceUtil.fetchGroup(themeDisplay.getCompanyId(), "Test Resources Importer Portlet");
+	}
 
 	if (group != null) {
 		GroupLocalServiceUtil.deleteGroup(group);
 	}
 
-	String resourcesPath = servletContext.getRealPath("/WEB-INF/classes/resources-importer");
+	String resourcesPath = application.getRealPath("/WEB-INF/classes/resources-importer");
 
 	FileUtil.deltree(resourcesPath);
 	FileUtil.mkdirs(resourcesPath);
 
 	if (importer.equals("lar") || importer.equals("resource")) {
-		String importerPath = servletContext.getRealPath("WEB-INF/classes/test/" + importer);
+		String importerPath = application.getRealPath("WEB-INF/classes/test/" + importer);
 
 		FileUtil.copyDirectory(importerPath, resourcesPath);
 	}
@@ -55,13 +57,18 @@ for (String importer : importers) {
 
 	message.setResponseDestinationName("liferay/resources_importer");
 
-	Map<String, Object> responseMap = (Map<String, Object>)MessageBusUtil.sendSynchronousMessage(DestinationNames.HOT_DEPLOY, message);
+	long groupId = 0;
 
-	long groupId = GetterUtil.getLong(responseMap.get("groupId"));
+	try {
+		Map<String, Object> responseMap = (Map<String, Object>)MessageBusUtil.sendSynchronousMessage(DestinationNames.HOT_DEPLOY, message);
+
+		groupId = GetterUtil.getLong(responseMap.get("groupId"));
+	}
+	catch (Exception e) {
+	}
 %>
 
 	<h3>
-
 		<c:choose>
 			<c:when test='<%= importer.equals("custom") %>'>
 				Custom Resource Directory
@@ -76,7 +83,12 @@ for (String importer : importers) {
 	</h3>
 
 	<p>
-		GroupLocalServiceUtil#fetchGroup=<%= _assertTrue(GroupLocalServiceUtil.fetchGroup(groupId) != null) %><br />
+
+		<%
+		group = GroupLocalServiceUtil.fetchGroup(groupId);
+		%>
+
+		GroupLocalServiceUtil#fetchGroup=<%= _assertTrue(group != null) %><br />
 
 		<%
 		if (groupId == 0) {
