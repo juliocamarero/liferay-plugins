@@ -141,13 +141,12 @@ public class FooModelImpl extends BaseModelImpl<Foo> implements FooModel {
 
 	@Override
 	public Foo toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (Foo)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
+		if (_escapedModel == null) {
+			_escapedModel = (Foo)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
 		}
 
-		return _escapedModelProxy;
+		return _escapedModel;
 	}
 
 	@Override
@@ -246,9 +245,7 @@ public class FooModelImpl extends BaseModelImpl<Foo> implements FooModel {
 	}
 
 	private static ClassLoader _classLoader = Foo.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
-			Foo.class
-		};
+	private static Class<?>[] _escapedModelInterfaces = new Class[] { Foo.class };
 	private long _fooId;
-	private Foo _escapedModelProxy;
+	private Foo _escapedModel;
 }
