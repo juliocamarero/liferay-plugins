@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portlet.polls.service.permission;
+package com.liferay.polls.service.permission;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.security.auth.PrincipalException;
