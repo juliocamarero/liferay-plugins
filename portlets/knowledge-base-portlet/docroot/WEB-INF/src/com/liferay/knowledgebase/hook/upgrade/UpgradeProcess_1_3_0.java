@@ -12,22 +12,24 @@
  * details.
  */
 
-package com.liferay.mysubscriptions.portlet;
+package com.liferay.knowledgebase.hook.upgrade;
 
-import com.liferay.portal.model.Portlet;
-import com.liferay.portal.security.permission.PermissionChecker;
-import com.liferay.portlet.BaseControlPanelEntry;
+import com.liferay.knowledgebase.hook.upgrade.v1_3_0.UpgradeKBAttachments;
+import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 /**
- * @author Peter Shin
+ * @author Sergio González
  */
-public class MySubscriptionsControlPanelEntry extends BaseControlPanelEntry {
+public class UpgradeProcess_1_3_0 extends UpgradeProcess {
 
-	public boolean isVisible(
-			PermissionChecker permissionChecker, Portlet portlet)
-		throws Exception {
+	@Override
+	public int getThreshold() {
+		return 130;
+	}
 
-		return true;
+	@Override
+	protected void doUpgrade() throws Exception {
+		upgrade(UpgradeKBAttachments.class);
 	}
 
 }
