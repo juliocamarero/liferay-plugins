@@ -34,7 +34,6 @@ page import="com.liferay.polls.NoSuchQuestionException" %><%@
 page import="com.liferay.polls.model.PollsChoice" %><%@
 page import="com.liferay.polls.model.PollsQuestion" %><%@
 page import="com.liferay.polls.model.PollsVote" %><%@
-page import="com.liferay.polls.service.PollsQuestionServiceUtil" %><%@
 page import="com.liferay.polls.service.PollsQuestionLocalServiceUtil" %><%@
 page import="com.liferay.polls.service.PollsVoteLocalServiceUtil" %><%@
 page import="com.liferay.polls.service.permission.PollsPermission" %><%@
@@ -65,7 +64,9 @@ page import="com.liferay.portal.service.PortletLocalServiceUtil" %><%@
 page import="com.liferay.portal.service.UserLocalServiceUtil" %><%@
 page import="com.liferay.portal.service.permission.PortletPermissionUtil" %><%@
 page import="com.liferay.portal.util.PortalUtil" %><%@
-page import="com.liferay.portlet.PortletPreferencesFactoryUtil" %><%@
+page import="com.liferay.portlet.PortletPreferencesFactoryUtil" %>
+
+<%@
 
 <%@ page import="java.text.Format" %><%@
 page import="java.text.NumberFormat" %>

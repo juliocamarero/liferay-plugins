@@ -36,22 +36,7 @@ import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.service.ServiceContext;
-<<<<<<< HEAD
 import com.liferay.portal.util.PortletKeys;
-=======
-import com.liferay.portlet.polls.DuplicateVoteException;
-import com.liferay.portlet.polls.model.PollsChoice;
-import com.liferay.portlet.polls.model.PollsQuestion;
-import com.liferay.portlet.polls.model.PollsVote;
-import com.liferay.portlet.polls.service.PollsChoiceLocalServiceUtil;
-import com.liferay.portlet.polls.service.PollsQuestionLocalServiceUtil;
-import com.liferay.portlet.polls.service.PollsVoteLocalServiceUtil;
-import com.liferay.portlet.polls.service.persistence.PollsChoiceFinderUtil;
-import com.liferay.portlet.polls.service.persistence.PollsChoiceUtil;
-import com.liferay.portlet.polls.service.persistence.PollsQuestionUtil;
-import com.liferay.portlet.polls.service.persistence.PollsVoteUtil;
-import com.liferay.portlet.polls.util.PortletKeys;
->>>>>>> 2aed0b9... LPS-30029 Move EditQuestionAction and PortletKeys constants to PollsConstants
 
 import java.util.Calendar;
 import java.util.Date;
