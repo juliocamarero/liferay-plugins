@@ -1,3 +1,5 @@
+<%@ page import="com.liferay.portlet.polls.util.PortletKeys" %>
+
 <%--
 /**
  * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.

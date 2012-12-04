@@ -76,34 +76,34 @@ public class PollsPortlet extends MVCPortlet {
 	public void addAndStoreSelection(
 			PortletConfig portletConfig, PortletRequest portletRequest,
 			PollsQuestion question)
-			throws Exception {
+		throws Exception {
 
 		String referringPortletResource = ParamUtil.getString(
-				portletRequest, "referringPortletResource");
+			portletRequest, "referringPortletResource");
 
 		if (Validator.isNull(referringPortletResource)) {
 			return;
 		}
-
+		
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-				WebKeys.THEME_DISPLAY);
-
+			WebKeys.THEME_DISPLAY);		
+		
 		Layout layout = LayoutLocalServiceUtil.getLayout(
-				themeDisplay.getRefererPlid());
+			themeDisplay.getRefererPlid());
 
 		PortletPreferences preferences =
-				PortletPreferencesFactoryUtil.getPortletSetup(
-						layout, referringPortletResource, StringPool.BLANK);
+			PortletPreferencesFactoryUtil.getPortletSetup(
+				layout, referringPortletResource, StringPool.BLANK);
 
 		preferences.setValue(
-				"questionId", String.valueOf(question.getQuestionId()));
-
+			"questionId", String.valueOf(question.getQuestionId()));
+		
 		preferences.store();
 	}
 
 	public void deleteQuestion(
 			ActionRequest actionRequest, ActionResponse actionResponse)
-			throws Exception {
+		throws Exception {
 
 		long questionId = ParamUtil.getLong(actionRequest, "questionId");
 
@@ -112,16 +112,16 @@ public class PollsPortlet extends MVCPortlet {
 
 	public void serveResource(
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
-			throws IOException {
+		throws IOException {
 
 		try {
 			HttpServletRequest request = PortalUtil.getHttpServletRequest(
-					resourceRequest);
+				resourceRequest);
 			HttpServletResponse response = PortalUtil.getHttpServletResponse(
-					resourceResponse);
+				resourceResponse);
 
 			ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
-					WebKeys.THEME_DISPLAY);
+				WebKeys.THEME_DISPLAY);
 
 			long questionId = ParamUtil.getLong(request, "questionId");
 
@@ -131,36 +131,36 @@ public class PollsPortlet extends MVCPortlet {
 			String yName = themeDisplay.translate("votes");
 
 			CategoryDataset categoryDataset = PollsUtil.getVotesDataset(
-					questionId);
+				questionId);
 
 			JFreeChart jFreeChat = null;
 
 			if (chartType.equals("area")) {
 				jFreeChat = ChartFactory.createAreaChart(
-						chartName, xName, yName, categoryDataset,
-						PlotOrientation.VERTICAL, true, false, false);
+					chartName, xName, yName, categoryDataset,
+					PlotOrientation.VERTICAL, true, false, false);
 			}
 			else if (chartType.equals("horizontal_bar")) {
 				jFreeChat = ChartFactory.createBarChart(
-						chartName, xName, yName, categoryDataset,
-						PlotOrientation.HORIZONTAL, true, false, false);
+					chartName, xName, yName, categoryDataset,
+					PlotOrientation.HORIZONTAL, true, false, false);
 			}
 			else if (chartType.equals("line")) {
 				jFreeChat = ChartFactory.createLineChart(
-						chartName, xName, yName, categoryDataset,
-						PlotOrientation.VERTICAL, true, false, false);
+					chartName, xName, yName, categoryDataset,
+					PlotOrientation.VERTICAL, true, false, false);
 			}
 			else if (chartType.equals("vertical_bar")) {
 				jFreeChat = ChartFactory.createBarChart(
-						chartName, xName, yName, categoryDataset,
-						PlotOrientation.VERTICAL, true, false, false);
+					chartName, xName, yName, categoryDataset,
+					PlotOrientation.VERTICAL, true, false, false);
 			}
 			else {
 				PieDataset pieDataset = DatasetUtilities.createPieDatasetForRow(
-						categoryDataset, 0);
+					categoryDataset, 0);
 
 				jFreeChat = ChartFactory.createPieChart(
-						chartName, pieDataset, true, false, false);
+					chartName, pieDataset, true, false, false);
 			}
 
 			response.setContentType(ContentTypes.IMAGE_JPEG);
@@ -176,32 +176,32 @@ public class PollsPortlet extends MVCPortlet {
 
 	public void updateQuestion(
 			ActionRequest actionRequest, ActionResponse actionResponse)
-			throws Exception {
+		throws Exception {
 
 		PortletConfig portletConfig = (PortletConfig)actionRequest.getAttribute(
-				JavaConstants.JAVAX_PORTLET_CONFIG);
+			JavaConstants.JAVAX_PORTLET_CONFIG);
 
 		long questionId = ParamUtil.getLong(actionRequest, "questionId");
-
+		
 		Map<Locale, String> titleMap = LocalizationUtil.getLocalizationMap(
-				actionRequest, "title");
+			actionRequest, "title");
 		Map<Locale, String> descriptionMap =
-				LocalizationUtil.getLocalizationMap(actionRequest, "description");
+			LocalizationUtil.getLocalizationMap(actionRequest, "description");
 
 		int expirationDateMonth = ParamUtil.getInteger(
-				actionRequest, "expirationDateMonth");
+			actionRequest, "expirationDateMonth");
 		int expirationDateDay = ParamUtil.getInteger(
-				actionRequest, "expirationDateDay");
+			actionRequest, "expirationDateDay");
 		int expirationDateYear = ParamUtil.getInteger(
-				actionRequest, "expirationDateYear");
+			actionRequest, "expirationDateYear");
 		int expirationDateHour = ParamUtil.getInteger(
-				actionRequest, "expirationDateHour");
+			actionRequest, "expirationDateHour");
 		int expirationDateMinute = ParamUtil.getInteger(
-				actionRequest, "expirationDateMinute");
+			actionRequest, "expirationDateMinute");
 		int expirationDateAmPm = ParamUtil.getInteger(
-				actionRequest, "expirationDateAmPm");
+			actionRequest, "expirationDateAmPm");
 		boolean neverExpire = ParamUtil.getBoolean(
-				actionRequest, "neverExpire");
+			actionRequest, "neverExpire");
 
 		if (expirationDateAmPm == Calendar.PM) {
 			expirationDateHour += 12;
@@ -216,23 +216,23 @@ public class PollsPortlet extends MVCPortlet {
 		while (enu.hasMoreElements()) {
 			String param = enu.nextElement();
 
-			if (param.startsWith(PollsKeys.CHOICE_DESCRIPTION_PREFIX)) {
+			if (param.startsWith(PollsConstants.CHOICE_DESCRIPTION_PREFIX)) {
 				try {
 					String id = param.substring(
-							PollsKeys.CHOICE_DESCRIPTION_PREFIX.length(),
-							param.indexOf(CharPool.UNDERLINE));
+						PollsConstants.CHOICE_DESCRIPTION_PREFIX.length(),
+						param.indexOf(CharPool.UNDERLINE));
 
 					if (readParameters.contains(id)) {
 						continue;
 					}
 
 					String choiceName = ParamUtil.getString(
-							actionRequest, PollsKeys.CHOICE_NAME_PREFIX + id);
+						actionRequest, PollsConstants.CHOICE_NAME_PREFIX + id);
 
 					Map<Locale, String> localeChoiceDescriptionMap =
-							LocalizationUtil.getLocalizationMap(
-									actionRequest,
-									PollsKeys.CHOICE_DESCRIPTION_PREFIX + id);
+						LocalizationUtil.getLocalizationMap(
+							actionRequest,
+							PollsConstants.CHOICE_DESCRIPTION_PREFIX + id);
 
 					PollsChoice choice = PollsChoiceUtil.create(0);
 
@@ -249,15 +249,15 @@ public class PollsPortlet extends MVCPortlet {
 		}
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-				BookmarksEntry.class.getName(), actionRequest);
+			BookmarksEntry.class.getName(), actionRequest);
 
 		if (questionId <= 0) {
 			// Add question
 
 			PollsQuestion question = PollsQuestionServiceUtil.addQuestion(
-					titleMap, descriptionMap, expirationDateMonth,
-					expirationDateDay, expirationDateYear, expirationDateHour,
-					expirationDateMinute, neverExpire, choices, serviceContext);
+				titleMap, descriptionMap, expirationDateMonth,
+				expirationDateDay, expirationDateYear, expirationDateHour,
+				expirationDateMinute, neverExpire, choices, serviceContext);
 
 			// Poll display
 			addAndStoreSelection(portletConfig, actionRequest, question);
@@ -266,21 +266,21 @@ public class PollsPortlet extends MVCPortlet {
 			// Update question
 
 			PollsQuestionServiceUtil.updateQuestion(
-					questionId, titleMap, descriptionMap, expirationDateMonth,
-					expirationDateDay, expirationDateYear, expirationDateHour,
-					expirationDateMinute, neverExpire, choices, serviceContext);
+				questionId, titleMap, descriptionMap, expirationDateMonth,
+				expirationDateDay, expirationDateYear, expirationDateHour,
+				expirationDateMinute, neverExpire, choices, serviceContext);
 		}
 	}
 
 	public void voteQuestion(
 			ActionRequest actionRequest, ActionResponse actionResponse)
-			throws Exception {
+		throws Exception {
 
 		long questionId = ParamUtil.getLong(actionRequest, "questionId");
 		long choiceId = ParamUtil.getLong(actionRequest, "choiceId");
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-				actionRequest);
+			actionRequest);
 
 		PollsVoteServiceUtil.addVote(questionId, choiceId, serviceContext);
 
