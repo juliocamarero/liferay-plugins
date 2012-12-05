@@ -38,7 +38,7 @@
 		/>
 
 		<liferay-ui:search-container-row
-			className="com.liferay.portlet.polls.model.PollsQuestion"
+			className="com.liferay.polls.model.PollsQuestion"
 			escapedModel="<%= true %>"
 			keyProperty="questionId"
 			modelVar="question"
@@ -141,7 +141,7 @@
 
 					<c:if test="<%= showPermissionsButton %>">
 						<liferay-security:permissionsURL
-							modelResource="com.liferay.portlet.polls"
+							modelResource="com.liferay.polls"
 							modelResourceDescription="<%= HtmlUtil.escape(themeDisplay.getScopeGroupName()) %>"
 							resourcePrimKey="<%= String.valueOf(scopeGroupId) %>"
 							var="permissionsURL"

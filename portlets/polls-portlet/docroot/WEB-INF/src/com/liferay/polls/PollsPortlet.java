@@ -19,6 +19,7 @@ import com.liferay.polls.model.PollsQuestion;
 import com.liferay.polls.service.PollsQuestionServiceUtil;
 import com.liferay.polls.service.PollsVoteServiceUtil;
 import com.liferay.polls.service.persistence.PollsChoiceUtil;
+import com.liferay.polls.util.PollsConstants;
 import com.liferay.polls.util.PollsUtil;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.ContentTypes;
