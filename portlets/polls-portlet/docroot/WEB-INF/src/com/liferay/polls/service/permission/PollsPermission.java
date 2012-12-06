@@ -36,7 +36,7 @@ public class PollsPermission {
 		PermissionChecker permissionChecker, long groupId, String actionId) {
 
 		return permissionChecker.hasPermission(
-			groupId, "com.liferay.portlet.polls", groupId, actionId);
+			groupId, "com.liferay.polls", groupId, actionId);
 	}
 
 }
