@@ -1,4 +1,3 @@
-<%--
 /**
  * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
@@ -12,8 +11,19 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
---%>
 
-<%@ include file="/polls_display/init.jsp" %>
+package com.liferay.polls.service.persistence;
 
-<liferay-ui:error exception="<%= PrincipalException.class %>" message="you-do-not-have-the-required-permissions" />
+/**
+ * @author Brian Wing Shun Chan
+ */
+public interface PollsChoiceFinder {
+	public com.liferay.polls.model.PollsChoice fetchByUUID_G(
+		java.lang.String uuid, long groupId)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	public com.liferay.polls.model.PollsChoice findByUUID_G(
+		java.lang.String uuid, long groupId)
+		throws com.liferay.polls.NoSuchChoiceException,
+			com.liferay.portal.kernel.exception.SystemException;
+}

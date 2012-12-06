@@ -19,8 +19,8 @@ package com.liferay.polls.util;
  */
 public class PortletKeys {
 
-	public static final String POLLS = "1";
+	public static final String POLLS = "1_WAR_pollsportlet";
 
-	public static final String POLLS_DISPLAY = "2";
+	public static final String POLLS_DISPLAY = "2_WAR_pollsportlet";
 
 }
