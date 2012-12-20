@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!--
+  ~ Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+  ~
+  ~ This library is free software; you can redistribute it and/or modify it under
+  ~ the terms of the GNU Lesser General Public License as published by the Free
+  ~ Software Foundation; either version 2.1 of the License, or (at your option)
+  ~ any later version.
+  ~
+  ~ This library is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+  ~ details.
+  -->
+
+<!DOCTYPE liferay-portlet-app PUBLIC "-//Liferay//DTD Portlet Application 6.2.0//EN" "http://www.liferay.com/dtd/liferay-portlet-app_6_2_0.dtd">
+
+<liferay-portlet-app>
+    <portlet>
+        <portlet-name>1</portlet-name>
+        <icon>/icon.png</icon>
+        <control-panel-entry-category>portal</control-panel-entry-category>
+        <control-panel-entry-weight>15</control-panel-entry-weight>
+        <instanceable>false</instanceable>
+        <header-portlet-css>/css/main.css</header-portlet-css>
+        <footer-portlet-javascript>/js/main.js</footer-portlet-javascript>
+        <css-class-wrapper>portal-safe-portlet</css-class-wrapper>
+        <system>true</system>
+    </portlet>
+    <portlet>
+        <portlet-name>2</portlet-name>
+        <icon>/icon.png</icon>
+        <control-panel-entry-category>content</control-panel-entry-category>
+        <control-panel-entry-weight>100</control-panel-entry-weight>
+        <instanceable>false</instanceable>
+        <header-portlet-css>/css/main.css</header-portlet-css>
+        <footer-portlet-javascript>/js/main.js</footer-portlet-javascript>
+        <css-class-wrapper>portal-safe-portlet</css-class-wrapper>
+        <system>true</system>
+    </portlet>
+    <role-mapper>
+		<role-name>administrator</role-name>
+		<role-link>Administrator</role-link>
+	</role-mapper>
+	<role-mapper>
+		<role-name>guest</role-name>
+		<role-link>Guest</role-link>
+	</role-mapper>
+	<role-mapper>
+		<role-name>power-user</role-name>
+		<role-link>Power User</role-link>
+	</role-mapper>
+	<role-mapper>
+		<role-name>user</role-name>
+		<role-link>User</role-link>
+	</role-mapper>
+</liferay-portlet-app>

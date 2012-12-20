@@ -1,0 +1,39 @@
+<%--
+/**
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+--%>
+
+<%
+ItemSearchTerms searchTerms = (ItemSearchTerms)searchContainer.getSearchTerms();
+
+List<String> itemsNames = PortalSafeServiceUtil.listItemsNames(company.getCompanyId(), safeGroupId);
+String searchedName = searchTerms.getKeywords();
+if(searchTerms.isAdvancedSearch()){
+	searchedName = searchTerms.getName();
+}
+if(Validator.isNotNull(searchedName)){
+	searchedName = searchedName.toLowerCase();
+	for(Iterator<String> it = itemsNames.iterator(); it.hasNext();){
+		String name = it.next();
+		if(!name.toLowerCase().contains(searchedName)){
+			it.remove();
+		}
+	}
+}
+
+List<String> pagedItemsNames = ListUtil.subList(itemsNames, searchContainer.getStart(), searchContainer.getEnd());
+
+pageContext.setAttribute("results", pagedItemsNames);
+pageContext.setAttribute("total", itemsNames.size());
+%>

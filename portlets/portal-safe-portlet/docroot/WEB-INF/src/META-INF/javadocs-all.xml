@@ -1,0 +1,1754 @@
+<?xml version="1.0"?>
+
+<javadocs>
+	<javadoc>
+		<name>PortalSafePortlet</name>
+		<type>com.liferay.portalsafe.portlet.PortalSafePortlet</type>
+		<comment><![CDATA[Manipulates data in underlying {@link PortalSafeUtil}. It's the main and only portlet of this plugin.]]></comment>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<method>
+			<name>deleteItem</name>
+			<comment><![CDATA[Removes item from portal safe.]]></comment>
+			<param>
+				<name>request</name>
+				<type>javax.portlet.ActionRequest</type>
+				<comment><![CDATA[the portlet request]]></comment>
+			</param>
+			<param>
+				<name>response</name>
+				<type>javax.portlet.ActionResponse</type>
+				<comment><![CDATA[the portlet request]]></comment>
+			</param>
+		</method>
+		<method>
+			<name>serveResource</name>
+			<comment><![CDATA[Writes binary content of a item into response.]]></comment>
+			<param>
+				<name>request</name>
+				<type>javax.portlet.ResourceRequest</type>
+				<comment><![CDATA[the portlet request]]></comment>
+			</param>
+			<param>
+				<name>response</name>
+				<type>javax.portlet.ResourceResponse</type>
+				<comment><![CDATA[the portlet response]]></comment>
+			</param>
+		</method>
+		<method>
+			<name>updateItem</name>
+			<comment><![CDATA[Creates or updates existing item.]]></comment>
+			<param>
+				<name>request</name>
+				<type>javax.portlet.ActionRequest</type>
+				<comment><![CDATA[the portlet request]]></comment>
+			</param>
+			<param>
+				<name>response</name>
+				<type>javax.portlet.ActionResponse</type>
+				<comment><![CDATA[the portlet response]]></comment>
+			</param>
+		</method>
+		<method>
+			<name>copy</name>
+			<comment><![CDATA[Copies binary content of the oldItemName and saves under the new itemName name.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of the company where the oldItemName is stored]]></comment>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of the group where the oldItemName is stored]]></comment>
+			</param>
+			<param>
+				<name>oldItemName</name>
+				<type>java.lang.String</type>
+				<comment><![CDATA[name of existing item]]></comment>
+			</param>
+			<param>
+				<name>itemName</name>
+				<type>java.lang.String</type>
+				<comment><![CDATA[name of the new item]]></comment>
+			</param>
+			<throws>
+				<name>PortalException</name>
+				<type>com.liferay.portal.kernel.exception.PortalException</type>
+				<comment><![CDATA[if underlying PortalSafeUtil throws the exception]]></comment>
+			</throws>
+			<throws>
+				<name>SystemException</name>
+				<type>com.liferay.portal.kernel.exception.SystemException</type>
+				<comment><![CDATA[if underlying PortalSafeUtil throws the exception]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>remove</name>
+			<comment><![CDATA[Removes item with the oldItemName from portal safe.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of the company where the oldItemName is stored]]></comment>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of the group where the oldItemName is stored]]></comment>
+			</param>
+			<param>
+				<name>itemName</name>
+				<type>java.lang.String</type>
+				<comment><![CDATA[name of the item to be removed]]></comment>
+			</param>
+			<throws>
+				<name>PortalException</name>
+				<type>com.liferay.portal.kernel.exception.PortalException</type>
+				<comment><![CDATA[if underlying PortalSafeUtil throws the exception]]></comment>
+			</throws>
+			<throws>
+				<name>SystemException</name>
+				<type>com.liferay.portal.kernel.exception.SystemException</type>
+				<comment><![CDATA[if underlying PortalSafeUtil throws the exception]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>save</name>
+			<comment><![CDATA[Saves new item or updates existing item.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of the company where the oldItemName is stored]]></comment>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of the group where the oldItemName is stored]]></comment>
+			</param>
+			<param>
+				<name>request</name>
+				<type>com.liferay.portal.kernel.upload.UploadPortletRequest</type>
+				<comment><![CDATA[the portlet request]]></comment>
+			</param>
+			<param>
+				<name>itemName</name>
+				<type>java.lang.String</type>
+				<comment><![CDATA[name of the item to be saved]]></comment>
+			</param>
+			<param>
+				<name>itemStream</name>
+				<type>java.io.InputStream</type>
+				<comment><![CDATA[binary content of the item]]></comment>
+			</param>
+			<throws>
+				<name>CertificateException</name>
+				<type>java.security.cert.CertificateException</type>
+				<comment><![CDATA[if certificates from KeyStore could not be loaded]]></comment>
+			</throws>
+			<throws>
+				<name>IOException</name>
+				<type>java.io.IOException</type>
+				<comment><![CDATA[if the exception occures while loading KeyStore]]></comment>
+			</throws>
+			<throws>
+				<name>KeyStoreException</name>
+				<type>java.security.KeyStoreException</type>
+				<comment><![CDATA[if KeyStore doesn't support provided provider]]></comment>
+			</throws>
+			<throws>
+				<name>NoSuchAlgorithmException</name>
+				<type>java.security.NoSuchAlgorithmException</type>
+				<comment><![CDATA[if the exception occures while loading the KeyStore]]></comment>
+			</throws>
+			<throws>
+				<name>NoSuchProviderException</name>
+				<type>java.security.NoSuchProviderException</type>
+				<comment><![CDATA[if the exception occures while loading the KeyStore]]></comment>
+			</throws>
+			<throws>
+				<name>PortalException</name>
+				<type>com.liferay.portal.kernel.exception.PortalException</type>
+				<comment><![CDATA[if underlying PortalSafeUtil throws the exception]]></comment>
+			</throws>
+			<throws>
+				<name>SystemException</name>
+				<type>com.liferay.portal.kernel.exception.SystemException</type>
+				<comment><![CDATA[if underlying PortalSafeUtil throws the exception]]></comment>
+			</throws>
+		</method>
+		<field>
+			<name>APPLICATION_OCTET_STREAM</name>
+		</field>
+		<field>
+			<name>_log</name>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>ItemDisplayTerms</name>
+		<type>com.liferay.portalsafe.search.ItemDisplayTerms</type>
+		<comment><![CDATA[Holds {@link #NAME} for search container.]]></comment>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<method>
+			<name>ItemDisplayTerms</name>
+			<param>
+				<name>portletRequest</name>
+				<type>javax.portlet.PortletRequest</type>
+			</param>
+		</method>
+		<method>
+			<name>getName</name>
+		</method>
+		<field>
+			<name>NAME</name>
+		</field>
+		<field>
+			<name>name</name>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>ItemSearch</name>
+		<type>com.liferay.portalsafe.search.ItemSearch</type>
+		<comment><![CDATA[Search container implementation for portal safe.]]></comment>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<method>
+			<name>ItemSearch</name>
+			<param>
+				<name>portletRequest</name>
+				<type>javax.portlet.PortletRequest</type>
+			</param>
+			<param>
+				<name>iteratorURL</name>
+				<type>javax.portlet.PortletURL</type>
+			</param>
+		</method>
+		<field>
+			<name>headerNames</name>
+		</field>
+		<field>
+			<name>orderableHeaders</name>
+		</field>
+		<field>
+			<name>EMPTY_RESULTS_MESSAGE</name>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>ItemSearchTerms</name>
+		<type>com.liferay.portalsafe.search.ItemSearchTerms</type>
+		<comment><![CDATA[Parses {@link #NAME} from request.]]></comment>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<method>
+			<name>ItemSearchTerms</name>
+			<param>
+				<name>portletRequest</name>
+				<type>javax.portlet.PortletRequest</type>
+			</param>
+		</method>
+	</javadoc>
+	<javadoc>
+		<name>BinaryItemSerializerImpl</name>
+		<type>com.liferay.portalsafe.serializer.BinaryItemSerializerImpl</type>
+		<comment><![CDATA[Implements serialization of {@link BinaryItem} into {@link ItemSerializer}.]]></comment>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<method>
+			<name>getSerializerUID</name>
+			<comment><![CDATA[Returns constant {@link #SERIALIZER_UID}.]]></comment>
+			<return>
+				<comment><![CDATA[value of {@link #SERIALIZER_UID}]]></comment>
+			</return>
+		</method>
+		<method>
+			<name>getSupportedClass</name>
+			<comment><![CDATA[Returns {@link BinaryItem}.]]></comment>
+			<return>
+				<comment><![CDATA[class representation of {@link BinaryItem}]]></comment>
+			</return>
+		</method>
+		<method>
+			<name>read</name>
+			<comment><![CDATA[Converts the serializedItem into the result by copying values.]]></comment>
+			<param>
+				<name>serializedItem</name>
+				<type>com.liferay.portal.kernel.safe.serializer.SerializedItem</type>
+				<comment><![CDATA[the item to be deserialized into the BinaryItem]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[new instance of BinaryItem with values copied from the serializedItem]]></comment>
+			</return>
+		</method>
+		<method>
+			<name>write</name>
+			<comment><![CDATA[Serialize provided item into new SerializedItem by copying values.]]></comment>
+			<param>
+				<name>item</name>
+				<type>com.liferay.portal.kernel.safe.model.BinaryItem</type>
+				<comment><![CDATA[the item to be converted]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[new instance of SerializedItem with existing values from the item]]></comment>
+			</return>
+		</method>
+		<field>
+			<name>SERIALIZER_UID</name>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>ItemSerializerRegistryImpl</name>
+		<type>com.liferay.portalsafe.serializer.ItemSerializerRegistryImpl</type>
+		<comment><![CDATA[Implementation of {@link ItemSerializerRegistry} which provides (de)serialization capabilities of portal safe.]]></comment>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<method>
+			<name>ItemSerializerRegistryImpl</name>
+		</method>
+		<method>
+			<name>deregisterSerializer</name>
+			<comment><![CDATA[Removes serializer from the {@link #_serializers}.]]></comment>
+			<param>
+				<name>serializer</name>
+				<type>com.liferay.portal.kernel.safe.serializer.ItemSerializer</type>
+				<comment><![CDATA[the serializer to be removed.]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[<code>true</code> if serializer was found in the registry and successfully removed, <code>false</code> otherwise]]></comment>
+			</return>
+		</method>
+		<method>
+			<name>read</name>
+			<comment><![CDATA[Tries to read header from the input stream and then deserialize the rest of the input stream using one of serializers.]]></comment>
+			<param>
+				<name>serializedItem</name>
+				<type>com.liferay.portal.kernel.safe.serializer.SerializedItem</type>
+				<comment><![CDATA[serialized form of item to be read]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[deserialized instance of the serializedItem]]></comment>
+			</return>
+			<throws>
+				<name>ItemSerializerException</name>
+				<type>com.liferay.portal.kernel.safe.serializer.ItemSerializerException</type>
+				<comment><![CDATA[if the deserialization process fails]]></comment>
+			</throws>
+			<throws>
+				<name>NoSuchItemSerializerException</name>
+				<type>com.liferay.portal.kernel.safe.serializer.NoSuchItemSerializerException</type>
+				<comment><![CDATA[if no suitable serializer is found to parse the serializedItem]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>registerSerializer</name>
+			<comment><![CDATA[Registers serializer into {@link #_serializers}.]]></comment>
+			<param>
+				<name>serializer</name>
+				<type>com.liferay.portal.kernel.safe.serializer.ItemSerializer</type>
+				<comment><![CDATA[the serializer to be registered]]></comment>
+			</param>
+			<throws>
+				<name>DuplicateItemSerializerException</name>
+				<type>com.liferay.portal.kernel.safe.serializer.DuplicateItemSerializerException</type>
+			</throws>
+		</method>
+		<method>
+			<name>write</name>
+			<comment><![CDATA[Serializes the item into binary form using one of registered serializers.]]></comment>
+			<param>
+				<name>item</name>
+				<type>com.liferay.portal.kernel.safe.model.Item</type>
+				<comment><![CDATA[the item to be converted into binary form.]]></comment>
+			</param>
+			<throws>
+				<name>ItemSerializerException</name>
+				<type>com.liferay.portal.kernel.safe.serializer.ItemSerializerException</type>
+			</throws>
+			<throws>
+				<name>NoSuchItemSerializerException</name>
+				<type>com.liferay.portal.kernel.safe.serializer.NoSuchItemSerializerException</type>
+			</throws>
+		</method>
+		<method>
+			<name>_initSerializers</name>
+			<comment><![CDATA[Registers serializers specified in {@link PortletPropsValues#PORTAL_SAFE_SERIALIZER_CLASSES}.]]></comment>
+		</method>
+		<method>
+			<name>getSerializerByClass</name>
+			<comment><![CDATA[Returns serializer from the registry based on the itemClass]]></comment>
+			<param>
+				<name>itemClass</name>
+				<type>java.lang.Class</type>
+				<comment><![CDATA[key to be used to fetch the serializer using {@link ItemSerializer#getSupportedClass()}]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[serializer to be used for serializing the itemClass]]></comment>
+			</return>
+		</method>
+		<method>
+			<name>getSerializerById</name>
+			<comment><![CDATA[Returns serializer from the registry based on the serializerUID]]></comment>
+			<param>
+				<name>serializerUID</name>
+				<type>long</type>
+				<comment><![CDATA[key to be used to fetch serializers using {@link ItemSerializer#getSerializerUID()}]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[serializer to be used for deserializing]]></comment>
+			</return>
+		</method>
+		<method>
+			<name>readMetadata</name>
+			<comment><![CDATA[Loads and sets {@link SerializedItem}'s header from the serializedItem's stream.]]></comment>
+			<param>
+				<name>serializedItem</name>
+				<type>com.liferay.portal.kernel.safe.serializer.SerializedItem</type>
+				<comment><![CDATA[the SerializedItem to be filled]]></comment>
+			</param>
+			<throws>
+				<name>IOException</name>
+				<type>java.io.IOException</type>
+				<comment><![CDATA[if the stream throws the exception while reading]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>writeMetadata</name>
+			<comment><![CDATA[Writes metadata ({@link com.liferay.portal.kernel.safe.serializer .SerializedItem#getHeader()} into the serializedItem's stream.]]></comment>
+			<param>
+				<name>serializedItem</name>
+				<type>com.liferay.portal.kernel.safe.serializer.SerializedItem</type>
+				<comment><![CDATA[the serializedItem to be filled]]></comment>
+			</param>
+		</method>
+		<field>
+			<name>_log</name>
+		</field>
+		<field>
+			<name>_serializers</name>
+			<comment><![CDATA[Registry with serializers]]></comment>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>KeyStoreSerializerImpl</name>
+		<type>com.liferay.portalsafe.serializer.KeyStoreSerializerImpl</type>
+		<comment><![CDATA[Implements serialization of {@link KeyStoreItem} into {@link ItemSerializer}.]]></comment>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<method>
+			<name>getSerializerUID</name>
+			<comment><![CDATA[Returns constant {@link #SERIALIZER_UID}.]]></comment>
+			<return>
+				<comment><![CDATA[value of {@link #SERIALIZER_UID}]]></comment>
+			</return>
+		</method>
+		<method>
+			<name>getSupportedClass</name>
+			<comment><![CDATA[Returns {@link KeyStoreItem}.]]></comment>
+			<return>
+				<comment><![CDATA[class representation of {@link KeyStoreItem}]]></comment>
+			</return>
+		</method>
+		<method>
+			<name>read</name>
+			<comment><![CDATA[Reads content of the serializedItem and tries to create a new {@link KeyStoreItem} with loaded {@link KeyStore}.
+
+<p>
+Uses {@link SerializedItem#getHeader()} to obtain KeyStore type and creates new KeyStore using {@link KeyStore#load(java.io.InputStream, char[])}.
+</p>]]></comment>
+			<param>
+				<name>serializedItem</name>
+				<type>com.liferay.portal.kernel.safe.serializer.SerializedItem</type>
+				<comment><![CDATA[the serialized item to be converted]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[deserialized item with KeyStore]]></comment>
+			</return>
+			<throws>
+				<name>ItemSerializerException</name>
+				<type>com.liferay.portal.kernel.safe.serializer.ItemSerializerException</type>
+				<comment><![CDATA[if the serializedItem is <code>null</code>, itemStream is <code>null</code> or if fails KeyStore instantiation or loading from the input stream.]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>write</name>
+			<comment><![CDATA[Serializes the item into InputStream using {@link KeyStore#store(java.io.OutputStream stream, char[] password)} method.
+
+<p>
+{@link com.liferay.portalsafe.util.CryptoService#getPassword(long)} is used to store internal representation of the KeyStore into stream.
+</p>
+
+<p>
+KeyStore type is written into SerializedItem header to be used for deserialization.
+</p>]]></comment>
+			<param>
+				<name>item</name>
+				<type>com.liferay.portal.kernel.safe.model.KeyStoreItem</type>
+				<comment><![CDATA[the item with KeyStore to be serialized]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[the serialized item with KeyStore saved as InputStream]]></comment>
+			</return>
+			<throws>
+				<name>ItemSerializerException</name>
+				<type>com.liferay.portal.kernel.safe.serializer.ItemSerializerException</type>
+				<comment><![CDATA[if the item is <code>null</code>, if {@link KeyStoreItem#getKeyStore()} is <code>null</code> or if serialization of the KeyStore fails]]></comment>
+			</throws>
+		</method>
+		<field>
+			<name>SERIALIZER_UID</name>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>PortalSafeLocalServiceClpInvoker</name>
+		<type>com.liferay.portalsafe.service.base.PortalSafeLocalServiceClpInvoker</type>
+		<author><![CDATA[Brian Wing Shun Chan]]></author>
+		<method>
+			<name>PortalSafeLocalServiceClpInvoker</name>
+		</method>
+		<method>
+			<name>invokeMethod</name>
+			<param>
+				<name>name</name>
+				<type>java.lang.String</type>
+			</param>
+			<param>
+				<name>parameterTypes</name>
+				<type>java.lang.String[]</type>
+			</param>
+			<param>
+				<name>arguments</name>
+				<type>java.lang.Object[]</type>
+			</param>
+			<throws>
+				<name>Throwable</name>
+				<type>java.lang.Throwable</type>
+			</throws>
+		</method>
+		<field>
+			<name>_methodName16</name>
+		</field>
+		<field>
+			<name>_methodParameterTypes16</name>
+		</field>
+		<field>
+			<name>_methodName17</name>
+		</field>
+		<field>
+			<name>_methodParameterTypes17</name>
+		</field>
+		<field>
+			<name>_methodName21</name>
+		</field>
+		<field>
+			<name>_methodParameterTypes21</name>
+		</field>
+		<field>
+			<name>_methodName22</name>
+		</field>
+		<field>
+			<name>_methodParameterTypes22</name>
+		</field>
+		<field>
+			<name>_methodName23</name>
+		</field>
+		<field>
+			<name>_methodParameterTypes23</name>
+		</field>
+		<field>
+			<name>_methodName24</name>
+		</field>
+		<field>
+			<name>_methodParameterTypes24</name>
+		</field>
+		<field>
+			<name>_methodName25</name>
+		</field>
+		<field>
+			<name>_methodParameterTypes25</name>
+		</field>
+		<field>
+			<name>_methodName26</name>
+		</field>
+		<field>
+			<name>_methodParameterTypes26</name>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>PortalSafeServiceClpInvoker</name>
+		<type>com.liferay.portalsafe.service.base.PortalSafeServiceClpInvoker</type>
+		<author><![CDATA[Brian Wing Shun Chan]]></author>
+		<method>
+			<name>PortalSafeServiceClpInvoker</name>
+		</method>
+		<method>
+			<name>invokeMethod</name>
+			<param>
+				<name>name</name>
+				<type>java.lang.String</type>
+			</param>
+			<param>
+				<name>parameterTypes</name>
+				<type>java.lang.String[]</type>
+			</param>
+			<param>
+				<name>arguments</name>
+				<type>java.lang.Object[]</type>
+			</param>
+			<throws>
+				<name>Throwable</name>
+				<type>java.lang.Throwable</type>
+			</throws>
+		</method>
+		<field>
+			<name>_methodName16</name>
+		</field>
+		<field>
+			<name>_methodParameterTypes16</name>
+		</field>
+		<field>
+			<name>_methodName17</name>
+		</field>
+		<field>
+			<name>_methodParameterTypes17</name>
+		</field>
+		<field>
+			<name>_methodName20</name>
+		</field>
+		<field>
+			<name>_methodParameterTypes20</name>
+		</field>
+		<field>
+			<name>_methodName21</name>
+		</field>
+		<field>
+			<name>_methodParameterTypes21</name>
+		</field>
+		<field>
+			<name>_methodName22</name>
+		</field>
+		<field>
+			<name>_methodParameterTypes22</name>
+		</field>
+		<field>
+			<name>_methodName23</name>
+		</field>
+		<field>
+			<name>_methodParameterTypes23</name>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>PortalSafeLocalServiceImpl</name>
+		<type>com.liferay.portalsafe.service.impl.PortalSafeLocalServiceImpl</type>
+		<comment><![CDATA[The implementation of the portal safe local service.
+
+<p>
+All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.portalsafe.service.PortalSafeLocalService} interface. <p> This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
+</p>]]></comment>
+		<author><![CDATA[Brian Wing Shun Chan]]></author>
+		<see><![CDATA[com.liferay.portalsafe.service.base.PortalSafeLocalServiceBaseImpl]]></see>
+		<see><![CDATA[com.liferay.portalsafe.service.PortalSafeLocalServiceUtil]]></see>
+		<method>
+			<name>PortalSafeLocalServiceImpl</name>
+		</method>
+		<method>
+			<name>getStorage</name>
+			<comment><![CDATA[Returns registered storage implementation or {@link FSStorageImpl} if there is no storage registered.]]></comment>
+			<return>
+				<comment><![CDATA[underlying storage]]></comment>
+			</return>
+		</method>
+		<method>
+			<name>listItemsNames</name>
+			<comment><![CDATA[Use registered storage to list the items names.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of company to load items from]]></comment>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of group inside the company to load items from]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[not <code>null</code> list of accessible items names. These can be later used for loading or removing items from the safe.]]></comment>
+			</return>
+			<throws>
+				<name>PortalSafeException</name>
+				<type>com.liferay.portal.kernel.safe.PortalSafeException</type>
+				<comment><![CDATA[if an other error occurs]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>loadItem</name>
+			<comment><![CDATA[Uses {@link Storage#load(long, long, String)} to load SerializedItem and then {@link ItemSerializerRegistryUtil#read(SerializedItem)} to obtain the result.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of company to load items from]]></comment>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of group inside the company to load items from]]></comment>
+			</param>
+			<param>
+				<name>name</name>
+				<type>java.lang.String</type>
+				<comment><![CDATA[name of the item to be loaded]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[descendant of {@link Item} interface]]></comment>
+			</return>
+			<throws>
+				<name>PortalSafeException</name>
+				<type>com.liferay.portal.kernel.safe.PortalSafeException</type>
+				<comment><![CDATA[if an other error occurs]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>removeItem</name>
+			<comment><![CDATA[Use {@link Storage#remove(long, long, String)} to remove the item and then removes Liferay permission resources.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of company to remove the item from]]></comment>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of group inside the company to remove the item from]]></comment>
+			</param>
+			<param>
+				<name>name</name>
+				<type>java.lang.String</type>
+				<comment><![CDATA[name of the item to be removed]]></comment>
+			</param>
+			<throws>
+				<name>PortalSafeException</name>
+				<type>com.liferay.portal.kernel.safe.PortalSafeException</type>
+				<comment><![CDATA[if some error occurs during deleting]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>saveItem</name>
+			<comment><![CDATA[Use {@link ItemSerializerRegistryUtil#write(Item)} to serialize the item into serializedItem and then saves the serializedItem using {@link Storage#save(SerializedItem, String)}. In the end creates resources in the portal permission system.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of company to save the item to]]></comment>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of group inside the company to save the item to]]></comment>
+			</param>
+			<param>
+				<name>item</name>
+				<type>com.liferay.portal.kernel.safe.model.Item</type>
+				<comment><![CDATA[the item to be saved]]></comment>
+			</param>
+			<throws>
+				<name>PortalSafeException</name>
+				<type>com.liferay.portal.kernel.safe.PortalSafeException</type>
+				<comment><![CDATA[if an other error occurs]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>setStorage</name>
+			<comment><![CDATA[Registers storage to be used]]></comment>
+			<param>
+				<name>storage</name>
+				<type>com.liferay.portal.kernel.safe.storage.Storage</type>
+			</param>
+		</method>
+		<method>
+			<name>_initStorage</name>
+			<comment><![CDATA[Inits storage from {@link PortletPropsValues#PORTAL_SAFE_STORAGE_CLASS}]]></comment>
+		</method>
+		<field>
+			<name>_log</name>
+		</field>
+		<field>
+			<name>_storage</name>
+			<comment><![CDATA[The registered storage]]></comment>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>PortalSafeServiceImpl</name>
+		<type>com.liferay.portalsafe.service.impl.PortalSafeServiceImpl</type>
+		<comment><![CDATA[The implementation of the portal safe remote service.
+
+<p>
+All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.portalsafe.service.PortalSafeService} interface. <p> This is a remote service. Methods of this service are expected to have security checks based on the propagated JAAS credentials because this service can be accessed remotely.
+</p>]]></comment>
+		<author><![CDATA[Brian Wing Shun Chan]]></author>
+		<see><![CDATA[com.liferay.portalsafe.service.base.PortalSafeServiceBaseImpl]]></see>
+		<see><![CDATA[com.liferay.portalsafe.service.PortalSafeServiceUtil]]></see>
+		<method>
+			<name>listItemsNames</name>
+			<comment><![CDATA[NOTE FOR DEVELOPERS:
+
+Never reference this interface directly. Always use {@link
+com.liferay.portalsafe.service.PortalSafeServiceUtil} to access the
+portal safe remote service.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<throws>
+				<name>PortalSafeException</name>
+				<type>com.liferay.portal.kernel.safe.PortalSafeException</type>
+			</throws>
+		</method>
+		<method>
+			<name>loadItem</name>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>name</name>
+				<type>java.lang.String</type>
+			</param>
+			<throws>
+				<name>PortalSafeException</name>
+				<type>com.liferay.portal.kernel.safe.PortalSafeException</type>
+			</throws>
+		</method>
+		<method>
+			<name>removeItem</name>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>name</name>
+				<type>java.lang.String</type>
+			</param>
+			<throws>
+				<name>PortalSafeException</name>
+				<type>com.liferay.portal.kernel.safe.PortalSafeException</type>
+			</throws>
+		</method>
+		<method>
+			<name>saveItem</name>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>item</name>
+				<type>com.liferay.portal.kernel.safe.model.Item</type>
+			</param>
+			<throws>
+				<name>PortalSafeException</name>
+				<type>com.liferay.portal.kernel.safe.PortalSafeException</type>
+			</throws>
+		</method>
+	</javadoc>
+	<javadoc>
+		<name>PortalSafeItemPermission</name>
+		<type>com.liferay.portalsafe.service.permission.PortalSafeItemPermission</type>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<method>
+			<name>check</name>
+			<param>
+				<name>permissionChecker</name>
+				<type>com.liferay.portal.security.permission.PermissionChecker</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>itemName</name>
+				<type>java.lang.String</type>
+			</param>
+			<param>
+				<name>actionId</name>
+				<type>java.lang.String</type>
+			</param>
+			<throws>
+				<name>PortalException</name>
+				<type>com.liferay.portal.kernel.exception.PortalException</type>
+			</throws>
+			<throws>
+				<name>SystemException</name>
+				<type>com.liferay.portal.kernel.exception.SystemException</type>
+			</throws>
+		</method>
+		<method>
+			<name>check</name>
+			<param>
+				<name>permissionChecker</name>
+				<type>com.liferay.portal.security.permission.PermissionChecker</type>
+			</param>
+			<param>
+				<name>item</name>
+				<type>com.liferay.portal.kernel.safe.model.Item</type>
+			</param>
+			<param>
+				<name>actionId</name>
+				<type>java.lang.String</type>
+			</param>
+			<throws>
+				<name>PortalException</name>
+				<type>com.liferay.portal.kernel.exception.PortalException</type>
+			</throws>
+			<throws>
+				<name>SystemException</name>
+				<type>com.liferay.portal.kernel.exception.SystemException</type>
+			</throws>
+		</method>
+		<method>
+			<name>contains</name>
+			<param>
+				<name>permissionChecker</name>
+				<type>com.liferay.portal.security.permission.PermissionChecker</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>itemName</name>
+				<type>java.lang.String</type>
+			</param>
+			<param>
+				<name>actionId</name>
+				<type>java.lang.String</type>
+			</param>
+		</method>
+		<method>
+			<name>contains</name>
+			<param>
+				<name>permissionChecker</name>
+				<type>com.liferay.portal.security.permission.PermissionChecker</type>
+			</param>
+			<param>
+				<name>item</name>
+				<type>com.liferay.portal.kernel.safe.model.Item</type>
+			</param>
+			<param>
+				<name>actionId</name>
+				<type>java.lang.String</type>
+			</param>
+			<throws>
+				<name>PortalException</name>
+				<type>com.liferay.portal.kernel.exception.PortalException</type>
+			</throws>
+			<throws>
+				<name>SystemException</name>
+				<type>com.liferay.portal.kernel.exception.SystemException</type>
+			</throws>
+		</method>
+	</javadoc>
+	<javadoc>
+		<name>PortalSafePermission</name>
+		<type>com.liferay.portalsafe.service.permission.PortalSafePermission</type>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<method>
+			<name>check</name>
+			<param>
+				<name>permissionChecker</name>
+				<type>com.liferay.portal.security.permission.PermissionChecker</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>actionId</name>
+				<type>java.lang.String</type>
+			</param>
+			<throws>
+				<name>PortalException</name>
+				<type>com.liferay.portal.kernel.exception.PortalException</type>
+			</throws>
+		</method>
+		<method>
+			<name>contains</name>
+			<param>
+				<name>permissionChecker</name>
+				<type>com.liferay.portal.security.permission.PermissionChecker</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>actionId</name>
+				<type>java.lang.String</type>
+			</param>
+		</method>
+		<field>
+			<name>_CLASS_NAME</name>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>BaseEncryptingStorage</name>
+		<type>com.liferay.portalsafe.storage.BaseEncryptingStorage</type>
+		<comment><![CDATA[Base storage implementation that encrypts stream and file name. Implementing class should override only <code>*Encrypted</code> methods.]]></comment>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<method>
+			<name>listNames</name>
+			<comment><![CDATA[List encoded names using {@link #listNamesEncrypted(long, long)} and decrypt each name using {@link #decryptFileName(long, String)}.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<throws>
+				<name>StorageException</name>
+				<type>com.liferay.portal.kernel.safe.storage.StorageException</type>
+			</throws>
+		</method>
+		<method>
+			<name>load</name>
+			<comment><![CDATA[Loads item's stream using encrypted name and verify checksum against the companyId.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>name</name>
+				<type>java.lang.String</type>
+			</param>
+			<throws>
+				<name>NoSuchItemException</name>
+				<type>com.liferay.portal.kernel.safe.model.NoSuchItemException</type>
+			</throws>
+			<throws>
+				<name>StorageException</name>
+				<type>com.liferay.portal.kernel.safe.storage.StorageException</type>
+			</throws>
+		</method>
+		<method>
+			<name>remove</name>
+			<comment><![CDATA[Encrypts the name and calls {@link #removeEncrypted(long, long, String)}]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>name</name>
+				<type>java.lang.String</type>
+			</param>
+			<throws>
+				<name>NoSuchItemException</name>
+				<type>com.liferay.portal.kernel.safe.model.NoSuchItemException</type>
+			</throws>
+			<throws>
+				<name>StorageException</name>
+				<type>com.liferay.portal.kernel.safe.storage.StorageException</type>
+			</throws>
+		</method>
+		<method>
+			<name>save</name>
+			<comment><![CDATA[Prepends companyId as a checksum value, creates encrypting CihperInputStream and saves the serializedItem stream using encrypted name.]]></comment>
+			<param>
+				<name>serializedItem</name>
+				<type>com.liferay.portal.kernel.safe.serializer.SerializedItem</type>
+			</param>
+			<param>
+				<name>name</name>
+				<type>java.lang.String</type>
+			</param>
+			<throws>
+				<name>StorageException</name>
+				<type>com.liferay.portal.kernel.safe.storage.StorageException</type>
+			</throws>
+		</method>
+		<method>
+			<name>decryptFileName</name>
+			<comment><![CDATA[Decode the fileName using {@link Base32} encoding and decrypt bytes using {@link CryptoService#decrypt(long, byte[])}.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of company to be used to get and decrypt secret key]]></comment>
+			</param>
+			<param>
+				<name>fileName</name>
+				<type>java.lang.String</type>
+				<comment><![CDATA[the name to be processed]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[plain text file name]]></comment>
+			</return>
+			<throws>
+				<name>Exception</name>
+				<type>java.lang.Exception</type>
+				<comment><![CDATA[if CryptoService throws the exception]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>encryptFileName</name>
+			<comment><![CDATA[Encrypts the fileName into bytes using {@link CryptoService#encrypt(long, byte[])} and encode bytes into {@link Base32} encoding, which is safe for file names.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of company to be used to get and decrypt secret key]]></comment>
+			</param>
+			<param>
+				<name>fileName</name>
+				<type>java.lang.String</type>
+				<comment><![CDATA[the name to be processed]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[encrypted and base32 encoded file name]]></comment>
+			</return>
+			<throws>
+				<name>Exception</name>
+				<type>java.lang.Exception</type>
+				<comment><![CDATA[if CryptoService throws the exception]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>listNamesEncrypted</name>
+			<comment><![CDATA[To be implemented by extending class.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<throws>
+				<name>StorageException</name>
+				<type>com.liferay.portal.kernel.safe.storage.StorageException</type>
+			</throws>
+			<see><![CDATA[Storage#listNames(long, long)]]></see>
+		</method>
+		<method>
+			<name>loadEncrypted</name>
+			<comment><![CDATA[To be implemented by extending class.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>encryptedName</name>
+				<type>java.lang.String</type>
+			</param>
+			<throws>
+				<name>NoSuchItemException</name>
+				<type>com.liferay.portal.kernel.safe.model.NoSuchItemException</type>
+			</throws>
+			<throws>
+				<name>StorageException</name>
+				<type>com.liferay.portal.kernel.safe.storage.StorageException</type>
+			</throws>
+			<see><![CDATA[Storage#load(long, long, String)]]></see>
+		</method>
+		<method>
+			<name>removeEncrypted</name>
+			<comment><![CDATA[To be implemented by extending class.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>encryptedName</name>
+				<type>java.lang.String</type>
+			</param>
+			<throws>
+				<name>NoSuchItemException</name>
+				<type>com.liferay.portal.kernel.safe.model.NoSuchItemException</type>
+			</throws>
+			<throws>
+				<name>StorageException</name>
+				<type>com.liferay.portal.kernel.safe.storage.StorageException</type>
+			</throws>
+			<see><![CDATA[Storage#remove(long, long, String)]]></see>
+		</method>
+		<method>
+			<name>saveEncrypted</name>
+			<comment><![CDATA[To be implemented by extending class.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>encryptedName</name>
+				<type>java.lang.String</type>
+			</param>
+			<param>
+				<name>inputStream</name>
+				<type>java.io.InputStream</type>
+			</param>
+			<throws>
+				<name>StorageException</name>
+				<type>com.liferay.portal.kernel.safe.storage.StorageException</type>
+			</throws>
+			<see><![CDATA[Storage#save(SerializedItem, String)]]></see>
+		</method>
+		<field>
+			<name>_log</name>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>DLStorageImpl</name>
+		<type>com.liferay.portalsafe.storage.DLStorageImpl</type>
+		<comment><![CDATA[Saves and loads files using Document Library]]></comment>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<method>
+			<name>getDirectoryName</name>
+			<comment><![CDATA[Returns directory in which are files stored.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[omitted]]></comment>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+				<comment><![CDATA[used for]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[directory <code>{@link #PORTAL_SAFE}/groupId</code>]]></comment>
+			</return>
+		</method>
+		<method>
+			<name>getFileName</name>
+			<comment><![CDATA[Returns file name with full path for Document Library.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of the company where to store the file]]></comment>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of the group where to store the file]]></comment>
+			</param>
+			<param>
+				<name>name</name>
+				<type>java.lang.String</type>
+				<comment><![CDATA[name of the file]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[<code>{@link #getDirectoryName(long, long)}/name.{@link #ENCRYPTED_EXT}</code>]]></comment>
+			</return>
+			<throws>
+				<name>PortalException</name>
+				<type>com.liferay.portal.kernel.exception.PortalException</type>
+			</throws>
+		</method>
+		<method>
+			<name>listNamesEncrypted</name>
+			<comment><![CDATA[List names in {@link #getDirectoryName(long, long)} directory using {@link DLStoreUtil}.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<throws>
+				<name>StorageException</name>
+				<type>com.liferay.portal.kernel.safe.storage.StorageException</type>
+			</throws>
+			<see><![CDATA[com.liferay.portal.kernel.safe.storage.Storage#listNames(long, long)]]></see>
+		</method>
+		<method>
+			<name>loadEncrypted</name>
+			<comment><![CDATA[Constructs correct file name using {@link #getFileName(long, long, String)} and loads file using {@link DLStoreUtil}.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>name</name>
+				<type>java.lang.String</type>
+			</param>
+			<throws>
+				<name>NoSuchItemException</name>
+				<type>com.liferay.portal.kernel.safe.model.NoSuchItemException</type>
+			</throws>
+			<throws>
+				<name>StorageException</name>
+				<type>com.liferay.portal.kernel.safe.storage.StorageException</type>
+			</throws>
+			<see><![CDATA[com.liferay.portal.kernel.safe.storage.Storage#load(long, long, String)]]></see>
+		</method>
+		<method>
+			<name>removeEncrypted</name>
+			<comment><![CDATA[Remove file from {@link DLStoreUtil} using {@link #getFileName(long, long, String)}]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>name</name>
+				<type>java.lang.String</type>
+			</param>
+			<throws>
+				<name>NoSuchItemException</name>
+				<type>com.liferay.portal.kernel.safe.model.NoSuchItemException</type>
+			</throws>
+			<throws>
+				<name>StorageException</name>
+				<type>com.liferay.portal.kernel.safe.storage.StorageException</type>
+			</throws>
+			<see><![CDATA[com.liferay.portal.kernel.safe.storage.Storage#remove(long, long, String)]]></see>
+		</method>
+		<method>
+			<name>saveEncrypted</name>
+			<comment><![CDATA[Constructs correct file name using {@link #getFileName(long, long, String)} and saves file using {@link DLStoreUtil}. If Document Library already has the file, then removes previous file and creates a new one.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>name</name>
+				<type>java.lang.String</type>
+			</param>
+			<param>
+				<name>inputStream</name>
+				<type>java.io.InputStream</type>
+			</param>
+			<throws>
+				<name>StorageException</name>
+				<type>com.liferay.portal.kernel.safe.storage.StorageException</type>
+			</throws>
+			<see><![CDATA[com.liferay.portal.kernel.safe.storage.Storage#save(com.liferay.portal.kernel.safe.serializer.SerializedItem, String)]]></see>
+		</method>
+		<field>
+			<name>ENCRYPTED_EXT</name>
+			<comment><![CDATA[Extension for encrypted files]]></comment>
+		</field>
+		<field>
+			<name>PORTAL_SAFE</name>
+			<comment><![CDATA[Portal Safe directory in Document Library]]></comment>
+		</field>
+		<field>
+			<name>STORAGE_ID</name>
+			<comment><![CDATA[Document Library storage - uses {@link CompanyConstants#SYSTEM}]]></comment>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>FSStorageImpl</name>
+		<type>com.liferay.portalsafe.storage.FSStorageImpl</type>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<method>
+			<name>getFileName</name>
+			<comment><![CDATA[Returns full file name based on the companyId, groupId and the name]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of the company where to store the file]]></comment>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of the group where to store the file]]></comment>
+			</param>
+			<param>
+				<name>name</name>
+				<type>java.lang.String</type>
+				<comment><![CDATA[name to be used for the file]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[<code>{@link #getFileNamePrefix(long, long)}name{@link #ENCRYPTED_EXT}</code>]]></comment>
+			</return>
+			<throws>
+				<name>com.liferay.portalsafe.ItemNameException</name>
+				<type>com.liferay.portalsafe.ItemNameException</type>
+			</throws>
+		</method>
+		<method>
+			<name>getFileNamePrefix</name>
+			<comment><![CDATA[Creates file name prefix based on the companyId and the groupId]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of the company where to store the file]]></comment>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of the group where to store the file]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[<code>companyId-groupId-</code>]]></comment>
+			</return>
+		</method>
+		<method>
+			<name>listNamesEncrypted</name>
+			<comment><![CDATA[Return all files from the {@link #PORTAL_SAFE_DIRECTORY} which start with {@link #getFileNamePrefix(long, long)}]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<see><![CDATA[com.liferay.portal.kernel.safe.storage.Storage#listNames(long, long)]]></see>
+		</method>
+		<method>
+			<name>loadEncrypted</name>
+			<comment><![CDATA[Returns FileInputStream of file with name obtained using {@link #getFileName(long, long, String)}]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>encryptedName</name>
+				<type>java.lang.String</type>
+			</param>
+			<throws>
+				<name>NoSuchItemException</name>
+				<type>com.liferay.portal.kernel.safe.model.NoSuchItemException</type>
+			</throws>
+			<throws>
+				<name>StorageException</name>
+				<type>com.liferay.portal.kernel.safe.storage.StorageException</type>
+			</throws>
+			<see><![CDATA[com.liferay.portal.kernel.safe.storage.Storage#load(long, long, String)]]></see>
+		</method>
+		<method>
+			<name>removeEncrypted</name>
+			<comment><![CDATA[Removes file from disk with name obtained using {@link #getFileName(long, long, String)}. Before deleting tries to rewrite the file content with random bytes.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>encryptedName</name>
+				<type>java.lang.String</type>
+			</param>
+			<throws>
+				<name>NoSuchItemException</name>
+				<type>com.liferay.portal.kernel.safe.model.NoSuchItemException</type>
+			</throws>
+			<throws>
+				<name>StorageException</name>
+				<type>com.liferay.portal.kernel.safe.storage.StorageException</type>
+			</throws>
+			<see><![CDATA[com.liferay.portal.kernel.safe.storage.Storage#remove(long, long, String)]]></see>
+		</method>
+		<method>
+			<name>saveEncrypted</name>
+			<comment><![CDATA[Writes the inputStream into file with name obtained using {@link #getFileName(long, long, String)}]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>encryptedName</name>
+				<type>java.lang.String</type>
+			</param>
+			<param>
+				<name>inputStream</name>
+				<type>java.io.InputStream</type>
+			</param>
+			<throws>
+				<name>StorageException</name>
+				<type>com.liferay.portal.kernel.safe.storage.StorageException</type>
+			</throws>
+			<see><![CDATA[com.liferay.portal.kernel.safe.storage.Storage#save(com.liferay.portal.kernel.safe.serializer.SerializedItem, String)]]></see>
+		</method>
+		<field>
+			<name>ENCRYPTED_EXT</name>
+			<comment><![CDATA[Extension for encrypted files]]></comment>
+		</field>
+		<field>
+			<name>PORTAL_SAFE_DIRECTORY</name>
+			<comment><![CDATA[Directory for portal safe]]></comment>
+		</field>
+		<field>
+			<name>_log</name>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>CryptoService</name>
+		<type>com.liferay.portalsafe.util.CryptoService</type>
+		<comment><![CDATA[Encryption and decryption service]]></comment>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<method>
+			<name>getInstance</name>
+			<comment><![CDATA[Returns singleton of the instance]]></comment>
+			<return>
+				<comment><![CDATA[the instance]]></comment>
+			</return>
+		</method>
+		<method>
+			<name>clearPassword</name>
+			<comment><![CDATA[Resets bytes in the password, we shouldn't wait for GC]]></comment>
+			<param>
+				<name>password</name>
+				<type>byte[]</type>
+				<comment><![CDATA[the password to be cleared]]></comment>
+			</param>
+		</method>
+		<method>
+			<name>clearPassword</name>
+			<comment><![CDATA[Resets characters in the password, we shouldn't wait for GC]]></comment>
+			<param>
+				<name>password</name>
+				<type>char[]</type>
+				<comment><![CDATA[the password to be cleared]]></comment>
+			</param>
+		</method>
+		<method>
+			<name>decrypt</name>
+			<comment><![CDATA[Decrypts content using secret key belonging to the company]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of company to be used to get and decrypt the key]]></comment>
+			</param>
+			<param>
+				<name>content</name>
+				<type>byte[]</type>
+				<comment><![CDATA[the content to be decrypted]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[decrypted content in bytes]]></comment>
+			</return>
+			<throws>
+				<name>Exception</name>
+				<type>java.lang.Exception</type>
+				<comment><![CDATA[if decrypting fails]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>encrypt</name>
+			<comment><![CDATA[Encrypts content using secret key belonging to the company]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of company to be used to get and decrypt the key]]></comment>
+			</param>
+			<param>
+				<name>content</name>
+				<type>byte[]</type>
+				<comment><![CDATA[the content to be encrypted]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[encrypted content in bytes]]></comment>
+			</return>
+			<throws>
+				<name>Exception</name>
+				<type>java.lang.Exception</type>
+				<comment><![CDATA[if encrypting fails]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>generatePassword</name>
+			<comment><![CDATA[Generates new safe password based on the userInput]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of company to be used to encrypt the password]]></comment>
+			</param>
+			<param>
+				<name>userInput</name>
+				<type>char[]</type>
+				<comment><![CDATA[random array of characters to be used for password]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[character arrays {plainTextPassword, encryptedPassword}]]></comment>
+			</return>
+			<throws>
+				<name>Exception</name>
+				<type>java.lang.Exception</type>
+				<comment><![CDATA[if password generating fails]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>getCipherStream</name>
+			<comment><![CDATA[Returns cipher stream based which encrypts or decrypts the inputStream using portal safe's secret key.]]></comment>
+			<param>
+				<name>cipherMode</name>
+				<type>int</type>
+				<comment><![CDATA[either {@link Cipher#ENCRYPT_MODE} or {@link Cipher#DECRYPT_MODE} or to be used for cipher]]></comment>
+			</param>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of company to be used to get and decrypt the key]]></comment>
+			</param>
+			<param>
+				<name>inputStream</name>
+				<type>java.io.InputStream</type>
+				<comment><![CDATA[stream to be encrypted using CipherInputStream]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[encrypting or decrypting {@link CipherInputStream}]]></comment>
+			</return>
+			<throws>
+				<name>Exception</name>
+				<type>java.lang.Exception</type>
+				<comment><![CDATA[if {@link #getCipher(int, long)} throws the exception]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>getPassword</name>
+			<comment><![CDATA[Returns portal safe's secret key for the companyId. Returned array must be cleared using {@link #clearPassword(char[])}.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of company to be used to get and decrypt the key]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[the secret key in form of a character array]]></comment>
+			</return>
+			<throws>
+				<name>Exception</name>
+				<type>java.lang.Exception</type>
+				<comment><![CDATA[if {@link #getPasswordAsBytes(long)} throws the exception]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>getPasswordAsBytes</name>
+			<comment><![CDATA[Loads and decrypts portal safe's secret key belonging to the company. Returned array must be cleared using {@link #clearPassword(char[])}.]]></comment>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of company to be used to get and decrypt the key]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[decrypted password as bytes]]></comment>
+			</return>
+			<throws>
+				<name>Exception</name>
+				<type>java.lang.Exception</type>
+			</throws>
+		</method>
+		<method>
+			<name>getCipher</name>
+			<comment><![CDATA[Constructs cipher]]></comment>
+			<param>
+				<name>cipherMode</name>
+				<type>int</type>
+				<comment><![CDATA[either {@link Cipher#ENCRYPT_MODE} or {@link Cipher#DECRYPT_MODE} or to be used for cipher]]></comment>
+			</param>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+				<comment><![CDATA[ID of company to be used to get and decrypt the key]]></comment>
+			</param>
+			<throws>
+				<name>Exception</name>
+				<type>java.lang.Exception</type>
+				<comment><![CDATA[if {@link #getPasswordAsBytes(long)} throws the exception or if the Cipher cannot be initialized]]></comment>
+			</throws>
+		</method>
+		<field>
+			<name>_instance</name>
+			<comment><![CDATA[This class's singleton]]></comment>
+		</field>
+		<field>
+			<name>_secureRandom</name>
+			<comment><![CDATA[Source of randomness]]></comment>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>PortletPropsKeys</name>
+		<type>com.liferay.portalsafe.util.PortletPropsKeys</type>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<field>
+			<name>PORTAL_SAFE_ALGORITHM</name>
+		</field>
+		<field>
+			<name>PORTAL_SAFE_ALGORITHM_KEY_SIZE</name>
+		</field>
+		<field>
+			<name>PORTAL_SAFE_BCRYPT_LOG_ROUNDS</name>
+		</field>
+		<field>
+			<name>PORTAL_SAFE_SERIALIZER_CLASSES</name>
+		</field>
+		<field>
+			<name>PORTAL_SAFE_STORAGE_CLASS</name>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>PortletPropsValues</name>
+		<type>com.liferay.portalsafe.util.PortletPropsValues</type>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<field>
+			<name>PORTAL_SAFE_ALGORITHM</name>
+		</field>
+		<field>
+			<name>PORTAL_SAFE_ALGORITHM_KEY_SIZE</name>
+		</field>
+		<field>
+			<name>PORTAL_SAFE_BCRYPT_LOG_ROUNDS</name>
+		</field>
+		<field>
+			<name>PORTAL_SAFE_SERIALIZER_CLASSES</name>
+		</field>
+		<field>
+			<name>PORTAL_SAFE_STORAGE_CLASS</name>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>PropsKeys</name>
+		<type>com.liferay.portalsafe.util.PropsKeys</type>
+		<author><![CDATA[Tomas Polesovsky]]></author>
+		<field>
+			<name>PORTAL_SAFE_PASSWORD</name>
+		</field>
+	</javadoc>
+</javadocs>
