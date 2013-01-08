@@ -214,10 +214,15 @@ public class WebFormPortlet extends MVCPortlet {
 			}
 		}
 
-		if (SessionErrors.isEmpty(actionRequest) &&
-			Validator.isNotNull(successURL)) {
+		if (SessionErrors.isEmpty(actionRequest)) {
+			if (Validator.isNotNull(successURL)) {
+				actionResponse.sendRedirect(successURL);
+			}
+			else {
+				String redirect = PortalUtil.getLayoutURL(themeDisplay);
 
-			actionResponse.sendRedirect(successURL);
+				actionResponse.sendRedirect(redirect);
+			}
 		}
 	}
 
