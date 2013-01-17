@@ -523,10 +523,12 @@ public class FileSystemImporter extends BaseImporter {
 				null, new HashMap<String, byte[]>(), StringPool.BLANK,
 				serviceContext);
 
+		String articleURL = PortalUtil.getControlPanelFullURL(
+			serviceContext.getScopeGroupId(), PortletKeys.JOURNAL, null);
+
 		JournalArticleLocalServiceUtil.updateStatus(
-			userId, groupId, journalArticle.getArticleId(),
-			journalArticle.getVersion(), WorkflowConstants.STATUS_APPROVED,
-			StringPool.BLANK, serviceContext);
+			userId, journalArticle, WorkflowConstants.STATUS_APPROVED,
+			articleURL, null, serviceContext);
 	}
 
 	protected void doImportResources() throws Exception {
