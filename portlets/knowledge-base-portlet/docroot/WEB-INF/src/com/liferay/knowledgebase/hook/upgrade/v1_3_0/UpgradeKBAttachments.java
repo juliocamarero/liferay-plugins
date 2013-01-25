@@ -91,6 +91,12 @@ public class UpgradeKBAttachments extends BaseUpgradeAttachments {
 	}
 
 	@Override
+	protected String getRepositoryClassName() {
+		return "com.liferay.portal.repository.liferayrepository." +
+			"LiferayRepository";
+	}
+
+	@Override
 	protected void updateAttachments() throws Exception {
 		Connection con = null;
 		PreparedStatement ps = null;
