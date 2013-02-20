@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portlet.polls.service.permission;
+package com.liferay.polls.service.permission;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -27,50 +27,51 @@ import com.liferay.portlet.polls.service.PollsQuestionLocalServiceUtil;
 public class PollsQuestionPermission {
 
 	public static void check(
-			PermissionChecker permissionChecker, long questionId,
+			PermissionChecker permissionChecker, long pollsQuestionId,
 			String actionId)
 		throws PortalException, SystemException {
 
-		if (!contains(permissionChecker, questionId, actionId)) {
+		if (!contains(permissionChecker, pollsQuestionId, actionId)) {
 			throw new PrincipalException();
 		}
 	}
 
 	public static void check(
-			PermissionChecker permissionChecker, PollsQuestion question,
+			PermissionChecker permissionChecker, PollsQuestion pollsQuestion,
 			String actionId)
 		throws PortalException {
 
-		if (!contains(permissionChecker, question, actionId)) {
+		if (!contains(permissionChecker, pollsQuestion, actionId)) {
 			throw new PrincipalException();
 		}
 	}
 
 	public static boolean contains(
-			PermissionChecker permissionChecker, long questionId,
+			PermissionChecker permissionChecker, long pollsQuestionId,
 			String actionId)
 		throws PortalException, SystemException {
 
-		PollsQuestion question = PollsQuestionLocalServiceUtil.getQuestion(
-			questionId);
+		PollsQuestion pollsQuestion = PollsQuestionLocalServiceUtil.getQuestion(
+			pollsQuestionId);
 
-		return contains(permissionChecker, question, actionId);
+		return contains(permissionChecker, pollsQuestion, actionId);
 	}
 
 	public static boolean contains(
-		PermissionChecker permissionChecker, PollsQuestion question,
+		PermissionChecker permissionChecker, PollsQuestion pollsQuestion,
 		String actionId) {
 
 		if (permissionChecker.hasOwnerPermission(
-				question.getCompanyId(), PollsQuestion.class.getName(),
-				question.getQuestionId(), question.getUserId(), actionId)) {
+				pollsQuestion.getCompanyId(), PollsQuestion.class.getName(),
+				pollsQuestion.getQuestionId(), pollsQuestion.getUserId(),
+				actionId)) {
 
 			return true;
 		}
 
 		return permissionChecker.hasPermission(
-			question.getGroupId(), PollsQuestion.class.getName(),
-			question.getQuestionId(), actionId);
+			pollsQuestion.getGroupId(), PollsQuestion.class.getName(),
+			pollsQuestion.getQuestionId(), actionId);
 	}
 
 }
