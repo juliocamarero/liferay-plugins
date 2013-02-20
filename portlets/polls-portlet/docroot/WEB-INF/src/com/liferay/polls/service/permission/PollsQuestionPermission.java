@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portlet.polls.service.permission;
+package com.liferay.polls.service.permission;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -27,21 +27,21 @@ import com.liferay.portlet.polls.service.PollsQuestionLocalServiceUtil;
 public class PollsQuestionPermission {
 
 	public static void check(
-			PermissionChecker permissionChecker, long questionId,
+			PermissionChecker permissionChecker, long pollsQuestionId,
 			String actionId)
 		throws PortalException, SystemException {
 
-		if (!contains(permissionChecker, questionId, actionId)) {
+		if (!contains(permissionChecker, pollsQuestionId, actionId)) {
 			throw new PrincipalException();
 		}
 	}
 
 	public static void check(
-			PermissionChecker permissionChecker, PollsQuestion question,
+			PermissionChecker permissionChecker, PollsQuestion pollsQuestion,
 			String actionId)
 		throws PortalException {
 
-		if (!contains(permissionChecker, question, actionId)) {
+		if (!contains(permissionChecker, pollsQuestion, actionId)) {
 			throw new PrincipalException();
 		}
 	}
