@@ -12,8 +12,13 @@
  * details.
  */
 
-package com.liferay.portlet.polls.lar;
+package com.liferay.polls.lar;
 
+import com.liferay.polls.NoSuchQuestionException;
+import com.liferay.polls.model.PollsChoice;
+import com.liferay.polls.model.PollsQuestion;
+import com.liferay.polls.model.PollsVote;
+import com.liferay.polls.service.persistence.PollsQuestionUtil;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -24,11 +29,6 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
-import com.liferay.portlet.polls.NoSuchQuestionException;
-import com.liferay.portlet.polls.model.PollsChoice;
-import com.liferay.portlet.polls.model.PollsQuestion;
-import com.liferay.portlet.polls.model.PollsVote;
-import com.liferay.portlet.polls.service.persistence.PollsQuestionUtil;
 
 import java.util.Map;
 
@@ -40,7 +40,7 @@ import javax.portlet.PortletPreferences;
 public class PollsDisplayPortletDataHandler extends PollsPortletDataHandler {
 
 	public PollsDisplayPortletDataHandler() {
-		setDataPortletPreferences("questionId");
+		setDataPortletPreferences("pollsQuestionId");
 		setPublishToLiveByDefault(true);
 	}
 
@@ -54,7 +54,7 @@ public class PollsDisplayPortletDataHandler extends PollsPortletDataHandler {
 			return portletPreferences;
 		}
 
-		portletPreferences.setValue("questionId", StringPool.BLANK);
+		portletPreferences.setValue("pollsQuestionId", StringPool.BLANK);
 
 		return portletPreferences;
 	}
@@ -65,23 +65,23 @@ public class PollsDisplayPortletDataHandler extends PollsPortletDataHandler {
 			PortletPreferences portletPreferences)
 		throws Exception {
 
-		long questionId = GetterUtil.getLong(
-			portletPreferences.getValue("questionId", StringPool.BLANK));
+		long pollsQuestionId = GetterUtil.getLong(
+			portletPreferences.getValue("pollsQuestionId", StringPool.BLANK));
 
-		if (questionId <= 0) {
+		if (pollsQuestionId <= 0) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
-					"No question id found in preferences of portlet " +
+					"No polls question id found in preferences of portlet " +
 						portletId);
 			}
 
 			return StringPool.BLANK;
 		}
 
-		PollsQuestion question = null;
+		PollsQuestion pollsQuestion = null;
 
 		try {
-			question = PollsQuestionUtil.findByPrimaryKey(questionId);
+			pollsQuestion = PollsQuestionUtil.findByPrimaryKey(pollsQuestionId);
 		}
 		catch (NoSuchQuestionException nsqe) {
 			if (_log.isWarnEnabled()) {
@@ -92,20 +92,21 @@ public class PollsDisplayPortletDataHandler extends PollsPortletDataHandler {
 		}
 
 		portletDataContext.addPermissions(
-			"com.liferay.portlet.polls", portletDataContext.getScopeGroupId());
+			"com.liferay.polls", portletDataContext.getScopeGroupId());
 
 		Element rootElement = addExportRootElement();
 
 		rootElement.addAttribute(
 			"group-id", String.valueOf(portletDataContext.getScopeGroupId()));
 
-		Element questionsElement = rootElement.addElement("questions");
-		Element choicesElement = rootElement.addElement("choices");
-		Element votesElement = rootElement.addElement("votes");
+		Element pollsQuestionsElement = rootElement.addElement(
+			"pollsQuestions");
+		Element pollsChoicesElement = rootElement.addElement("pollsChoices");
+		Element pollsVotesElement = rootElement.addElement("pollsVotes");
 
-		PollsPortletDataHandler.exportQuestion(
-			portletDataContext, questionsElement, choicesElement, votesElement,
-			question);
+		PollsPortletDataHandler.exportPollsQuestion(
+			portletDataContext, pollsQuestionsElement, pollsChoicesElement,
+			pollsVotesElement, pollsQuestion);
 
 		return rootElement.formattedString();
 	}
@@ -117,7 +118,7 @@ public class PollsDisplayPortletDataHandler extends PollsPortletDataHandler {
 		throws Exception {
 
 		portletDataContext.importPermissions(
-			"com.liferay.portlet.polls", portletDataContext.getSourceGroupId(),
+			"com.liferay.polls", portletDataContext.getSourceGroupId(),
 			portletDataContext.getScopeGroupId());
 
 		if (Validator.isNull(data)) {
@@ -128,68 +129,75 @@ public class PollsDisplayPortletDataHandler extends PollsPortletDataHandler {
 
 		Element rootElement = document.getRootElement();
 
-		Element questionsElement = rootElement.element("questions");
+		Element pollsQuestionsElement = rootElement.element("pollsQuestions");
 
-		for (Element questionElement : questionsElement.elements("question")) {
-			String path = questionElement.attributeValue("path");
+		for (Element pollsQuestionElement :
+				pollsQuestionsElement.elements("pollsQuestion")) {
+
+			String path = pollsQuestionsElement.attributeValue("path");
 
 			if (!portletDataContext.isPathNotProcessed(path)) {
 				continue;
 			}
 
-			PollsQuestion question =
+			PollsQuestion pollsQuestion =
 				(PollsQuestion)portletDataContext.getZipEntryAsObject(path);
 
-			PollsPortletDataHandler.importQuestion(
-				portletDataContext, questionElement, question);
+			PollsPortletDataHandler.importPollsQuestion(
+				portletDataContext, pollsQuestionElement, pollsQuestion);
 		}
 
-		Element choicesElement = rootElement.element("choices");
+		Element pollsChoicesElement = rootElement.element("pollsChoices");
 
-		for (Element choiceElement : choicesElement.elements("choice")) {
-			String path = choiceElement.attributeValue("path");
+		for (Element pollsChoiceElement :
+				pollsChoicesElement.elements("pollsChoice")) {
+
+			String path = pollsChoiceElement.attributeValue("path");
 
 			if (!portletDataContext.isPathNotProcessed(path)) {
 				continue;
 			}
 
-			PollsChoice choice =
+			PollsChoice pollsChoice =
 				(PollsChoice)portletDataContext.getZipEntryAsObject(path);
 
-			PollsPortletDataHandler.importChoice(portletDataContext, choice);
+			PollsPortletDataHandler.importPollsChoice(
+				portletDataContext, pollsChoice);
 		}
 
-		if (portletDataContext.getBooleanParameter(
-				PollsPortletDataHandler.NAMESPACE, "votes")) {
+		if (portletDataContext.getBooleanParameter(NAMESPACE, "pollsVotes")) {
+			Element pollsVotesElement = rootElement.element("pollsVotes");
 
-			Element votesElement = rootElement.element("votes");
+			for (Element pollsVoteElement :
+					pollsVotesElement.elements("pollsVote")) {
 
-			for (Element voteElement : votesElement.elements("vote")) {
-				String path = voteElement.attributeValue("path");
+				String path = pollsVoteElement.attributeValue("path");
 
 				if (!portletDataContext.isPathNotProcessed(path)) {
 					continue;
 				}
 
-				PollsVote vote =
+				PollsVote pollsVote =
 					(PollsVote)portletDataContext.getZipEntryAsObject(path);
 
-				PollsPortletDataHandler.importVote(portletDataContext, vote);
+				PollsPortletDataHandler.importPollsVote(
+					portletDataContext, pollsVote);
 			}
 		}
 
-		long questionId = GetterUtil.getLong(
-			portletPreferences.getValue("questionId", StringPool.BLANK));
+		long pollsQuestionId = GetterUtil.getLong(
+			portletPreferences.getValue("pollsQuestionId", StringPool.BLANK));
 
-		if (questionId > 0) {
-			Map<Long, Long> questionIds =
+		if (pollsQuestionId > 0) {
+			Map<Long, Long> pollsQuestionIds =
 				(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
 					PollsQuestion.class);
 
-			questionId = MapUtil.getLong(questionIds, questionId, questionId);
+			pollsQuestionId = MapUtil.getLong(
+				pollsQuestionIds, pollsQuestionId, pollsQuestionId);
 
 			portletPreferences.setValue(
-				"questionId", String.valueOf(questionId));
+				"pollsQuestionId", String.valueOf(pollsQuestionId));
 		}
 
 		return portletPreferences;
