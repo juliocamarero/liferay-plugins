@@ -19,6 +19,8 @@ package com.liferay.socialnetworking.util;
  */
 public interface PortletPropsKeys {
 
+	public static final String USER_PROFILE_URL = "user.profile.url";
+
 	public static final String WALL_LAYOUT_FRIENDLY_URL =
 		"wall.layout.friendly.url";
 
