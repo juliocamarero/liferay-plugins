@@ -22,6 +22,9 @@ import com.liferay.util.portlet.PortletProps;
  */
 public class PortletPropsValues {
 
+	public static final String USER_PROFILE_URL = GetterUtil.getString(
+		PortletProps.get(PortletPropsKeys.USER_PROFILE_URL));
+
 	public static final String WALL_LAYOUT_FRIENDLY_URL = GetterUtil.getString(
 		PortletProps.get(PortletPropsKeys.WALL_LAYOUT_FRIENDLY_URL));
 
