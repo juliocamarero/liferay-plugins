@@ -90,6 +90,12 @@
 	<a href="<portlet:renderURL><portlet:param name="<%= ActionRequest.ACTION_NAME %>" value="uploadForm3" /><portlet:param name="mvcPath" value="/upload/form.jsp" /></portlet:renderURL>">Form 3</a>
 </p>
 
+<h3>Portal Message</h3>
+
+<p>
+	<a href="<portlet:actionURL name="addPortalMessage" />">Add Portal Message</a>
+</p>
+
 <%!
 private static String _assertEquals(Object expected, Object actual) {
 	return _assertTrue(Validator.equals(expected, actual));

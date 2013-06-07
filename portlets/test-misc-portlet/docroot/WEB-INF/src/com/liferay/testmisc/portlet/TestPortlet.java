@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.testmisc.util.PortletKeys;
 import com.liferay.util.portlet.PortletRequestUtil;
 
 import java.io.File;
@@ -48,6 +49,17 @@ import javax.servlet.http.HttpServletResponse;
  * @author Amos Fong
  */
 public class TestPortlet extends LiferayPortlet {
+
+	public void addPortalMessage(
+		ActionRequest actionRequest, ActionResponse actionResponse) {
+
+		HttpServletRequest request = PortalUtil.getHttpServletRequest(
+			actionRequest);
+
+		PortalUtil.addPortalMessage(
+			request, "/portal_message/portal_message.jsp",
+			PortletKeys.TEST_MISC, "alert-info", true, 10000);
+	}
 
 	@Override
 	public void doDispatch(
