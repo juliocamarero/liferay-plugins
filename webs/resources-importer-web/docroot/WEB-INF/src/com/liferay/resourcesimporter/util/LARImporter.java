@@ -36,22 +36,39 @@ public class LARImporter extends BaseImporter {
 
 	@Override
 	public void importResources() throws Exception {
-		LayoutLocalServiceUtil.importLayouts(
-			userId, groupId, true, getParameterMap(), _larInputStream);
+		if (_privateLARInputStream != null) {
+			LayoutLocalServiceUtil.importLayouts(
+				userId, groupId, true, getParameterMap(),
+				_privateLARInputStream);
+		}
+
+		if (_publicLARInputStream != null) {
+			LayoutLocalServiceUtil.importLayouts(
+				userId, groupId, false, getParameterMap(),
+				_publicLARInputStream);
+		}
 	}
 
-	public void setLARFile(File larFile) {
+	public void setLARFile(File file) {
 		try {
-			setLARInputStream(
-				new BufferedInputStream(new FileInputStream(larFile)));
+			setPublicLARInputStream(
+				new BufferedInputStream(new FileInputStream(file)));
 		}
 		catch (FileNotFoundException fnfe) {
 			_log.error(fnfe, fnfe);
 		}
 	}
 
-	public void setLARInputStream(InputStream larInputStream) {
-		_larInputStream = larInputStream;
+	public void setLARInputStream(InputStream inputStream) {
+		setPublicLARInputStream(inputStream);
+	}
+
+	public void setPrivateLARInputStream(InputStream privateLARInputStream) {
+		_privateLARInputStream = privateLARInputStream;
+	}
+
+	public void setPublicLARInputStream(InputStream publicLARInputStream) {
+		_publicLARInputStream = publicLARInputStream;
 	}
 
 	protected Map<String, String[]> getParameterMap() {
@@ -85,10 +102,19 @@ public class LARImporter extends BaseImporter {
 			PortletDataHandlerKeys.PORTLET_ARCHIVED_SETUPS,
 			new String[] {Boolean.TRUE.toString()});
 		parameters.put(
+			PortletDataHandlerKeys.PORTLET_CONFIGURATION,
+			new String[] {Boolean.TRUE.toString()});
+		parameters.put(
+			PortletDataHandlerKeys.PORTLET_CONFIGURATION_ALL,
+			new String[] {Boolean.TRUE.toString()});
+		parameters.put(
 			PortletDataHandlerKeys.PORTLET_DATA,
 			new String[] {Boolean.TRUE.toString()});
 		parameters.put(
-			PortletDataHandlerKeys.PORTLET_SETUP,
+			PortletDataHandlerKeys.PORTLET_DATA_ALL,
+			new String[] {Boolean.TRUE.toString()});
+		parameters.put(
+			PortletDataHandlerKeys.PORTLET_SETUP_ALL,
 			new String[] {Boolean.TRUE.toString()});
 		parameters.put(
 			PortletDataHandlerKeys.PORTLET_USER_PREFERENCES,
@@ -117,6 +143,7 @@ public class LARImporter extends BaseImporter {
 
 	private static Log _log = LogFactoryUtil.getLog(LARImporter.class);
 
-	private InputStream _larInputStream;
+	private InputStream _privateLARInputStream;
+	private InputStream _publicLARInputStream;
 
 }

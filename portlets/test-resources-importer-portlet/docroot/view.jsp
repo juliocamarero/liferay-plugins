@@ -37,13 +37,13 @@ for (String importer : importers) {
 
 	if (group != null) {
 		if (importer.equals("lar")) {
-			Map<String, String[]> parameters = new HashMap<String, String[]>();
+			File privateLAR = _exportLayoutsAsFile(group, true);
 
-			parameters.put(PortletDataHandlerKeys.PORTLET_DATA_ALL, new String[] {Boolean.TRUE.toString()});
+			FileUtil.copyFile(privateLAR, new File(application.getRealPath("/WEB-INF/classes/test/lar/private.lar")));
 
-			File file = LayoutLocalServiceUtil.exportLayoutsAsFile(group.getGroupId(), false, null, parameters, null, null);
+			File publicLAR = _exportLayoutsAsFile(group, false);
 
-			FileUtil.copyFile(file, new File(application.getRealPath("/WEB-INF/classes/test/lar/archive.lar")));
+			FileUtil.copyFile(publicLAR, new File(application.getRealPath("/WEB-INF/classes/test/lar/public.lar")));
 		}
 
 		GroupLocalServiceUtil.deleteGroup(group);
@@ -135,7 +135,7 @@ for (String importer : importers) {
 		String[] assetTagNames = null;
 
 		try {
-			dlFileEntry = DLFileEntryLocalServiceUtil.getFileEntry(groupId, DLFolderConstants.DEFAULT_PARENT_FOLDER_ID, "company_logo");
+			dlFileEntry = DLFileEntryLocalServiceUtil.fetchFileEntry(groupId, DLFolderConstants.DEFAULT_PARENT_FOLDER_ID, "company_logo");
 
 			assetTagNames = AssetTagLocalServiceUtil.getTagNames(DLFileEntry.class.getName(), dlFileEntry.getFileEntryId());
 		}
@@ -147,6 +147,17 @@ for (String importer : importers) {
 	</p>
 
 	<p>
+
+		<%
+		DLFolder dlFolder = DLFolderLocalServiceUtil.fetchFolder(groupId, DLFolderConstants.DEFAULT_PARENT_FOLDER_ID, "Parent Folder");
+
+		dlFileEntry = DLFileEntryLocalServiceUtil.fetchFileEntry(groupId, dlFolder.getFolderId(), "child_document");
+		%>
+
+		DLFolderLocalServiceUtil#fetchFolder=<%= _assertTrue(dlFolder != null) %><br />
+
+		DLFileEntryLocalServiceUtil#fetchFileEntry=<%= _assertTrue(dlFileEntry != null) %><br />
+
 		DLFileEntryLocalServiceUtil#getFileEntriesCount=<%= _assertEquals(1, DLFileEntryLocalServiceUtil.getFileEntriesCount(groupId, DLFolderConstants.DEFAULT_PARENT_FOLDER_ID)) %><br />
 	</p>
 
@@ -215,5 +226,23 @@ private static String _assertTrue(boolean value) {
 	else {
 		return "FAILED";
 	}
+}
+
+private static File _exportLayoutsAsFile(Group group, boolean privateLayout) throws PortalException, SystemException {
+	Map<String, String[]> parameters = new HashMap<String, String[]>();
+
+	parameters.put(PortletDataHandlerKeys.PORTLET_DATA_ALL, new String[] {Boolean.TRUE.toString()});
+
+	List<Layout> layouts = LayoutLocalServiceUtil.getLayouts(group.getGroupId(), privateLayout);
+
+	long[] layoutIds = new long[layouts.size()];
+
+	for (int i = 0; i < layoutIds.length; i++) {
+		Layout layout = layouts.get(i);
+
+		layoutIds[i] = layout.getLayoutId();
+	}
+
+	return LayoutLocalServiceUtil.exportLayoutsAsFile(group.getGroupId(), privateLayout, layoutIds, parameters, null, null);
 }
 %>
