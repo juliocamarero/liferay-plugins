@@ -17,7 +17,6 @@ package com.liferay.opensocial.model;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.model.StagedModel;
 import com.liferay.portal.service.ServiceContext;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
@@ -39,7 +38,7 @@ import java.util.Date;
  * @see com.liferay.opensocial.model.impl.GadgetModelImpl
  * @generated
  */
-public interface GadgetModel extends BaseModel<Gadget>, StagedModel {
+public interface GadgetModel extends BaseModel<Gadget> {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -66,7 +65,6 @@ public interface GadgetModel extends BaseModel<Gadget>, StagedModel {
 	 * @return the uuid of this gadget
 	 */
 	@AutoEscape
-	@Override
 	public String getUuid();
 
 	/**
@@ -74,7 +72,6 @@ public interface GadgetModel extends BaseModel<Gadget>, StagedModel {
 	 *
 	 * @param uuid the uuid of this gadget
 	 */
-	@Override
 	public void setUuid(String uuid);
 
 	/**
@@ -96,7 +93,6 @@ public interface GadgetModel extends BaseModel<Gadget>, StagedModel {
 	 *
 	 * @return the company ID of this gadget
 	 */
-	@Override
 	public long getCompanyId();
 
 	/**
@@ -104,7 +100,6 @@ public interface GadgetModel extends BaseModel<Gadget>, StagedModel {
 	 *
 	 * @param companyId the company ID of this gadget
 	 */
-	@Override
 	public void setCompanyId(long companyId);
 
 	/**
@@ -112,7 +107,6 @@ public interface GadgetModel extends BaseModel<Gadget>, StagedModel {
 	 *
 	 * @return the create date of this gadget
 	 */
-	@Override
 	public Date getCreateDate();
 
 	/**
@@ -120,7 +114,6 @@ public interface GadgetModel extends BaseModel<Gadget>, StagedModel {
 	 *
 	 * @param createDate the create date of this gadget
 	 */
-	@Override
 	public void setCreateDate(Date createDate);
 
 	/**
@@ -128,7 +121,6 @@ public interface GadgetModel extends BaseModel<Gadget>, StagedModel {
 	 *
 	 * @return the modified date of this gadget
 	 */
-	@Override
 	public Date getModifiedDate();
 
 	/**
@@ -136,7 +128,6 @@ public interface GadgetModel extends BaseModel<Gadget>, StagedModel {
 	 *
 	 * @param modifiedDate the modified date of this gadget
 	 */
-	@Override
 	public void setModifiedDate(Date modifiedDate);
 
 	/**

@@ -17,7 +17,6 @@ package com.liferay.wsrp.model;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.model.StagedModel;
 import com.liferay.portal.service.ServiceContext;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
@@ -39,7 +38,7 @@ import java.util.Date;
  * @see com.liferay.wsrp.model.impl.WSRPConsumerModelImpl
  * @generated
  */
-public interface WSRPConsumerModel extends BaseModel<WSRPConsumer>, StagedModel {
+public interface WSRPConsumerModel extends BaseModel<WSRPConsumer> {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -66,7 +65,6 @@ public interface WSRPConsumerModel extends BaseModel<WSRPConsumer>, StagedModel 
 	 * @return the uuid of this w s r p consumer
 	 */
 	@AutoEscape
-	@Override
 	public String getUuid();
 
 	/**
@@ -74,7 +72,6 @@ public interface WSRPConsumerModel extends BaseModel<WSRPConsumer>, StagedModel 
 	 *
 	 * @param uuid the uuid of this w s r p consumer
 	 */
-	@Override
 	public void setUuid(String uuid);
 
 	/**
@@ -96,7 +93,6 @@ public interface WSRPConsumerModel extends BaseModel<WSRPConsumer>, StagedModel 
 	 *
 	 * @return the company ID of this w s r p consumer
 	 */
-	@Override
 	public long getCompanyId();
 
 	/**
@@ -104,7 +100,6 @@ public interface WSRPConsumerModel extends BaseModel<WSRPConsumer>, StagedModel 
 	 *
 	 * @param companyId the company ID of this w s r p consumer
 	 */
-	@Override
 	public void setCompanyId(long companyId);
 
 	/**
@@ -112,7 +107,6 @@ public interface WSRPConsumerModel extends BaseModel<WSRPConsumer>, StagedModel 
 	 *
 	 * @return the create date of this w s r p consumer
 	 */
-	@Override
 	public Date getCreateDate();
 
 	/**
@@ -120,7 +114,6 @@ public interface WSRPConsumerModel extends BaseModel<WSRPConsumer>, StagedModel 
 	 *
 	 * @param createDate the create date of this w s r p consumer
 	 */
-	@Override
 	public void setCreateDate(Date createDate);
 
 	/**
@@ -128,7 +121,6 @@ public interface WSRPConsumerModel extends BaseModel<WSRPConsumer>, StagedModel 
 	 *
 	 * @return the modified date of this w s r p consumer
 	 */
-	@Override
 	public Date getModifiedDate();
 
 	/**
@@ -136,7 +128,6 @@ public interface WSRPConsumerModel extends BaseModel<WSRPConsumer>, StagedModel 
 	 *
 	 * @param modifiedDate the modified date of this w s r p consumer
 	 */
-	@Override
 	public void setModifiedDate(Date modifiedDate);
 
 	/**
