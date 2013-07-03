@@ -23,6 +23,14 @@
 <liferay-ui:success key="announcementDeleted" message="the-announcement-was-successfully-deleted" />
 <liferay-ui:success key="announcementUpdated" message="the-announcement-was-successfully-updated" />
 
+<c:if test="<%= permissionChecker.isGroupAdmin(layout.getGroupId()) || permissionChecker.isGroupOwner(layout.getGroupId()) %>">
+	<div class="admin-actions">
+		<aui:button onClick='<%= renderResponse.getNamespace() + "addEntry()" %>' value="add-entry" />
+
+		<aui:button onClick='<%= renderResponse.getNamespace() + "manageEntries()" %>' value="manage-entries" />
+	</div>
+</c:if>
+
 <div class="unread-entries" id="unreadEntries">
 
 	<%
@@ -52,7 +60,7 @@
 <%
 flagValue = AnnouncementsFlagConstants.HIDDEN;
 
-searchContainer = new SearchContainer(renderRequest, null, null, "cur2", pageDelta, portletURL, null, "there-are-no-read-entries");
+searchContainer = new SearchContainer(renderRequest, null, null, "cur2", SearchContainer.DEFAULT_DELTA, portletURL, null, "there-are-no-read-entries");
 
 results = AnnouncementsEntryLocalServiceUtil.getEntries(user.getUserId(), scopes, portletName.equals(PortletKeys.ALERTS), flagValue, searchContainer.getStart(), searchContainer.getEnd());
 %>
@@ -74,6 +82,19 @@ results = AnnouncementsEntryLocalServiceUtil.getEntries(user.getUserId(), scopes
 </c:if>
 
 <aui:script>
+	function <portlet:namespace />addEntry() {
+		<portlet:renderURL var="addEntryURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
+			<portlet:param name="mvcPath" value="/edit_entry.jsp" />
+			<portlet:param name="redirect" value="<%= currentURL %>" />
+		</portlet:renderURL>
+
+		<portlet:namespace />openWindow('<%= addEntryURL %>', '<%= LanguageUtil.get(pageContext, "add-entry") %>', true, 800);
+	}
+
+	function <portlet:namespace />editEntry(uri) {
+		<portlet:namespace />openWindow(uri, '<%= LanguageUtil.get(pageContext, "edit-entry") %>', true, 800);
+	}
+
 	function <portlet:namespace />handleEntry(entryId) {
 		var A = AUI();
 
@@ -93,6 +114,12 @@ results = AnnouncementsEntryLocalServiceUtil.getEntries(user.getUserId(), scopes
 		}
 	}
 
+	function <portlet:namespace />manageEntries() {
+		<portlet:renderURL var="manageEntriesURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>"><portlet:param name="mvcPath" value="/manage_entries.jsp" /></portlet:renderURL>
+
+		<portlet:namespace />openWindow('<%= manageEntriesURL %>', '<%= LanguageUtil.get(pageContext, "manage-entries") %>', true, 800);
+	}
+
 	function <portlet:namespace />markEntry(entryId) {
 		Liferay.Service(
 			'/announcementsflag/add-flag',
@@ -103,6 +130,27 @@ results = AnnouncementsEntryLocalServiceUtil.getEntries(user.getUserId(), scopes
 		);
 
 		Liferay.Portlet.refresh('#p_p_id<portlet:namespace />');
+	}
+
+	function <portlet:namespace />openWindow(url, title, modal, width) {
+		Liferay.Util.openWindow(
+			{
+				cache: false,
+				dialog: {
+					align: Liferay.Util.Window.ALIGN_CENTER,
+					modal: modal,
+					on: {
+						close: function() {
+							Liferay.Portlet.refresh('#p_p_id<portlet:namespace />');
+						}
+					},
+					width: width
+				},
+				id: '<portlet:namespace />Dialog',
+				title: title,
+				uri: url
+			}
+		);
 	}
 
 	function <portlet:namespace />unmarkEntry(entryId) {

@@ -14,6 +14,7 @@
 
 package com.liferay.marketplace.model;
 
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
 
 import java.util.Date;
@@ -58,6 +59,7 @@ public class AppWrapper implements App, ModelWrapper<App> {
 		attributes.put("remoteAppId", getRemoteAppId());
 		attributes.put("title", getTitle());
 		attributes.put("description", getDescription());
+		attributes.put("category", getCategory());
 		attributes.put("iconURL", getIconURL());
 		attributes.put("version", getVersion());
 
@@ -124,6 +126,12 @@ public class AppWrapper implements App, ModelWrapper<App> {
 
 		if (description != null) {
 			setDescription(description);
+		}
+
+		String category = (String)attributes.get("category");
+
+		if (category != null) {
+			setCategory(category);
 		}
 
 		String iconURL = (String)attributes.get("iconURL");
@@ -382,6 +390,26 @@ public class AppWrapper implements App, ModelWrapper<App> {
 	}
 
 	/**
+	* Returns the category of this app.
+	*
+	* @return the category of this app
+	*/
+	@Override
+	public java.lang.String getCategory() {
+		return _app.getCategory();
+	}
+
+	/**
+	* Sets the category of this app.
+	*
+	* @param category the category of this app
+	*/
+	@Override
+	public void setCategory(java.lang.String category) {
+		_app.setCategory(category);
+	}
+
+	/**
 	* Returns the icon u r l of this app.
 	*
 	* @return the icon u r l of this app
@@ -562,6 +590,25 @@ public class AppWrapper implements App, ModelWrapper<App> {
 	public boolean isInstalled()
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return _app.isInstalled();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (!(obj instanceof AppWrapper)) {
+			return false;
+		}
+
+		AppWrapper appWrapper = (AppWrapper)obj;
+
+		if (Validator.equals(_app, appWrapper._app)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

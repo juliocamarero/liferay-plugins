@@ -55,11 +55,7 @@ page import="javax.portlet.PortletPreferences" %>
 <%
 String currentURL = PortalUtil.getCurrentURL(request);
 
-PortletPreferences preferences = liferayPortletRequest.getPreferences();
+PortletPreferences preferences = renderRequest.getPreferences();
 
 String portletResource = ParamUtil.getString(request, "portletResource");
-
-if (Validator.isNotNull(portletResource)) {
-	preferences = PortletPreferencesFactoryUtil.getPortletSetup(request, portletResource);
-}
 %>
