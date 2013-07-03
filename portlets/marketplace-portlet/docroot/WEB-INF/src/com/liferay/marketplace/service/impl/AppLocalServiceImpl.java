@@ -21,6 +21,7 @@ import com.liferay.marketplace.DuplicateAppException;
 import com.liferay.marketplace.model.App;
 import com.liferay.marketplace.model.Module;
 import com.liferay.marketplace.service.base.AppLocalServiceBaseImpl;
+import com.liferay.marketplace.util.comparator.AppTitleComparator;
 import com.liferay.portal.kernel.deploy.DeployManagerUtil;
 import com.liferay.portal.kernel.deploy.auto.context.AutoDeploymentContext;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -29,6 +30,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.plugin.PluginPackage;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PropertiesUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
 import com.liferay.portal.kernel.util.StreamUtil;
@@ -39,6 +41,7 @@ import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.model.User;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.documentlibrary.NoSuchFileException;
 import com.liferay.portlet.documentlibrary.store.DLStoreUtil;
 
@@ -60,6 +63,7 @@ import java.util.zip.ZipFile;
  */
 public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 
+	@Override
 	public void clearInstalledAppsCache() {
 		_installedApps = null;
 	}
@@ -103,10 +107,17 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 		return deleteApp(app);
 	}
 
+	@Override
 	public App fetchRemoteApp(long remoteAppId) throws SystemException {
 		return appPersistence.fetchByRemoteAppId(remoteAppId);
 	}
 
+	@Override
+	public List<App> getApps(String category) throws SystemException {
+		return appPersistence.findByCategory(category);
+	}
+
+	@Override
 	public List<App> getInstalledApps() throws SystemException {
 		if (_installedApps != null) {
 			return _installedApps;
@@ -122,7 +133,7 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 		coreApp.setDescription("Plugins bundled with Liferay Portal.");
 		coreApp.setVersion(ReleaseInfo.getVersion());
 
-		coreApp.addContextName(StringPool.BLANK);
+		coreApp.addContextName(PortalUtil.getPathContext());
 
 		installedApps.add(coreApp);
 
@@ -142,7 +153,7 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 			App app = appPersistence.create(0);
 
 			app.setTitle(pluginPackage.getName());
-			app.setDescription(pluginPackage.getShortDescription());
+			app.setDescription(pluginPackage.getLongDescription());
 			app.setVersion(pluginPackage.getVersion());
 
 			app.addContextName(pluginPackage.getContext());
@@ -160,11 +171,14 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 			}
 		}
 
+		installedApps = ListUtil.sort(installedApps, new AppTitleComparator());
+
 		_installedApps = installedApps;
 
 		return _installedApps;
 	}
 
+	@Override
 	public void installApp(long remoteAppId)
 		throws PortalException, SystemException {
 
@@ -291,6 +305,7 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 		}
 	}
 
+	@Override
 	public void processMarketplaceProperties(Properties properties)
 		throws PortalException, SystemException {
 
@@ -307,6 +322,7 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 		}
 	}
 
+	@Override
 	public void uninstallApp(long remoteAppId)
 		throws PortalException, SystemException {
 
@@ -332,6 +348,7 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 		}
 	}
 
+	@Override
 	public App updateApp(
 			long userId, long remoteAppId, String version, File file)
 		throws PortalException, SystemException {
@@ -345,15 +362,18 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 
 		String title = properties.getProperty("title");
 		String description = properties.getProperty("description");
+		String category = properties.getProperty("category");
 		String iconURL = properties.getProperty("icon-url");
 
 		return updateApp(
-			userId, remoteAppId, title, description, iconURL, version, file);
+			userId, remoteAppId, title, description, category, iconURL, version,
+			file);
 	}
 
+	@Override
 	public App updateApp(
 			long userId, long remoteAppId, String title, String description,
-			String iconURL, String version, File file)
+			String category, String iconURL, String version, File file)
 		throws PortalException, SystemException {
 
 		// App
@@ -382,6 +402,7 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 		app.setRemoteAppId(remoteAppId);
 		app.setTitle(title);
 		app.setDescription(description);
+		app.setCategory(category);
 		app.setIconURL(iconURL);
 		app.setVersion(version);
 
