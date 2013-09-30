@@ -35,16 +35,10 @@
 					emptyResultsMessage="you-have-no-notifications"
 					iteratorURL="<%= iteratorURL %>"
 					rowChecker="<%= new RowChecker(renderResponse) %>"
+					total=<%= UserNotificationEventLocalServiceUtil.getUserNotificationEventsCount(themeDisplay.getUserId()) %>
 				>
-
-					<%
-					List<UserNotificationEvent> notificationEvents = UserNotificationEventLocalServiceUtil.getUserNotificationEvents(themeDisplay.getUserId(), searchContainer.getStart(), searchContainer.getEnd());
-					int notificationEventsCount = UserNotificationEventLocalServiceUtil.getUserNotificationEventsCount(themeDisplay.getUserId());
-					%>
-
 					<liferay-ui:search-container-results
-						results="<%= notificationEvents %>"
-						total="<%= notificationEventsCount %>"
+						results="<%= UserNotificationEventLocalServiceUtil.getUserNotificationEvents(themeDisplay.getUserId(), searchContainer.getStart(), searchContainer.getEnd()) %>"
 					/>
 
 					<liferay-ui:search-container-row
@@ -78,7 +72,7 @@
 
 						<liferay-ui:search-container-column-text name="notifications" valign="top">
 							<c:choose>
-								<c:when test="<%= portletId.equals(PortletKeys.ANNOUNCEMENTS) || portletId.equals(PortletKeys.SO_ANNOUNCEMENTS) %>">
+								<c:when test="<%= portletId.equals(PortletKeys.SO_ANNOUNCEMENTS) %>">
 									<%@ include file="/notifications/view_announcement.jspf" %>
 								</c:when>
 								<c:when test="<%= portletId.equals(PortletKeys.SO_INVITE_MEMBERS) %>">
