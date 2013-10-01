@@ -68,11 +68,14 @@ taskListURL.setParameter("tabs2", tabs2);
 	if (tabs2.equals("open")) {
 		status = TasksEntryConstants.STATUS_OPEN;
 	}
+
+	total = TasksEntryLocalServiceUtil.getTasksEntriesCount(groupId, 0, assigneeUserId, reporterUserId, status, assetTagIds, new long[0]);
+
+	searchContainer.setTotal(total);
 	%>
 
 	<liferay-ui:search-container-results
 		results="<%= TasksEntryLocalServiceUtil.getTasksEntries(groupId, 0, assigneeUserId, reporterUserId, status, assetTagIds, new long[0], searchContainer.getStart(), searchContainer.getEnd()) %>"
-		total="<%= TasksEntryLocalServiceUtil.getTasksEntriesCount(groupId, 0, assigneeUserId, reporterUserId, status, assetTagIds, new long[0]) %>"
 	/>
 
 	<liferay-ui:search-container-row
