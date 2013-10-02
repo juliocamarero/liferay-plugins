@@ -73,8 +73,8 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 			tuples.add(new Tuple(array));
 		}
 
-		pageContext.setAttribute("results", tuples);
-		pageContext.setAttribute("total", hits.getLength());
+		searchContainer.setResults(tuples);
+		searchContainer.setTotal(hits.getLength());
 		%>
 
 	</liferay-ui:search-container-results>
