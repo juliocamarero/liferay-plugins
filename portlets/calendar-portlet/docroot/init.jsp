@@ -117,19 +117,15 @@ page import="java.util.TimeZone" %>
 String currentURL = PortalUtil.getCurrentURL(request);
 
 CalendarResource groupCalendarResource = CalendarResourceUtil.getGroupCalendarResource(liferayPortletRequest, scopeGroupId);
+CalendarResource userCalendarResource = CalendarResourceUtil.getUserCalendarResource(liferayPortletRequest, themeDisplay.getUserId());
 
-CalendarResource userCalendarResource = null;
 Calendar userDefaultCalendar = null;
 
-if (themeDisplay.isSignedIn()) {
-	userCalendarResource = CalendarResourceUtil.getUserCalendarResource(liferayPortletRequest, themeDisplay.getUserId());
+if (userCalendarResource != null) {
+	long defaultCalendarId = userCalendarResource.getDefaultCalendarId();
 
-	if (userCalendarResource != null) {
-		long defaultCalendarId = userCalendarResource.getDefaultCalendarId();
-
-		if (defaultCalendarId > 0) {
-			userDefaultCalendar = CalendarServiceUtil.getCalendar(defaultCalendarId);
-		}
+	if (defaultCalendarId > 0) {
+		userDefaultCalendar = CalendarServiceUtil.getCalendar(defaultCalendarId);
 	}
 }
 
