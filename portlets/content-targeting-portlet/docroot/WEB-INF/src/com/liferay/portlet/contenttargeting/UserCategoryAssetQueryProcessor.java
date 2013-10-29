@@ -16,10 +16,10 @@ package com.liferay.portlet.contenttargeting;
 
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.RemotePreference;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.User;
-import com.liferay.portal.model.UserRemotePreference;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.asset.model.AssetCategory;
@@ -27,13 +27,14 @@ import com.liferay.portlet.asset.model.AssetVocabulary;
 import com.liferay.portlet.asset.service.AssetCategoryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetVocabularyLocalServiceUtil;
 import com.liferay.portlet.asset.service.persistence.AssetEntryQuery;
-import com.liferay.portlet.assetpublisher.util.AssetQueryProcessor;
+import com.liferay.portlet.assetpublisher.util.AssetEntryQueryProcessor;
 import com.liferay.portlet.messageboards.NoSuchCategoryException;
 
+import javax.portlet.PortletPreferences;
 import java.util.List;
 
-import javax.portlet.PortletPreferences;
-public class UserCategoryAssetQueryProcessor implements AssetQueryProcessor {
+public class UserCategoryAssetQueryProcessor
+	implements AssetEntryQueryProcessor {
 
 	public static final String VOCABULARY_NAME = "UserSegment";
 
@@ -42,7 +43,7 @@ public class UserCategoryAssetQueryProcessor implements AssetQueryProcessor {
 	}
 
 	@Override
-	public void adaptQuery(
+	public void processAssetEntryQuery(
 			User user, PortletPreferences preferences,
 			AssetEntryQuery assetEntryQuery)
 		throws Exception {
@@ -81,7 +82,7 @@ public class UserCategoryAssetQueryProcessor implements AssetQueryProcessor {
 			}
 		}
 		else {
-			UserRemotePreference userSegmentPreference =
+			RemotePreference userSegmentPreference =
 				user.getRemotePreference("UserSegment");
 
 			if ((userSegmentPreference != null) ||
