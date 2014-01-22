@@ -46,7 +46,7 @@ $default-border-color: #E7E7E7;
 
 	.activity-data {
 		margin-left: 55px;
-		overflow: hidden;
+		word-wrap: break-word;
 	}
 
 	.activity-header {
@@ -147,7 +147,7 @@ $default-border-color: #E7E7E7;
 	}
 
 	.grouped-activity-body-container {
-		max-height: 93px;
+		max-height: 107px;
 		overflow: hidden;
 
 		.activity-subentry {
@@ -259,7 +259,6 @@ $default-border-color: #E7E7E7;
 	.comment-entry, .comments-container .form {
 		background: #EAEAEA;
 		border-top: 1px solid #FFF;
-		overflow: hidden;
 		padding: 2px;
 	}
 
@@ -338,11 +337,11 @@ $default-border-color: #E7E7E7;
 	}
 
 	.loading-bar.loaded {
-		visibility: hidden;
+		display: none;
 	}
 
-	.no-activities {
-		padding: 5px;
+	.manual-loader, .no-activities {
+		padding: 10px;
 		text-align: center;
 	}
 }
@@ -351,7 +350,7 @@ $default-border-color: #E7E7E7;
 
 .ie7 {
 	.so-portlet-activities .grouped-activity-body-container {
-		height: 93px;
+		height: 107px;
 		max-height: none;
 
 		.activity-subentry-title {

@@ -221,7 +221,7 @@ public class SitesPortlet extends MVCPortlet {
 		}
 		else if (searchTab.equals("my-favorites")) {
 			groups = SitesUtil.getFavoriteSitesGroups(
-				themeDisplay.getUserId(), keywords, 0, end);
+				themeDisplay.getUserId(), keywords, start, end);
 			groupsCount = SitesUtil.getFavoriteSitesGroupsCount(
 				themeDisplay.getUserId(), keywords);
 		}
@@ -334,7 +334,7 @@ public class SitesPortlet extends MVCPortlet {
 						themeDisplay.getLocale(), "x-wishes-to-join-x",
 						new Object[] {
 							user.getFullName(), group.getDescriptiveName()
-						});
+						}, false);
 
 					membershipRequestURL.setParameter("comments", comments);
 

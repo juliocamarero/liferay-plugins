@@ -14,6 +14,10 @@
 
 package com.liferay.chat.video;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * @author Philippe Proulx
  */
@@ -25,8 +29,50 @@ public class WebRTCClient {
 		updatePresenceTime();
 	}
 
+	public void addWebRTCConnection(
+		WebRTCClient webRTCClient, WebRTCConnection webRTCConnection) {
+
+		_webRTCConnections.put(webRTCClient, webRTCConnection);
+	}
+
+	public long getPresenceTime() {
+		return _presenceTime;
+	}
+
+	public long getUserId() {
+		return _userId;
+	}
+
+	public Set<WebRTCClient> getWebRTCClients() {
+		return _webRTCConnections.keySet();
+	}
+
+	public WebRTCConnection getWebRTCConnection(WebRTCClient webRTCClient) {
+		return _webRTCConnections.get(webRTCClient);
+	}
+
 	public boolean isAvailable() {
 		return _available;
+	}
+
+	public void removeBilateralWebRTCConnection(WebRTCClient webRTCClient) {
+		webRTCClient.removeUnilateralWebRTCConnection(this);
+
+		removeUnilateralWebRTCConnection(webRTCClient);
+	}
+
+	public void removeBilateralWebRTCConnections() {
+		for (WebRTCClient webRTCClient : _webRTCConnections.keySet()) {
+			webRTCClient.removeUnilateralWebRTCConnection(this);
+		}
+
+		_webRTCConnections.clear();
+	}
+
+	public void reset() {
+		setAvailable(false);
+
+		removeBilateralWebRTCConnections();
 	}
 
 	public void setAvailable(boolean available) {
@@ -37,8 +83,14 @@ public class WebRTCClient {
 		_presenceTime = System.currentTimeMillis();
 	}
 
+	protected void removeUnilateralWebRTCConnection(WebRTCClient webRTCClient) {
+		_webRTCConnections.remove(webRTCClient);
+	}
+
 	private boolean _available;
 	private long _presenceTime;
 	private long _userId;
+	private Map<WebRTCClient, WebRTCConnection> _webRTCConnections =
+		new ConcurrentHashMap<WebRTCClient, WebRTCConnection>();
 
 }

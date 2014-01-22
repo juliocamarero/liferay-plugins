@@ -45,6 +45,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -120,6 +121,10 @@ public class KaleoTimerInstanceTokenLocalServiceImpl
 			Map<String, Serializable> workflowContext,
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
+
+		if (kaleoTimers.isEmpty()) {
+			return Collections.emptyList();
+		}
 
 		List<KaleoTimerInstanceToken> kaleoTimerInstanceTokens =
 			new ArrayList<KaleoTimerInstanceToken>(kaleoTimers.size());

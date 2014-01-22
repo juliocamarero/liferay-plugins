@@ -1167,6 +1167,7 @@ public class CalendarBookingWrapper implements CalendarBooking,
 	/**
 	* @deprecated As of 6.1.0, replaced by {@link #isApproved()}
 	*/
+	@Deprecated
 	@Override
 	public boolean getApproved() {
 		return _calendarBooking.getApproved();
@@ -1465,6 +1466,7 @@ public class CalendarBookingWrapper implements CalendarBooking,
 	/**
 	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
 	 */
+	@Deprecated
 	public CalendarBooking getWrappedCalendarBooking() {
 		return _calendarBooking;
 	}
@@ -1472,6 +1474,16 @@ public class CalendarBookingWrapper implements CalendarBooking,
 	@Override
 	public CalendarBooking getWrappedModel() {
 		return _calendarBooking;
+	}
+
+	@Override
+	public boolean isEntityCacheEnabled() {
+		return _calendarBooking.isEntityCacheEnabled();
+	}
+
+	@Override
+	public boolean isFinderCacheEnabled() {
+		return _calendarBooking.isFinderCacheEnabled();
 	}
 
 	@Override

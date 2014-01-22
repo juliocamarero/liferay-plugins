@@ -12,7 +12,7 @@
 	<meta content="user-scalable=yes, initial-scale=1.0, width=device-width" name="viewport" />
 </head>
 
-<body class="so-strata-theme $css_class">
+<body class="dockbar-split so-strata-theme $css_class">
 
 $theme.include($body_top_include)
 
@@ -27,7 +27,7 @@ $theme.include($body_top_include)
 		<div id="heading">
 			#if (!$is_user_dashboard)
 				<h1 class="site-title">
-					<a class="$logo_css_class" href="$community_default_public_url" title="#language_format ("go-to-x", [$site_name])">
+					<a class="$logo_css_class" href="$logo_url" title="#language_format ("go-to-x", [$site_name])">
 
 						#if (!$is_profile_page)
 							<img alt="$logo_description" height="$site_logo_height" src="$site_logo" width="$site_logo_width" />
@@ -74,7 +74,7 @@ $theme.include($body_top_include)
 
 							#set ($arguments = [$user_name, $community_name])
 
-							$membership_request_url.setParameter("comments", $languageUtil.format($locale, "x-wishes-to-join-x", $arguments.toArray()))
+							$membership_request_url.setParameter("comments", $languageUtil.format($locale, "x-wishes-to-join-x", $arguments.toArray(), false))
 
 							<a class="aui-button button action request member-button" href="$membership_request_url" id="memberButton">
 								<span class="aui-button-content">
@@ -113,7 +113,7 @@ $theme.include($body_top_include)
 			#if ($is_user_dashboard)
 				<h2 class="page-title">
 						<a class="avatar" href="$current_user_profile_url" style="background-image: url($user.getPortraitURL($themeDisplay))">
-							<img alt="$user.getFullName()" src="$user.getPortraitURL($themeDisplay)">
+							<img alt="$htmlUtil.escape($user.getFullName())" src="$user.getPortraitURL($themeDisplay)">
 						</a>
 
 						<span class="aui-helper-hidden">$htmlUtil.escape($current_user.getFullName())'s</span>
@@ -139,16 +139,6 @@ $theme.include($body_top_include)
 			$theme.wrapPortlet("portlet.vm", $content_include)
 		#end
 	</div>
-
-	#if (!$page_group.isUser())
-		<nav class="site-breadcrumbs" id="breadcrumbs">
-			<h1 class="hidden-accessible">
-				<span>#language("breadcrumbs")</span>
-			</h1>
-
-			#breadcrumbs()
-		</nav>
-	#end
 
 	<footer id="footer" role="contentinfo">
 		<p class="powered-by">

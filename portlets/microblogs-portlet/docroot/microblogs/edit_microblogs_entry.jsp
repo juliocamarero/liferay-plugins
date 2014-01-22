@@ -55,7 +55,7 @@ if ((microblogsEntry != null) && !edit) {
 
 	receiverUserId = microblogsEntry.getUserId();
 
-	receiverUserFullName = PortalUtil.getUserName(microblogsEntry);
+	receiverUserFullName = HtmlUtil.escape(PortalUtil.getUserName(microblogsEntry));
 
 	try {
 		User receiverUser = UserLocalServiceUtil.getUserById(microblogsEntry.getUserId());
@@ -149,7 +149,7 @@ if (comment) {
 	<c:if test="<%= !repost %>">
 		<c:if test="<%= comment %>">
 			<span class="thumbnail">
-				<a href="<%= user.getDisplayURL(themeDisplay) %>"><img alt="<%= user.getFullName() %>" src="<%= user.getPortraitURL(themeDisplay) %>" /></a>
+				<a href="<%= user.getDisplayURL(themeDisplay) %>"><img alt="<%= HtmlUtil.escape(user.getFullName()) %>" src="<%= user.getPortraitURL(themeDisplay) %>" /></a>
 			</span>
 		</c:if>
 
