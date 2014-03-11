@@ -110,8 +110,9 @@ public class NotificationTemplateContextFactory {
 		attributes.put(
 			"portletName",
 			LanguageUtil.get(
-				getPortletConfig(), user.getLocale(),
-				"javax.portlet.title.".concat(PortletKeys.CALENDAR)));
+				user.getLocale(),
+				"javax.portlet.title.".concat(PortletKeys.CALENDAR),
+				StringPool.BLANK));
 
 		String startTime =
 			dateFormatDateTime.format(calendarBooking.getStartTime()) +
