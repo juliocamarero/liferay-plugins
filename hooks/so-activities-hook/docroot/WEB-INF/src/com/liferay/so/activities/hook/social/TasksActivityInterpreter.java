@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,9 +14,7 @@
 
 package com.liferay.so.activities.hook.social;
 
-import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.Group;
@@ -26,9 +24,7 @@ import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.UserLocalServiceUtil;
-import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.social.model.SocialActivity;
-import com.liferay.portlet.social.model.SocialActivityFeedEntry;
 import com.liferay.portlet.social.model.SocialActivitySet;
 import com.liferay.portlet.social.service.SocialActivityLocalServiceUtil;
 import com.liferay.portlet.social.service.SocialActivitySetLocalServiceUtil;
@@ -104,45 +100,16 @@ public class TasksActivityInterpreter extends SOSocialActivityInterpreter {
 		sb.append("<div class=\"grouped-activity-body-container\">");
 		sb.append("<div class=\"grouped-activity-body\">");
 
-		boolean hasViewableActivities = false;
-
-		List<SocialActivity> activities =
-			SocialActivityLocalServiceUtil.getActivitySetActivities(
-				activitySet.getActivitySetId(), QueryUtil.ALL_POS,
-				QueryUtil.ALL_POS);
+		List<SocialActivity> activities = getViewableActivities(
+			activitySet, serviceContext);
 
 		for (SocialActivity activity : activities) {
-			ThemeDisplay themeDisplay = serviceContext.getThemeDisplay();
-
-			PermissionChecker permissionChecker =
-				themeDisplay.getPermissionChecker();
-
-			if (!hasPermissions(
-					permissionChecker, activity, ActionKeys.VIEW,
-					serviceContext)) {
-
-				continue;
-			}
-
-			SocialActivityFeedEntry subfeedEntry = getSubfeedEntry(
-				activity, serviceContext);
-
-			if (subfeedEntry == null) {
-				continue;
-			}
-
 			sb.append("<div class=\"activity-subentry tasks\">");
 			sb.append(
 				getBody(
 					activity.getClassName(), activity.getClassPK(),
 					serviceContext));
 			sb.append("</div>");
-
-			hasViewableActivities = true;
-		}
-
-		if (!hasViewableActivities) {
-			return null;
 		}
 
 		sb.append("</div></div>");
@@ -182,8 +149,7 @@ public class TasksActivityInterpreter extends SOSocialActivityInterpreter {
 			}
 
 			String assigneeUserLink = wrapLink(
-				assigneeDisplayURL,
-				HtmlUtil.escape(tasksEntry.getAssigneeFullName()));
+				assigneeDisplayURL, tasksEntry.getAssigneeFullName());
 
 			sb.append(assigneeUserLink);
 		}

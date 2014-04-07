@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -19,6 +19,7 @@ package com.liferay.so.service.impl;
 
 import com.liferay.mail.service.MailServiceUtil;
 import com.liferay.portal.NoSuchUserException;
+import com.liferay.portal.NoSuchWorkflowDefinitionLinkException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -40,6 +41,8 @@ import com.liferay.portal.model.User;
 import com.liferay.portal.model.UserNotificationDeliveryConstants;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.UserNotificationEventLocalServiceUtil;
+import com.liferay.portal.service.WorkflowDefinitionLinkLocalServiceUtil;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.so.MemberRequestAlreadyUsedException;
 import com.liferay.so.MemberRequestInvalidUserException;
 import com.liferay.so.invitemembers.util.InviteMembersConstants;
@@ -260,8 +263,21 @@ public class MemberRequestLocalServiceImpl
 		return memberRequest;
 	}
 
+	protected static String addParameterWithPortletNamespace(
+		String url, String name, String value) {
+
+		String portletId = HttpUtil.getParameter(url, "p_p_id", false);
+
+		if (Validator.isNotNull(portletId)) {
+			name = PortalUtil.getPortletNamespace(portletId) + name;
+		}
+
+		return HttpUtil.addParameter(url, name, value);
+	}
+
 	protected String getCreateAccountURL(
-		MemberRequest memberRequest, ServiceContext serviceContext) {
+			MemberRequest memberRequest, ServiceContext serviceContext)
+		throws PortalException, SystemException {
 
 		String createAccountURL = (String)serviceContext.getAttribute(
 			"createAccountURL");
@@ -270,18 +286,27 @@ public class MemberRequestLocalServiceImpl
 			createAccountURL = serviceContext.getPortalURL();
 		}
 
-		String redirectURL = getRedirectURL(serviceContext);
+		try {
+			WorkflowDefinitionLinkLocalServiceUtil.
+				getDefaultWorkflowDefinitionLink(
+					memberRequest.getCompanyId(), User.class.getName(), 0, 0);
+		}
+		catch (NoSuchWorkflowDefinitionLinkException nswdle) {
+			String redirectURL = getRedirectURL(serviceContext);
 
-		redirectURL = HttpUtil.addParameter(
-			redirectURL, "key", memberRequest.getKey());
+			redirectURL = addParameterWithPortletNamespace(
+				redirectURL, "key", memberRequest.getKey());
 
-		createAccountURL = HttpUtil.addParameter(
-			createAccountURL, "redirect", redirectURL);
+			createAccountURL = addParameterWithPortletNamespace(
+				createAccountURL, "redirect", redirectURL);
+		}
 
 		return createAccountURL;
 	}
 
-	protected String getLoginURL(ServiceContext serviceContext) {
+	protected String getLoginURL(
+		MemberRequest memberRequest, ServiceContext serviceContext) {
+
 		String loginURL = (String)serviceContext.getAttribute("loginURL");
 
 		if (Validator.isNull(loginURL)) {
@@ -289,6 +314,9 @@ public class MemberRequestLocalServiceImpl
 		}
 
 		String redirectURL = getRedirectURL(serviceContext);
+
+		redirectURL = addParameterWithPortletNamespace(
+			redirectURL, "key", memberRequest.getKey());
 
 		return HttpUtil.addParameter(loginURL, "redirect", redirectURL);
 	}
@@ -374,7 +402,7 @@ public class MemberRequestLocalServiceImpl
 				fromAddress, fromName,
 				getCreateAccountURL(memberRequest, serviceContext),
 				group.getDescriptiveName(serviceContext.getLocale()),
-				getLoginURL(serviceContext), user.getFullName()
+				getLoginURL(memberRequest, serviceContext), user.getFullName()
 			});
 
 		InternetAddress from = new InternetAddress(fromAddress, fromName);

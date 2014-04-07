@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -17,6 +17,7 @@
 
 package com.liferay.so.sites.portlet;
 
+import com.liferay.compat.portal.kernel.util.PortalClassInvoker;
 import com.liferay.portal.DuplicateGroupException;
 import com.liferay.portal.GroupNameException;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -27,9 +28,9 @@ import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.util.ClassResolverUtil;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.MethodKey;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.PortalClassInvoker;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
@@ -40,7 +41,9 @@ import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutSet;
 import com.liferay.portal.model.LayoutSetPrototype;
 import com.liferay.portal.model.MembershipRequestConstants;
+import com.liferay.portal.model.Organization;
 import com.liferay.portal.model.User;
+import com.liferay.portal.model.UserGroup;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.service.GroupLocalServiceUtil;
@@ -49,9 +52,11 @@ import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetPrototypeServiceUtil;
 import com.liferay.portal.service.MembershipRequestLocalServiceUtil;
+import com.liferay.portal.service.OrganizationLocalServiceUtil;
 import com.liferay.portal.service.PortletPreferencesLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
+import com.liferay.portal.service.UserGroupLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.service.permission.GroupPermissionUtil;
 import com.liferay.portal.theme.ThemeDisplay;
@@ -221,7 +226,7 @@ public class SitesPortlet extends MVCPortlet {
 		}
 		else if (searchTab.equals("my-favorites")) {
 			groups = SitesUtil.getFavoriteSitesGroups(
-				themeDisplay.getUserId(), keywords, 0, end);
+				themeDisplay.getUserId(), keywords, start, end);
 			groupsCount = SitesUtil.getFavoriteSitesGroupsCount(
 				themeDisplay.getUserId(), keywords);
 		}
@@ -244,9 +249,11 @@ public class SitesPortlet extends MVCPortlet {
 		for (Group group : groups) {
 			JSONObject groupJSONObject = JSONFactoryUtil.createJSONObject();
 
-			groupJSONObject.put("description", group.getDescription());
 			groupJSONObject.put(
-				"name", group.getDescriptiveName(themeDisplay.getLocale()));
+				"description", HtmlUtil.escape(group.getDescription()));
+			groupJSONObject.put(
+				"name", HtmlUtil.escape(
+					group.getDescriptiveName(themeDisplay.getLocale())));
 
 			boolean member = GroupLocalServiceUtil.hasUserGroup(
 				themeDisplay.getUserId(), group.getGroupId());
@@ -306,7 +313,7 @@ public class SitesPortlet extends MVCPortlet {
 					"addUserIds", String.valueOf(themeDisplay.getUserId()));
 
 				groupJSONObject.put(
-					"joinUrl", siteAssignmentsPortletURL.toString());
+					"joinURL", siteAssignmentsPortletURL.toString());
 			}
 			else if (!member &&
 					 (group.getType() == GroupConstants.TYPE_SITE_RESTRICTED)) {
@@ -334,7 +341,7 @@ public class SitesPortlet extends MVCPortlet {
 						themeDisplay.getLocale(), "x-wishes-to-join-x",
 						new Object[] {
 							user.getFullName(), group.getDescriptiveName()
-						});
+						}, false);
 
 					membershipRequestURL.setParameter("comments", comments);
 
@@ -347,8 +354,9 @@ public class SitesPortlet extends MVCPortlet {
 					groupJSONObject.put("membershipRequested", true);
 				}
 			}
-			else if (GroupLocalServiceUtil.hasUserGroup(
-						themeDisplay.getUserId(), group.getGroupId())) {
+			else if (member &&
+					 !isOrganizationOrUserGroupMember(
+						themeDisplay.getUserId(), group)) {
 
 				siteAssignmentsPortletURL.setParameter(
 					"removeUserIds", String.valueOf(themeDisplay.getUserId()));
@@ -359,28 +367,35 @@ public class SitesPortlet extends MVCPortlet {
 						ActionKeys.ASSIGN_MEMBERS)) {
 
 					groupJSONObject.put(
-						"leaveUrl", siteAssignmentsPortletURL.toString());
+						"leaveURL", siteAssignmentsPortletURL.toString());
 				}
 			}
 
 			if (GroupPermissionUtil.contains(
 					permissionChecker, group.getGroupId(), ActionKeys.DELETE)) {
 
-				PortletURL deletePortletURL =
-					liferayPortletResponse.createActionURL(
-						PortletKeys.SITES_ADMIN);
+				if (group.getGroupId() == themeDisplay.getSiteGroupId()) {
+					groupJSONObject.put("deleteURL", StringPool.FALSE);
+				}
+				else {
+					PortletURL deletePortletURL =
+						liferayPortletResponse.createActionURL(
+							PortletKeys.SITES_ADMIN);
 
-				deletePortletURL.setWindowState(WindowState.NORMAL);
+					deletePortletURL.setWindowState(WindowState.NORMAL);
 
-				deletePortletURL.setParameter(
-					"struts_action", "/sites_admin/edit_site");
-				deletePortletURL.setParameter(Constants.CMD, Constants.DELETE);
-				deletePortletURL.setParameter(
-					"redirect", themeDisplay.getURLCurrent());
-				deletePortletURL.setParameter(
-					"groupId", String.valueOf(group.getGroupId()));
+					deletePortletURL.setParameter(
+						"struts_action", "/sites_admin/edit_site");
+					deletePortletURL.setParameter(
+						Constants.CMD, Constants.DELETE);
+					deletePortletURL.setParameter(
+						"redirect", themeDisplay.getURLCurrent());
+					deletePortletURL.setParameter(
+						"groupId", String.valueOf(group.getGroupId()));
 
-				groupJSONObject.put("deleteURL", deletePortletURL.toString());
+					groupJSONObject.put(
+						"deleteURL", deletePortletURL.toString());
+				}
 			}
 
 			PortletURL favoritePortletURL = resourceResponse.createActionURL();
@@ -394,20 +409,26 @@ public class SitesPortlet extends MVCPortlet {
 			favoritePortletURL.setParameter(
 				"groupId", String.valueOf(group.getGroupId()));
 
-			if (!FavoriteSiteLocalServiceUtil.isFavoriteSite(
-					themeDisplay.getUserId(), group.getGroupId())) {
-
-				favoritePortletURL.setParameter(Constants.CMD, Constants.ADD);
-
-				groupJSONObject.put(
-					"favoriteURL", favoritePortletURL.toString());
+			if (!member && !group.hasPublicLayouts()) {
+				groupJSONObject.put("favoriteURL", StringPool.BLANK);
 			}
 			else {
-				favoritePortletURL.setParameter(
-					Constants.CMD, Constants.DELETE);
+				if (!FavoriteSiteLocalServiceUtil.isFavoriteSite(
+						themeDisplay.getUserId(), group.getGroupId())) {
 
-				groupJSONObject.put(
-					"unfavoriteURL", favoritePortletURL.toString());
+					favoritePortletURL.setParameter(
+						Constants.CMD, Constants.ADD);
+
+					groupJSONObject.put(
+						"favoriteURL", favoritePortletURL.toString());
+				}
+				else {
+					favoritePortletURL.setParameter(
+						Constants.CMD, Constants.DELETE);
+
+					groupJSONObject.put(
+						"unfavoriteURL", favoritePortletURL.toString());
+				}
 			}
 
 			jsonArray.put(groupJSONObject);
@@ -563,15 +584,15 @@ public class SitesPortlet extends MVCPortlet {
 		}
 
 		PortalClassInvoker.invoke(
-			true, _updateLayoutSetPrototypesMethodKey, group,
+			_updateLayoutSetPrototypesMethodKey, group,
 			publicLayoutSetPrototypeId, privateLayoutSetPrototypeId,
 			!privateLayout, privateLayout);
 
 		LayoutSet layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
-				group.getGroupId(), privateLayout);
+			group.getGroupId(), privateLayout);
 
 		PortalClassInvoker.invoke(
-			true, _mergeLayoutSetPrototypeLayoutsMethodKey, group, layoutSet);
+			_mergeLayoutSetPrototypeLayoutsMethodKey, group, layoutSet);
 
 		long[] deleteLayoutIds = getLongArray(actionRequest, "deleteLayoutIds");
 
@@ -599,6 +620,39 @@ public class SitesPortlet extends MVCPortlet {
 		}
 
 		return StringUtil.split(GetterUtil.getString(value), 0L);
+	}
+
+	protected boolean isOrganizationOrUserGroupMember(long userId, Group group)
+		throws Exception {
+
+		if (group.isOrganization()) {
+			return true;
+		}
+
+		List<Organization> organizations =
+			OrganizationLocalServiceUtil.getGroupOrganizations(
+				group.getGroupId());
+
+		for (Organization organization : organizations) {
+			if (OrganizationLocalServiceUtil.hasUserOrganization(
+					userId, organization.getOrganizationId())) {
+
+				return true;
+			}
+		}
+
+		List<UserGroup> userGroups =
+			UserGroupLocalServiceUtil.getGroupUserGroups(group.getGroupId());
+
+		for (UserGroup userGroup : userGroups) {
+			if (UserGroupLocalServiceUtil.hasUserUserGroup(
+					userId, userGroup.getUserGroupId())) {
+
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	protected void setCustomJspServletContextName(Group group)

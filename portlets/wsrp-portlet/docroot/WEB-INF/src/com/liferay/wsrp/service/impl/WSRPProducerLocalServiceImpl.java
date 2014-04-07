@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -109,6 +109,18 @@ public class WSRPProducerLocalServiceImpl
 		groupLocalService.deleteGroup(wsrpProducer.getGroupId());
 
 		return wsrpProducer;
+	}
+
+	@Override
+	public void deleteWSRPProducers(long companyId)
+		throws PortalException, SystemException {
+
+		List<WSRPProducer> wsrpProducers =
+			wsrpProducerPersistence.findByCompanyId(companyId);
+
+		for (WSRPProducer wsrpProducer : wsrpProducers) {
+			wsrpProducerLocalService.deleteWSRPProducer(wsrpProducer);
+		}
 	}
 
 	public WSRPProducer getWSRPProducer(String wsrpProducerUuid)

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,6 +18,7 @@ import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.model.CalendarBookingConstants;
 import com.liferay.calendar.service.CalendarBookingLocalServiceUtil;
+import com.liferay.calendar.workflow.CalendarBookingWorkflowConstants;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.lar.BaseStagedModelDataHandler;
@@ -64,6 +65,11 @@ public class CalendarBookingStagedModelDataHandler
 	@Override
 	public String getDisplayName(CalendarBooking calendarBooking) {
 		return calendarBooking.getTitleCurrentValue();
+	}
+
+	@Override
+	public int[] getExportableStatuses() {
+		return _EXPORTABLE_STATUSES;
 	}
 
 	@Override
@@ -223,5 +229,12 @@ public class CalendarBookingStagedModelDataHandler
 				userId, existingBooking.getCalendarBookingId());
 		}
 	}
+
+	private static final int[] _EXPORTABLE_STATUSES = {
+		CalendarBookingWorkflowConstants.STATUS_APPROVED,
+		CalendarBookingWorkflowConstants.STATUS_DENIED,
+		CalendarBookingWorkflowConstants.STATUS_MAYBE,
+		CalendarBookingWorkflowConstants.STATUS_PENDING
+	};
 
 }

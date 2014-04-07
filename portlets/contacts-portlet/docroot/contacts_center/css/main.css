@@ -16,6 +16,10 @@ $section-header-bg: #CCE6F7;
 		display: block;
 	}
 
+	.btn-hidden {
+		display: none;
+	}
+
 	.column-content, .column-content-center {
 		padding: 0;
 	}
@@ -225,8 +229,11 @@ $section-header-bg: #CCE6F7;
 	.contacts-profile {
 		.lfr-detail-info {
 			border-bottom-width: 0;
-			padding: 10px 10px 5px;
 			width: 100%;
+		}
+
+		.lfr-contact-thumb, .lfr-contact-info {
+			padding: 10px 10px 5px;
 		}
 
 		.lfr-contact-name {
@@ -313,6 +320,10 @@ $section-header-bg: #CCE6F7;
 			}
 		}
 
+		.contacts-action-content .action {
+			padding: 5px 4px;
+		}
+
 		.contacts-profile .lfr-contact-info {
 			padding: 8px;
 		}
@@ -323,6 +334,7 @@ $section-header-bg: #CCE6F7;
 
 		a {
 			display: inline-block;
+			margin: 4px 0;
 			padding: 3px 4px;
 
 			&:hover {
@@ -336,7 +348,6 @@ $section-header-bg: #CCE6F7;
 
 		.action {
 			display: inline-block;
-			padding: 3px 4px 0px;
 		}
 	}
 
@@ -347,7 +358,9 @@ $section-header-bg: #CCE6F7;
 	.section {
 		border-bottom: 1px solid #E7E7E7;
 		clear: both;
+		float: none;
 		padding: 10px;
+		width: auto;
 		zoom: 1;
 
 		&:after {
@@ -360,6 +373,7 @@ $section-header-bg: #CCE6F7;
 			color: #B4BEC8;
 			float: left;
 			font-size: 1em;
+			line-height: 20px;
 			margin: 0;
 			text-align: right;
 			width: 100px;
@@ -513,6 +527,10 @@ $section-header-bg: #CCE6F7;
 
 	.lfr-search-container {
 		margin-top: 1em;
+	}
+
+	.contacts-profile {
+		overflow: hidden;
 	}
 
 	.my-profile .field-group {

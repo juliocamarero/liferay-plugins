@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -53,21 +53,21 @@ else {
 
 	if (messageType.equals("reply")) {
 		to = replyMessage.getSender();
-		subject = LanguageUtil.format(pageContext, "re-x", replyMessage.getSubject());
+		subject = LanguageUtil.format(pageContext, "re-x", replyMessage.getSubject(), false);
 	}
 	else if (messageType.equals("reply-all")) {
 		to = replyMessage.getSender() + ", " + replyMessage.getTo();
 		cc = replyMessage.getCc();
-		subject = LanguageUtil.format(pageContext, "re-x", replyMessage.getSubject());
+		subject = LanguageUtil.format(pageContext, "re-x", replyMessage.getSubject(), false);
 	}
 	else if (messageType.equals("forward")) {
-		subject = LanguageUtil.format(pageContext, "fwd-x", replyMessage.getSubject());
+		subject = LanguageUtil.format(pageContext, "fwd-x", replyMessage.getSubject(), false);
 	}
 
 	StringBundler sb = new StringBundler(4);
 
 	sb.append("<br /><br />");
-	sb.append(LanguageUtil.format(pageContext, "on-x-x-wrote", new Object[] {dateFormatDateTime.format(replyMessage.getSentDate()), replyMessage.getSender()}));
+	sb.append(LanguageUtil.format(pageContext, "on-x-x-wrote", new Object[] {dateFormatDateTime.format(replyMessage.getSentDate()), replyMessage.getSender()}, false));
 	sb.append("<br />");
 	sb.append(replyMessage.getBody());
 

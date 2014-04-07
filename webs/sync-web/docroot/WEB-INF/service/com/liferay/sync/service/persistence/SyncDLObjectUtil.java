@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -111,69 +111,76 @@ public class SyncDLObjectUtil {
 	}
 
 	/**
-	* Returns the sync d l object where typePK = &#63; or throws a {@link com.liferay.sync.NoSuchDLObjectException} if it could not be found.
+	* Returns the sync d l object where type = &#63; and typePK = &#63; or throws a {@link com.liferay.sync.NoSuchDLObjectException} if it could not be found.
 	*
+	* @param type the type
 	* @param typePK the type p k
 	* @return the matching sync d l object
 	* @throws com.liferay.sync.NoSuchDLObjectException if a matching sync d l object could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public static com.liferay.sync.model.SyncDLObject findByTypePK(long typePK)
+	public static com.liferay.sync.model.SyncDLObject findByT_T(
+		java.lang.String type, long typePK)
 		throws com.liferay.portal.kernel.exception.SystemException,
 			com.liferay.sync.NoSuchDLObjectException {
-		return getPersistence().findByTypePK(typePK);
+		return getPersistence().findByT_T(type, typePK);
 	}
 
 	/**
-	* Returns the sync d l object where typePK = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	* Returns the sync d l object where type = &#63; and typePK = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
 	*
+	* @param type the type
 	* @param typePK the type p k
 	* @return the matching sync d l object, or <code>null</code> if a matching sync d l object could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public static com.liferay.sync.model.SyncDLObject fetchByTypePK(long typePK)
+	public static com.liferay.sync.model.SyncDLObject fetchByT_T(
+		java.lang.String type, long typePK)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().fetchByTypePK(typePK);
+		return getPersistence().fetchByT_T(type, typePK);
 	}
 
 	/**
-	* Returns the sync d l object where typePK = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	* Returns the sync d l object where type = &#63; and typePK = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
 	*
+	* @param type the type
 	* @param typePK the type p k
 	* @param retrieveFromCache whether to use the finder cache
 	* @return the matching sync d l object, or <code>null</code> if a matching sync d l object could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public static com.liferay.sync.model.SyncDLObject fetchByTypePK(
-		long typePK, boolean retrieveFromCache)
+	public static com.liferay.sync.model.SyncDLObject fetchByT_T(
+		java.lang.String type, long typePK, boolean retrieveFromCache)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().fetchByTypePK(typePK, retrieveFromCache);
+		return getPersistence().fetchByT_T(type, typePK, retrieveFromCache);
 	}
 
 	/**
-	* Removes the sync d l object where typePK = &#63; from the database.
+	* Removes the sync d l object where type = &#63; and typePK = &#63; from the database.
 	*
+	* @param type the type
 	* @param typePK the type p k
 	* @return the sync d l object that was removed
 	* @throws SystemException if a system exception occurred
 	*/
-	public static com.liferay.sync.model.SyncDLObject removeByTypePK(
-		long typePK)
+	public static com.liferay.sync.model.SyncDLObject removeByT_T(
+		java.lang.String type, long typePK)
 		throws com.liferay.portal.kernel.exception.SystemException,
 			com.liferay.sync.NoSuchDLObjectException {
-		return getPersistence().removeByTypePK(typePK);
+		return getPersistence().removeByT_T(type, typePK);
 	}
 
 	/**
-	* Returns the number of sync d l objects where typePK = &#63;.
+	* Returns the number of sync d l objects where type = &#63; and typePK = &#63;.
 	*
+	* @param type the type
 	* @param typePK the type p k
 	* @return the number of matching sync d l objects
 	* @throws SystemException if a system exception occurred
 	*/
-	public static int countByTypePK(long typePK)
+	public static int countByT_T(java.lang.String type, long typePK)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().countByTypePK(typePK);
+		return getPersistence().countByT_T(type, typePK);
 	}
 
 	/**
@@ -324,7 +331,7 @@ public class SyncDLObjectUtil {
 	/**
 	* Returns the sync d l objects before and after the current sync d l object in the ordered set where companyId = &#63; and modifiedTime &gt; &#63; and repositoryId = &#63;.
 	*
-	* @param objectId the primary key of the current sync d l object
+	* @param syncDLObjectId the primary key of the current sync d l object
 	* @param companyId the company ID
 	* @param modifiedTime the modified time
 	* @param repositoryId the repository ID
@@ -334,13 +341,14 @@ public class SyncDLObjectUtil {
 	* @throws SystemException if a system exception occurred
 	*/
 	public static com.liferay.sync.model.SyncDLObject[] findByC_M_R_PrevAndNext(
-		long objectId, long companyId, long modifiedTime, long repositoryId,
+		long syncDLObjectId, long companyId, long modifiedTime,
+		long repositoryId,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException,
 			com.liferay.sync.NoSuchDLObjectException {
 		return getPersistence()
-				   .findByC_M_R_PrevAndNext(objectId, companyId, modifiedTime,
-			repositoryId, orderByComparator);
+				   .findByC_M_R_PrevAndNext(syncDLObjectId, companyId,
+			modifiedTime, repositoryId, orderByComparator);
 	}
 
 	/**
@@ -396,25 +404,27 @@ public class SyncDLObjectUtil {
 	/**
 	* Creates a new sync d l object with the primary key. Does not add the sync d l object to the database.
 	*
-	* @param objectId the primary key for the new sync d l object
+	* @param syncDLObjectId the primary key for the new sync d l object
 	* @return the new sync d l object
 	*/
-	public static com.liferay.sync.model.SyncDLObject create(long objectId) {
-		return getPersistence().create(objectId);
+	public static com.liferay.sync.model.SyncDLObject create(
+		long syncDLObjectId) {
+		return getPersistence().create(syncDLObjectId);
 	}
 
 	/**
 	* Removes the sync d l object with the primary key from the database. Also notifies the appropriate model listeners.
 	*
-	* @param objectId the primary key of the sync d l object
+	* @param syncDLObjectId the primary key of the sync d l object
 	* @return the sync d l object that was removed
 	* @throws com.liferay.sync.NoSuchDLObjectException if a sync d l object with the primary key could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public static com.liferay.sync.model.SyncDLObject remove(long objectId)
+	public static com.liferay.sync.model.SyncDLObject remove(
+		long syncDLObjectId)
 		throws com.liferay.portal.kernel.exception.SystemException,
 			com.liferay.sync.NoSuchDLObjectException {
-		return getPersistence().remove(objectId);
+		return getPersistence().remove(syncDLObjectId);
 	}
 
 	public static com.liferay.sync.model.SyncDLObject updateImpl(
@@ -426,29 +436,29 @@ public class SyncDLObjectUtil {
 	/**
 	* Returns the sync d l object with the primary key or throws a {@link com.liferay.sync.NoSuchDLObjectException} if it could not be found.
 	*
-	* @param objectId the primary key of the sync d l object
+	* @param syncDLObjectId the primary key of the sync d l object
 	* @return the sync d l object
 	* @throws com.liferay.sync.NoSuchDLObjectException if a sync d l object with the primary key could not be found
 	* @throws SystemException if a system exception occurred
 	*/
 	public static com.liferay.sync.model.SyncDLObject findByPrimaryKey(
-		long objectId)
+		long syncDLObjectId)
 		throws com.liferay.portal.kernel.exception.SystemException,
 			com.liferay.sync.NoSuchDLObjectException {
-		return getPersistence().findByPrimaryKey(objectId);
+		return getPersistence().findByPrimaryKey(syncDLObjectId);
 	}
 
 	/**
 	* Returns the sync d l object with the primary key or returns <code>null</code> if it could not be found.
 	*
-	* @param objectId the primary key of the sync d l object
+	* @param syncDLObjectId the primary key of the sync d l object
 	* @return the sync d l object, or <code>null</code> if a sync d l object with the primary key could not be found
 	* @throws SystemException if a system exception occurred
 	*/
 	public static com.liferay.sync.model.SyncDLObject fetchByPrimaryKey(
-		long objectId)
+		long syncDLObjectId)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().fetchByPrimaryKey(objectId);
+		return getPersistence().fetchByPrimaryKey(syncDLObjectId);
 	}
 
 	/**

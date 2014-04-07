@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -131,7 +131,8 @@ public class AdminSubscriptionSender extends SubscriptionSender {
 			_serviceContext.getPlid(), _kbArticle.getResourcePrimKey(),
 			_kbArticle.getStatus(), _serviceContext.getPortalURL(), false);
 		String kbArticleVersion = LanguageUtil.format(
-			locale, "version-x", String.valueOf(_kbArticle.getVersion()));
+			locale, "version-x", String.valueOf(_kbArticle.getVersion()),
+			false);
 		String categoryTitle = LanguageUtil.get(locale, "category.kb");
 
 		setContextAttribute("[$ARTICLE_ATTACHMENTS$]", kbArticleAttachments);

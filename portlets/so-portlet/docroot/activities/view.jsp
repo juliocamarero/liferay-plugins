@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -99,8 +99,20 @@ portletURL.setParameter("tabs1", tabs1);
 
 								loading = false;
 
-								if ((body.height() < win.height()) && !activities.one('.no-activities')) {
-									loadNewContent();
+								if (!activities.one('.no-activities')) {
+									if (body.height() < win.height()) {
+										loadNewContent();
+									}
+									else if (win.width() < 768) {
+										loading = true;
+
+										var manualLoaderTemplate =
+											'<div class="manual-loader">' +
+												'<button href="javascript:;"><liferay-ui:message key="load-more-activities" /></button>' +
+											'</div>';
+
+										socialActivities.append(manualLoaderTemplate);
+									}
 								}
 							}
 						}
@@ -127,6 +139,18 @@ portletURL.setParameter("tabs1", tabs1);
 			}
 		}
 	);
+
+	socialActivities.delegate(
+		'click',
+		function(event) {
+			var manualLoader = socialActivities.one('.manual-loader');
+
+			manualLoader.remove(true);
+
+			loadNewContent();
+		},
+		'.manual-loader button'
+	)
 
 	socialActivities.delegate(
 		'click',
@@ -172,6 +196,8 @@ portletURL.setParameter("tabs1", tabs1);
 					}
 				);
 			}
+
+			commentsContainer.one('.comment-form').focus();
 		},
 		'.view-comments a'
 	);

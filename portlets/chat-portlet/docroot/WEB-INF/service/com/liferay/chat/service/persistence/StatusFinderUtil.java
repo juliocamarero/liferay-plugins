@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -29,12 +29,12 @@ public class StatusFinderUtil {
 			end);
 	}
 
-	public static java.util.List<java.lang.Object[]> findBySocialRelationType(
-		long userId, int type, long modifiedDate, int start, int end)
+	public static java.util.List<java.lang.Object[]> findBySocialRelationTypes(
+		long userId, int[] types, long modifiedDate, int start, int end)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getFinder()
-				   .findBySocialRelationType(userId, type, modifiedDate, start,
-			end);
+				   .findBySocialRelationTypes(userId, types, modifiedDate,
+			start, end);
 	}
 
 	public static java.util.List<java.lang.Object[]> findByUsersGroups(

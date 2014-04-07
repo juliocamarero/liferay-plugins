@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -38,6 +38,8 @@ import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
+import com.liferay.privatemessaging.model.UserThread;
+import com.liferay.privatemessaging.service.UserThreadLocalServiceUtil;
 import com.liferay.privatemessaging.util.PortletKeys;
 
 import javax.portlet.PortletRequest;
@@ -84,6 +86,17 @@ public class PrivateMessagingUserNotificationHandler
 			userId = jsonObject.getLong("userId");
 		}
 		else {
+			UserThread userThread = UserThreadLocalServiceUtil.fetchUserThread(
+				serviceContext.getUserId(), mbMessage.getThreadId());
+
+			if ((userThread == null) || userThread.isDeleted()) {
+				UserNotificationEventLocalServiceUtil.
+					deleteUserNotificationEvent(
+						userNotificationEvent.getUserNotificationEventId());
+
+				return null;
+			}
+
 			body = mbMessage.getBody();
 			userId = mbMessage.getUserId();
 		}
@@ -94,9 +107,10 @@ public class PrivateMessagingUserNotificationHandler
 		sb.append(
 			serviceContext.translate(
 				"x-sent-you-a-message",
-				PortalUtil.getUserName(userId, StringPool.BLANK)));
+				HtmlUtil.escape(
+					PortalUtil.getUserName(userId, StringPool.BLANK))));
 		sb.append("</div><div class=\"body\">");
-		sb.append(HtmlUtil.escape(StringUtil.shorten(body)));
+		sb.append(HtmlUtil.escape(StringUtil.shorten(body, 50)));
 		sb.append("</div>");
 
 		return sb.toString();

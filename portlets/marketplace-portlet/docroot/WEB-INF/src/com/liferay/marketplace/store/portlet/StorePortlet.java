@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,7 +17,9 @@ package com.liferay.marketplace.store.portlet;
 import com.liferay.marketplace.model.App;
 import com.liferay.marketplace.service.AppLocalServiceUtil;
 import com.liferay.marketplace.service.AppServiceUtil;
+import com.liferay.marketplace.util.MarketplaceLicenseUtil;
 import com.liferay.marketplace.util.MarketplaceUtil;
+import com.liferay.marketplace.util.PortletPropsValues;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.Constants;
@@ -62,6 +64,17 @@ public class StorePortlet extends MVCPortlet {
 		long remoteAppId = ParamUtil.getLong(actionRequest, "appId");
 		String url = ParamUtil.getString(actionRequest, "url");
 		String version = ParamUtil.getString(actionRequest, "version");
+
+		if (!url.startsWith(PortletPropsValues.MARKETPLACE_URL)) {
+			JSONObject jsonObject = getAppJSONObject(remoteAppId);
+
+			jsonObject.put("cmd", "downloadApp");
+			jsonObject.put("message", "fail");
+
+			writeJSON(actionRequest, actionResponse, jsonObject);
+
+			return;
+		}
 
 		url = getRemoteAppPackageURL(
 			themeDisplay.getCompanyId(), themeDisplay.getUserId(), token, url);
@@ -218,6 +231,20 @@ public class StorePortlet extends MVCPortlet {
 		long remoteAppId = ParamUtil.getLong(actionRequest, "appId");
 		String version = ParamUtil.getString(actionRequest, "version");
 		String url = ParamUtil.getString(actionRequest, "url");
+		String orderUuid = ParamUtil.getString(actionRequest, "orderUuid");
+		String productEntryName = ParamUtil.getString(
+			actionRequest, "productEntryName");
+
+		if (!url.startsWith(PortletPropsValues.MARKETPLACE_URL)) {
+			JSONObject jsonObject = getAppJSONObject(remoteAppId);
+
+			jsonObject.put("cmd", "downloadApp");
+			jsonObject.put("message", "fail");
+
+			writeJSON(actionRequest, actionResponse, jsonObject);
+
+			return;
+		}
 
 		url = getRemoteAppPackageURL(
 			themeDisplay.getCompanyId(), themeDisplay.getUserId(), token, url);
@@ -234,6 +261,17 @@ public class StorePortlet extends MVCPortlet {
 			FileUtil.write(tempFile, inputStream);
 
 			AppServiceUtil.updateApp(remoteAppId, version, tempFile);
+
+			if (Validator.isNull(orderUuid) &&
+				Validator.isNotNull(productEntryName)) {
+
+				orderUuid = MarketplaceLicenseUtil.getOrder(productEntryName);
+			}
+
+			if (Validator.isNotNull(orderUuid)) {
+				MarketplaceLicenseUtil.registerOrder(
+					orderUuid, productEntryName);
+			}
 
 			AppServiceUtil.installApp(remoteAppId);
 

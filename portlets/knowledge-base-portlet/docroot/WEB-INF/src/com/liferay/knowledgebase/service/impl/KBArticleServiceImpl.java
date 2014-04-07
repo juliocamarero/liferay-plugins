@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -37,7 +37,6 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.UnmodifiableList;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.Group;
@@ -56,9 +55,11 @@ import com.sun.syndication.feed.synd.SyndLink;
 import com.sun.syndication.feed.synd.SyndLinkImpl;
 import com.sun.syndication.io.FeedException;
 
+import java.io.File;
 import java.io.InputStream;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -75,24 +76,8 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
-		if ((resourcePrimKey <= 0) &&
-			portletId.equals(PortletKeys.KNOWLEDGE_BASE_ADMIN)) {
-
-			AdminPermission.check(
-				getPermissionChecker(), serviceContext.getScopeGroupId(),
-				ActionKeys.ADD_KB_ARTICLE);
-		}
-		else if ((resourcePrimKey <= 0) &&
-				 portletId.equals(PortletKeys.KNOWLEDGE_BASE_DISPLAY)) {
-
-			DisplayPermission.check(
-				getPermissionChecker(), serviceContext.getScopeGroupId(),
-				ActionKeys.ADD_KB_ARTICLE);
-		}
-		else {
-			KBArticlePermission.check(
-				getPermissionChecker(), resourcePrimKey, ActionKeys.UPDATE);
-		}
+		checkAttachmentPermissions(
+			serviceContext.getScopeGroupId(), portletId, resourcePrimKey);
 
 		kbArticleLocalService.addAttachment(
 			dirName, shortFileName, inputStream, serviceContext);
@@ -161,6 +146,16 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 			getPermissionChecker(), groupId, ActionKeys.DELETE_KB_ARTICLES);
 
 		kbArticleLocalService.deleteKBArticles(resourcePrimKeys);
+	}
+
+	public File getAttachment(
+			long companyId, long groupId, String portletId,
+			long resourcePrimKey, String fileName)
+		throws PortalException, SystemException {
+
+		checkAttachmentPermissions(groupId, portletId, resourcePrimKey);
+
+		return kbArticleLocalService.getAttachment(companyId, fileName);
 	}
 
 	public List<KBArticle> getGroupKBArticles(
@@ -268,7 +263,7 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 			kbArticles = ListUtil.sort(kbArticles, orderByComparator);
 		}
 
-		return new UnmodifiableList<KBArticle>(kbArticles);
+		return Collections.unmodifiableList(kbArticles);
 	}
 
 	public String getKBArticleRSS(
@@ -330,7 +325,7 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 			kbArticles = KnowledgeBaseUtil.sort(resourcePrimKeys, kbArticles);
 		}
 
-		return new UnmodifiableList<KBArticle>(kbArticles);
+		return Collections.unmodifiableList(kbArticles);
 	}
 
 	public List<KBArticle> getKBArticles(
@@ -779,6 +774,28 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 		}
 		catch (FeedException fe) {
 			throw new SystemException(fe);
+		}
+	}
+
+	private void checkAttachmentPermissions(
+			long groupId, String portletId, long resourcePrimKey)
+		throws PortalException, SystemException {
+
+		if ((resourcePrimKey <= 0) &&
+			portletId.equals(PortletKeys.KNOWLEDGE_BASE_ADMIN)) {
+
+			AdminPermission.check(
+				getPermissionChecker(), groupId, ActionKeys.ADD_KB_ARTICLE);
+		}
+		else if ((resourcePrimKey <= 0) &&
+				 portletId.equals(PortletKeys.KNOWLEDGE_BASE_DISPLAY)) {
+
+			DisplayPermission.check(
+				getPermissionChecker(), groupId, ActionKeys.ADD_KB_ARTICLE);
+		}
+		else {
+			KBArticlePermission.check(
+				getPermissionChecker(), resourcePrimKey, ActionKeys.UPDATE);
 		}
 	}
 

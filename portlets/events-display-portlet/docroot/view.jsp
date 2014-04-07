@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -24,7 +24,9 @@ List<Long> groupIds = new ArrayList<Long>();
 
 Group group = GroupLocalServiceUtil.getGroup(layout.getGroupId());
 
-if (group.isRegularSite()) {
+boolean regularSite = group.isRegularSite();
+
+if (regularSite) {
 	groupIds.add(group.getGroupId());
 }
 else if (group.isUser() && themeDisplay.isSignedIn()) {
@@ -49,17 +51,19 @@ long displayEndTime = jCalendar.getTimeInMillis() + (Time.DAY * maxDaysDisplayed
 
 List<Long> calendarResourceIds = new ArrayList<Long>();
 
-for (long groupId : groupIds) {
-	long classNameId = PortalUtil.getClassNameId(Group.class);
+if (!regularSite) {
+	for (long groupId : groupIds) {
+		long classNameId = PortalUtil.getClassNameId(Group.class);
 
-	if (group.isUser()) {
-		classNameId = PortalUtil.getClassNameId(User.class);
-	}
+		if (group.isUser()) {
+			classNameId = PortalUtil.getClassNameId(User.class);
+		}
 
-	CalendarResource calendarResource = CalendarResourceLocalServiceUtil.fetchCalendarResource(classNameId, groupId);
+		CalendarResource calendarResource = CalendarResourceLocalServiceUtil.fetchCalendarResource(classNameId, groupId);
 
-	if (calendarResource != null) {
-		calendarResourceIds.add(calendarResource.getCalendarResourceId());
+		if (calendarResource != null) {
+			calendarResourceIds.add(calendarResource.getCalendarResourceId());
+		}
 	}
 }
 
@@ -97,7 +101,7 @@ for (CalendarBooking calendarBooking : calendarBookings) {
 
 	startTimeJCalendar.setTimeInMillis(startTime);
 
-	if (startTimeJCalendar.get(Calendar.DAY_OF_MONTH) <= jCalendar.get(Calendar.DAY_OF_MONTH)) {
+	if ((startTimeJCalendar.get(Calendar.DAY_OF_YEAR) <= jCalendar.get(Calendar.DAY_OF_YEAR)) && (startTimeJCalendar.get(Calendar.YEAR) <= jCalendar.get(Calendar.YEAR))) {
 		todayBookings.add(calendarBooking);
 	}
 	else {

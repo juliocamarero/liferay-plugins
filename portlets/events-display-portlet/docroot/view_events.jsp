@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -80,7 +80,7 @@ List<CalendarBooking> calendarBookings = (List<CalendarBooking>)request.getAttri
 
 			<div class="event">
 				<span class="event-name">
-					<a href="<%= eventHREF %>"><%= StringUtil.shorten(calendarBooking.getTitle(locale), 40) %></a>
+					<a href="<%= eventHREF %>"><%= StringUtil.shorten(HtmlUtil.escape(calendarBooking.getTitle(locale)), 40) %></a>
 				</span>
 
 				<c:if test="<%= !calendarBooking.isAllDay() %>">

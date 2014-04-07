@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,6 +21,8 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.PortletPreferencesFactoryUtil;
+import com.liferay.stocks.util.PortletKeys;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 import java.io.IOException;
@@ -56,7 +58,17 @@ public class StocksPortlet extends MVCPortlet {
 			return;
 		}
 
-		PortletPreferences preferences = actionRequest.getPreferences();
+		PortletPreferences portletPreferences = null;
+
+		try {
+			portletPreferences =
+				PortletPreferencesFactoryUtil.getPortletPreferences(
+					PortalUtil.getHttpServletRequest(actionRequest),
+					PortletKeys.STOCKS);
+		}
+		catch (Exception e) {
+			throw new PortletException(e);
+		}
 
 		String[] symbols = StringUtil.split(
 			StringUtil.toUpperCase(
@@ -65,10 +77,10 @@ public class StocksPortlet extends MVCPortlet {
 
 		Arrays.sort(symbols);
 
-		preferences.setValues("symbols", symbols);
+		portletPreferences.setValues("symbols", symbols);
 
 		try {
-			preferences.store();
+			portletPreferences.store();
 		}
 		catch (ValidatorException ve) {
 			SessionErrors.add(

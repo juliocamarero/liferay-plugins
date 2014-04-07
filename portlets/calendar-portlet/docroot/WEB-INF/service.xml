@@ -145,6 +145,7 @@
 
 		<!-- References -->
 
+		<reference package-path="com.liferay.portal" entity="ClassName" />
 		<reference package-path="com.liferay.portal" entity="Group" />
 		<reference package-path="com.liferay.portal" entity="ResourceAction" />
 		<reference package-path="com.liferay.portal" entity="ResourceBlock" />
@@ -259,24 +260,15 @@
 			<finder-column name="classNameId" />
 			<finder-column name="classPK" />
 		</finder>
-		<finder name="G_N_A" return-type="Collection">
-			<finder-column name="groupId" arrayable-operator="OR" />
-			<finder-column name="name" comparator="LIKE" />
-			<finder-column name="active" />
-		</finder>
 		<finder name="C_C_A" return-type="Collection">
 			<finder-column name="companyId" />
 			<finder-column name="code" comparator="LIKE" />
 			<finder-column name="active" />
 		</finder>
-		<finder name="C_N_A" return-type="Collection">
-			<finder-column name="companyId" />
-			<finder-column name="name" comparator="LIKE" />
-			<finder-column name="active" />
-		</finder>
 
 		<!-- References -->
 
+		<reference package-path="com.liferay.portal" entity="ClassName" />
 		<reference package-path="com.liferay.portlet.asset" entity="AssetEntry" />
 	</entity>
 	<exceptions>

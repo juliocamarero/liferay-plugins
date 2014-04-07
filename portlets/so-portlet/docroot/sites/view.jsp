@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -57,30 +57,29 @@ pageContext.setAttribute("portletURL", portletURL);
 <div id="<portlet:namespace />messages"><!-- --></div>
 
 <form action="<%= portletURL.toString() %>" method="get" name="<portlet:namespace />fm">
-<liferay-portlet:renderURLParams varImpl="portletURL" />
+	<liferay-portlet:renderURLParams varImpl="portletURL" />
 
-<div class="sites-tabs">
-	<aui:select label="" name="tabs1">
-		<aui:option label="all-sites" selected='<%= tabs1.equals("all-sites") %>' value="all-sites" />
-		<aui:option label="my-sites" selected='<%= tabs1.equals("my-sites") %>' value="my-sites" />
-		<aui:option label="my-favorites" selected='<%= tabs1.equals("my-favorites") %>' value="my-favorites" />
-	</aui:select>
-</div>
+	<div class="sites-tabs">
+		<aui:select label="" name="tabs1">
+			<aui:option label="all-sites" selected='<%= tabs1.equals("all-sites") %>' value="all-sites" />
+			<aui:option label="my-sites" selected='<%= tabs1.equals("my-sites") %>' value="my-sites" />
+			<aui:option label="my-favorites" selected='<%= tabs1.equals("my-favorites") %>' value="my-favorites" />
+		</aui:select>
+	</div>
 
-<div class="search">
-	<input class="search-input" id="<portlet:namespace />name" name="<portlet:namespace />name" placeholder="<liferay-ui:message key="go-to" />" size="30" type="text" value="<%= HtmlUtil.escape(name) %>" />
+	<div class="search">
+		<input class="search-input" id="<portlet:namespace />name" name="<portlet:namespace />name" placeholder="<liferay-ui:message key="go-to" />" size="30" type="text" value="<%= HtmlUtil.escape(name) %>" />
 
-	<input src="<%= themeDisplay.getPathThemeImages() %>/common/search.png" type="image" value='<liferay-ui:message key="search" />' />
-</div>
+		<input src="<%= themeDisplay.getPathThemeImages() %>/common/search.png" type="image" value='<liferay-ui:message key="search" />' />
+	</div>
 
-<div class="site-list-container">
-	<ul class="site-list">
-	</ul>
-</div>
+	<div class="site-list-container">
+		<ul class="site-list">
+		</ul>
+	</div>
 
-<div class="control-container">
-</div>
-
+	<div class="control-container">
+	</div>
 </form>
 
 <aui:script use="aui-base,aui-io-deprecated,aui-toolbar,liferay-so-user-menu">
@@ -99,39 +98,42 @@ pageContext.setAttribute("portletURL", portletURL);
 
 	var controlContainer = A.one('.so-portlet-sites .control-container');
 
-	var addSiteButton = new A.Toolbar(
-		{
-			children: [
-				<c:if test="<%= PortalPermissionUtil.contains(permissionChecker, ActionKeys.ADD_COMMUNITY) %>">
+	if (controlContainer) {
+		var addSiteButton = new A.Toolbar(
+			{
+				children: [
+					<c:if test="<%= PortalPermissionUtil.contains(permissionChecker, ActionKeys.ADD_COMMUNITY) %>">
+						{
+							icon: 'icon-plus',
+							label: '<liferay-ui:message key="add-site" unicode="<%= true %>" />',
+							on: {
+								click: function(event) {
+									<liferay-portlet:renderURL var="addSiteURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
+										<portlet:param name="mvcPath" value="/sites/edit_site.jsp" />
+									</liferay-portlet:renderURL>
+
+									Liferay.SO.Sites.displayPopup('<%= addSiteURL %>', '<liferay-ui:message key="add-site" unicode="<%= true %>" />');
+								}
+							}
+						},
+					</c:if>
 					{
-						icon: 'plusthick',
-						label: '<liferay-ui:message key="add-site" unicode="<%= true %>" />',
+						icon: 'icon-reorder',
+						label: '<liferay-ui:message key="sites-directory" unicode="<%= true %>" />',
 						on: {
 							click: function(event) {
-								<liferay-portlet:renderURL var="addSiteURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
-									<portlet:param name="mvcPath" value="/sites/edit_site.jsp" />
+								<liferay-portlet:renderURL var="viewSitesURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
+									<portlet:param name="mvcPath" value="/sites/view_sites.jsp" />
 								</liferay-portlet:renderURL>
 
-								Liferay.SO.Sites.displayPopup('<%= addSiteURL %>', '<liferay-ui:message key="add-site" unicode="<%= true %>" />');
+								Liferay.SO.Sites.displayPopup('<%= viewSitesURL %>', '<liferay-ui:message key="sites-directory" unicode="<%= true %>" />');
 							}
 						}
-					},
-				</c:if>
-				{
-					label: '<liferay-ui:message key="sites-directory" unicode="<%= true %>" />',
-					on: {
-						click: function(event) {
-							<liferay-portlet:renderURL var="viewSitesURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
-								<portlet:param name="mvcPath" value="/sites/view_sites.jsp" />
-							</liferay-portlet:renderURL>
-
-							Liferay.SO.Sites.displayPopup('<%= viewSitesURL %>', '<liferay-ui:message key="sites-directory" unicode="<%= true %>" />');
-						}
 					}
-				}
-			]
-		}
-	).render(controlContainer);
+				]
+			}
+		).render(controlContainer);
+	}
 
 	var searchInput = A.one('#<portlet:namespace />name');
 
@@ -139,54 +141,56 @@ pageContext.setAttribute("portletURL", portletURL);
 
 	var sitesTabsContainer = A.one('.so-portlet-sites .sites-tabs');
 
-	var sitesTabsSelect = sitesTabsContainer.one('select[name=<portlet:namespace />tabs1]');
+	if (sitesTabsContainer && siteList) {
+		var sitesTabsSelect = sitesTabsContainer.one('select[name=<portlet:namespace />tabs1]');
 
-	sitesTabsSelect.on(
-		'change',
-		function(event) {
-			searchInput.set('value', '');
+		sitesTabsSelect.on(
+			'change',
+			function(event) {
+				searchInput.set('value', '');
 
-			Liferay.SO.Sites.updateSites();
-		}
-	);
+				Liferay.SO.Sites.updateSites();
+			}
+		);
 
-	siteList.delegate(
-		'click',
-		function(event) {
-			var keywords = searchInput.get('value');
+		siteList.delegate(
+			'click',
+			function(event) {
+				var keywords = searchInput.get('value');
 
-			var data = {
-				<portlet:namespace />keywords: keywords,
-				<portlet:namespace />tabs1: sitesTabsSelect.get('value')
-			};
+				var data = {
+					<portlet:namespace />keywords: keywords,
+					<portlet:namespace />tabs1: sitesTabsSelect.get('value')
+				};
 
-			<liferay-portlet:renderURL var="viewSitesURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
-				<portlet:param name="mvcPath" value="/sites/view_sites.jsp" />
-			</liferay-portlet:renderURL>
+				<liferay-portlet:renderURL var="viewSitesURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
+					<portlet:param name="mvcPath" value="/sites/view_sites.jsp" />
+				</liferay-portlet:renderURL>
 
-			Liferay.SO.Sites.displayPopup('<%= viewSitesURL %>', '<liferay-ui:message key="sites" unicode="<%= true %>" />', data);
-		},
-		'.more a'
-	);
+				Liferay.SO.Sites.displayPopup('<%= viewSitesURL %>', '<liferay-ui:message key="sites" unicode="<%= true %>" />', data);
+			},
+			'.more a'
+		);
 
-	siteList.delegate(
-		'click',
-		function(event) {
-			event.preventDefault();
+		siteList.delegate(
+			'click',
+			function(event) {
+				event.preventDefault();
 
-			A.io.request(
-				event.currentTarget.get('href'),
-				{
-					after: {
-						success: function(event, id, obj) {
-							Liferay.SO.Sites.updateSites();
+				A.io.request(
+					event.currentTarget.get('href'),
+					{
+						after: {
+							success: function(event, id, obj) {
+								Liferay.SO.Sites.updateSites();
+							}
 						}
 					}
-				}
-			);
-		},
-		'.action a'
-	);
+				);
+			},
+			'.action a'
+		);
+	}
 
 	var dockBar = A.one('.portlet-dockbar');
 

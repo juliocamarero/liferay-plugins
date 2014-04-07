@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -24,6 +24,7 @@ import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.TimeZoneUtil;
 
 import java.text.ParseException;
 
@@ -150,21 +151,50 @@ public class RecurrenceUtil {
 		CalendarBooking newCalendarBooking =
 			(CalendarBooking)calendarBooking.clone();
 
-		Calendar jCalendar = JCalendarUtil.getJCalendar(
-			calendarBooking.getStartTime());
-
-		jCalendar = JCalendarUtil.getJCalendar(
-			startDateValue.year(), startDateValue.month() - 1,
-			startDateValue.day(), jCalendar.get(Calendar.HOUR_OF_DAY),
-			jCalendar.get(Calendar.MINUTE), jCalendar.get(Calendar.SECOND),
-			jCalendar.get(Calendar.MILLISECOND),
-			TimeZone.getTimeZone(StringPool.UTC));
+		Calendar jCalendar = _getStartTimeJCalendar(
+			calendarBooking, startDateValue);
 
 		newCalendarBooking.setEndTime(
 			jCalendar.getTimeInMillis() + calendarBooking.getDuration());
 		newCalendarBooking.setStartTime(jCalendar.getTimeInMillis());
 
 		return newCalendarBooking;
+	}
+
+	private static Calendar _getStartTimeJCalendar(
+		CalendarBooking calendarBooking, DateValue startDateValue) {
+
+		Calendar jCalendar = JCalendarUtil.getJCalendar(
+			calendarBooking.getStartTime());
+
+		Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(
+			startDateValue.year(), startDateValue.month() - 1,
+			startDateValue.day(), jCalendar.get(Calendar.HOUR_OF_DAY),
+			jCalendar.get(Calendar.MINUTE), jCalendar.get(Calendar.SECOND),
+			jCalendar.get(Calendar.MILLISECOND),
+			TimeZone.getTimeZone(StringPool.UTC));
+
+		TimeZone timeZone = _getTimeZone(calendarBooking);
+
+		int shift = JCalendarUtil.getDSTShift(
+			jCalendar, startTimeJCalendar, timeZone);
+
+		startTimeJCalendar.add(Calendar.MILLISECOND, shift);
+
+		return startTimeJCalendar;
+	}
+
+	private static TimeZone _getTimeZone(CalendarBooking calendarBooking) {
+		try {
+			return calendarBooking.getTimeZone();
+		}
+		catch (Exception e) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(e);
+			}
+		}
+
+		return TimeZoneUtil.getDefault();
 	}
 
 	private static DateValue _toDateValue(long time) {

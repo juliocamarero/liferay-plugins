@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,6 +21,12 @@ String tabs2 = ParamUtil.getString(request, "tabs2", "general");
 
 String redirect = ParamUtil.getString(request, "redirect");
 
+if (Validator.isNull(redirect)) {
+	redirect = PortalUtil.getCurrentURL(request);
+}
+
+String backURL = ParamUtil.getString(request, "backURL");
+
 Calendar calendar = (Calendar)request.getAttribute(WebKeys.CALENDAR);
 
 CalendarResource calendarResource = (CalendarResource)request.getAttribute(WebKeys.CALENDAR_RESOURCE);
@@ -30,6 +36,7 @@ CalendarResource calendarResource = (CalendarResource)request.getAttribute(WebKe
 	<portlet:param name="mvcPath" value="/edit_calendar.jsp" />
 	<portlet:param name="tabs2" value="<%= tabs2 %>" />
 	<portlet:param name="redirect" value="<%= redirect %>" />
+	<portlet:param name="backURL" value="<%= backURL %>" />
 	<portlet:param name="calendarId" value="<%= (calendar != null) ? String.valueOf(calendar.getCalendarId()) : StringPool.BLANK %>" />
 	<portlet:param name="calendarResourceId" value="<%= (calendarResource != null) ? String.valueOf(calendarResource.getCalendarResourceId()) : StringPool.BLANK %>" />
 </liferay-portlet:renderURL>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UniqueList;
 import com.liferay.portal.security.permission.PermissionChecker;
@@ -41,6 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * @author Eduardo Lundgren
@@ -148,6 +150,23 @@ public class CalendarUtil {
 		return calendarResources;
 	}
 
+	public static CalendarBooking getNewDurationCalendarBooking(
+		CalendarBooking calendarBooking, long duration) {
+
+		calendarBooking.setEndTime(calendarBooking.getStartTime() + duration);
+
+		return calendarBooking;
+	}
+
+	public static CalendarBooking getNewStartTimeCalendarBooking(
+		CalendarBooking calendarBooking, long offset) {
+
+		calendarBooking.setStartTime(calendarBooking.getStartTime() + offset);
+		calendarBooking.setEndTime(calendarBooking.getEndTime() + offset);
+
+		return calendarBooking;
+	}
+
 	public static OrderByComparator getOrderByComparator(
 		String orderByCol, String orderByType) {
 
@@ -191,6 +210,54 @@ public class CalendarUtil {
 		return StringUtil.split(StringUtil.merge(keywordsList));
 	}
 
+	public static JSONObject toCalendarBookingJSONObject(
+			ThemeDisplay themeDisplay, CalendarBooking calendarBooking,
+			TimeZone timeZone)
+		throws SystemException {
+
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
+
+		jsonObject.put("allDay", calendarBooking.isAllDay());
+		jsonObject.put(
+			"calendarBookingId", calendarBooking.getCalendarBookingId());
+		jsonObject.put("calendarId", calendarBooking.getCalendarId());
+		jsonObject.put(
+			"description",
+			calendarBooking.getDescription(themeDisplay.getLocale()));
+
+		if (calendarBooking.isAllDay()) {
+			timeZone = TimeZone.getTimeZone(StringPool.UTC);
+		}
+
+		java.util.Calendar endTimeJCalendar = JCalendarUtil.getJCalendar(
+			calendarBooking.getEndTime(), timeZone);
+
+		_addTimeProperties(jsonObject, "endTime", endTimeJCalendar);
+
+		jsonObject.put("firstReminder", calendarBooking.getFirstReminder());
+		jsonObject.put(
+			"firstReminderType", calendarBooking.getFirstReminderType());
+		jsonObject.put("location", calendarBooking.getLocation());
+		jsonObject.put(
+			"parentCalendarBookingId",
+			calendarBooking.getParentCalendarBookingId());
+		jsonObject.put("recurrence", calendarBooking.getRecurrence());
+		jsonObject.put("secondReminder", calendarBooking.getSecondReminder());
+		jsonObject.put(
+			"secondReminderType", calendarBooking.getSecondReminder());
+
+		java.util.Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(
+			calendarBooking.getStartTime(), timeZone);
+
+		_addTimeProperties(jsonObject, "startTime", startTimeJCalendar);
+
+		jsonObject.put("status", calendarBooking.getStatus());
+		jsonObject.put(
+			"title", calendarBooking.getTitle(themeDisplay.getLocale()));
+
+		return jsonObject;
+	}
+
 	public static JSONArray toCalendarBookingsJSONArray(
 			ThemeDisplay themeDisplay, List<CalendarBooking> calendarBookings)
 		throws PortalException, SystemException {
@@ -204,6 +271,23 @@ public class CalendarUtil {
 		for (CalendarBooking calendarBooking : calendarBookings) {
 			JSONObject jsonObject = toCalendarJSONObject(
 				themeDisplay, calendarBooking.getCalendar());
+
+			jsonArray.put(jsonObject);
+		}
+
+		return jsonArray;
+	}
+
+	public static JSONArray toCalendarBookingsJSONArray(
+			ThemeDisplay themeDisplay, List<CalendarBooking> calendarBookings,
+			TimeZone timeZone)
+		throws PortalException, SystemException {
+
+		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
+
+		for (CalendarBooking calendarBooking : calendarBookings) {
+			JSONObject jsonObject = toCalendarBookingJSONObject(
+				themeDisplay, calendarBooking, timeZone);
 
 			jsonArray.put(jsonObject);
 		}
@@ -280,6 +364,21 @@ public class CalendarUtil {
 		}
 
 		return jsonArray;
+	}
+
+	private static void _addTimeProperties(
+		JSONObject jsonObject, String prefix, java.util.Calendar jCalendar) {
+
+		jsonObject.put(prefix, jCalendar.getTimeInMillis());
+		jsonObject.put(
+			prefix + "Day", jCalendar.get(java.util.Calendar.DAY_OF_MONTH));
+		jsonObject.put(
+			prefix + "Hour", jCalendar.get(java.util.Calendar.HOUR_OF_DAY));
+		jsonObject.put(
+			prefix + "Minute", jCalendar.get(java.util.Calendar.MINUTE));
+		jsonObject.put(
+			prefix + "Month", jCalendar.get(java.util.Calendar.MONTH));
+		jsonObject.put(prefix + "Year", jCalendar.get(java.util.Calendar.YEAR));
 	}
 
 	private static JSONObject _getPermissionsJSONObject(

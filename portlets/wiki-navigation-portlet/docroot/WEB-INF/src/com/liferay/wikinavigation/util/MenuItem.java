@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -145,10 +145,7 @@ public class MenuItem implements Serializable {
 
 		List<MenuItem> menuItems = new LinkedList<MenuItem>();
 
-		Pattern pattern = Pattern.compile(
-			"((==\\s((.)*)\\s==)*(\\Q[[\\E((.)*)\\Q]]\\E)*)*");
-
-		Matcher matcher = pattern.matcher(wikiPage.getContent());
+		Matcher matcher = _pattern.matcher(wikiPage.getContent());
 
 		MenuItem menuItem = null;
 
@@ -222,6 +219,9 @@ public class MenuItem implements Serializable {
 
 		return menuItems;
 	}
+
+	private static Pattern _pattern = Pattern.compile(
+		"((==\\s((.)*)\\s==)*(\\Q[[\\E((.)*)\\Q]]\\E)*)*");
 
 	private List<MenuItem> _children;
 	private boolean _externalURL;

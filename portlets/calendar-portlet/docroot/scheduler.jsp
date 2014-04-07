@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -37,8 +37,9 @@ String viewCalendarBookingURL = ParamUtil.getString(request, "viewCalendarBookin
 <%@ include file="/event_recorder.jspf" %>
 
 <aui:script use="aui-toggler,liferay-calendar-list,liferay-scheduler,liferay-store,json">
+	Liferay.CalendarUtil.CALENDAR_BOOKINGS_URL = '<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="calendarBookings" />';
 	Liferay.CalendarUtil.PORTLET_NAMESPACE = '<portlet:namespace />';
-	Liferay.CalendarUtil.USER_TIMEZONE_OFFSET = <%= JCalendarUtil.getTimeZoneOffset(userTimeZone) %>;
+	Liferay.CalendarUtil.USER_TIME_ZONE = '<%= HtmlUtil.escapeJS(userTimeZone.getID()) %>';
 
 	<c:if test="<%= !hideDayView %>">
 		window.<portlet:namespace />dayView = new A.SchedulerDayView(
@@ -58,7 +59,10 @@ String viewCalendarBookingURL = ParamUtil.getString(request, "viewCalendarBookin
 			{
 				height: 700,
 				isoTime: <%= isoTimeFormat %>,
-				readOnly: <%= readOnly %>
+				readOnly: <%= readOnly %>,
+				strings: {
+					allDay: '<liferay-ui:message key="all-day" />'
+				}
 			}
 		);
 	</c:if>
@@ -105,6 +109,24 @@ String viewCalendarBookingURL = ParamUtil.getString(request, "viewCalendarBookin
 				viewCalendarBookingURL: '<%= HtmlUtil.escapeJS(viewCalendarBookingURL) %>'
 			}
 		);
+	</c:if>
+
+	var views = [];
+
+	<c:if test="<%= !hideDayView %>">
+		views.push(window.<portlet:namespace />dayView);
+	</c:if>
+
+	<c:if test="<%= !hideWeekView %>">
+		views.push(window.<portlet:namespace />weekView);
+	</c:if>
+
+	<c:if test="<%= !hideMonthView %>">
+		views.push(window.<portlet:namespace />monthView);
+	</c:if>
+
+	<c:if test="<%= !hideAgendaView %>">
+		views.push(window.<portlet:namespace />agendaView);
 	</c:if>
 
 	window.<portlet:namespace />scheduler = new Liferay.Scheduler(
@@ -154,23 +176,7 @@ String viewCalendarBookingURL = ParamUtil.getString(request, "viewCalendarBookin
 			%>
 
 			todayDate: new Date(<%= todayYear %>, <%= todayMonth %>, <%= todayDay %>),
-			views: [
-				<c:if test="<%= !hideDayView %>">
-					window.<portlet:namespace />dayView,
-				</c:if>
-
-				<c:if test="<%= !hideWeekView %>">
-					window.<portlet:namespace />weekView,
-				</c:if>
-
-				<c:if test="<%= !hideMonthView %>">
-					window.<portlet:namespace />monthView,
-				</c:if>
-
-				<c:if test="<%= !hideAgendaView %>">
-					window.<portlet:namespace />agendaView
-				</c:if>
-			]
+			views: views
 		}
 	);
 </aui:script>

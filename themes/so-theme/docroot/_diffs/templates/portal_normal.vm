@@ -12,7 +12,7 @@
 	<meta content="user-scalable=yes, initial-scale=1.0, width=device-width" name="viewport" />
 </head>
 
-<body class="so-strata-theme $css_class">
+<body class="dockbar-split so-strata-theme $css_class">
 
 $theme.include($body_top_include)
 
@@ -27,7 +27,7 @@ $theme.include($body_top_include)
 		<div id="heading">
 			#if (!$is_user_dashboard)
 				<h1 class="site-title">
-					<a class="$logo_css_class" href="$community_default_public_url" title="#language_format ("go-to-x", [$site_name])">
+					<a class="$logo_css_class" href="$logo_url" title="#language_format ("go-to-x", [$site_name])">
 
 						#if (!$is_profile_page)
 							<img alt="$logo_description" height="$site_logo_height" src="$site_logo" width="$site_logo_width" />
@@ -42,9 +42,9 @@ $theme.include($body_top_include)
 				</h1>
 
 				#if ($is_signed_in && !$is_user_page)
-					#set ($user_local_service = $serviceLocator.findService("com.liferay.portal.service.UserLocalService"))
+					#set ($group_local_service = $serviceLocator.findService("com.liferay.portal.service.GroupLocalService"))
 
-					#set ($member = $user_local_service.hasGroupUser($page_group.getGroupId(), $user_id))
+					#set ($member = $group_local_service.hasUserGroup($user_id, $page_group.getGroupId()))
 
 					#set ($membership_request_local_service = $serviceLocator.findService("com.liferay.portal.service.MembershipRequestLocalService"))
 
@@ -74,7 +74,7 @@ $theme.include($body_top_include)
 
 							#set ($arguments = [$user_name, $community_name])
 
-							$membership_request_url.setParameter("comments", $languageUtil.format($locale, "x-wishes-to-join-x", $arguments.toArray()))
+							$membership_request_url.setParameter("comments", $languageUtil.format($locale, "x-wishes-to-join-x", $arguments.toArray(), false))
 
 							<a class="aui-button button action request member-button" href="$membership_request_url" id="memberButton">
 								<span class="aui-button-content">
@@ -93,13 +93,15 @@ $theme.include($body_top_include)
 			#end
 
 			#if ($is_signed_in)
-				<a class="config-icon" href="javascript:;" id="toggleDockbar">
-					<img alt="#language("configuration") #language("icon")" height="16" src="$images_folder/custom/cog.png" width="16" />
+				#if ((!$page_group.isControlPanel()) && $user.isSetupComplete() && ($show_add_controls || $show_edit_controls || $show_preview_controls || $show_toggle_controls))
+					<a class="config-icon" href="javascript:;" id="toggleDockbar">
+						<img alt="#language("configuration") #language("icon")" height="16" src="$images_folder/custom/cog.png" width="16" />
 
-					<span class="aui-helper-hidden">
-						#language("toggle") #language("javax.portlet.title.145")
-					</span>
-				</a>
+						<span class="aui-helper-hidden">
+							#language("toggle") #language("javax.portlet.title.145")
+						</span>
+					</a>
+				#end
 
 				<div id="page-search">
 					$theme.search()
@@ -113,10 +115,10 @@ $theme.include($body_top_include)
 			#if ($is_user_dashboard)
 				<h2 class="page-title">
 						<a class="avatar" href="$current_user_profile_url" style="background-image: url($user.getPortraitURL($themeDisplay))">
-							<img alt="$user.getFullName()" src="$user.getPortraitURL($themeDisplay)">
+							<img alt="$htmlUtil.escape($user.getFullName())" src="$user.getPortraitURL($themeDisplay)">
 						</a>
 
-						<span class="aui-helper-hidden">$current_user.getFullName()'s</span>
+						<span class="aui-helper-hidden">$htmlUtil.escape($current_user.getFullName())'s</span>
 
 					<span>$the_title</span>
 				</h2>
@@ -140,16 +142,6 @@ $theme.include($body_top_include)
 		#end
 	</div>
 
-	#if (!$page_group.isUser())
-		<nav class="site-breadcrumbs" id="breadcrumbs">
-			<h1 class="hidden-accessible">
-				<span>#language("breadcrumbs")</span>
-			</h1>
-
-			#breadcrumbs()
-		</nav>
-	#end
-
 	<footer id="footer" role="contentinfo">
 		<p class="powered-by">
 			#language("powered-by") <a href="http://www.liferay.com" rel="external">Liferay</a>
@@ -160,52 +152,6 @@ $theme.include($body_top_include)
 $theme.include($body_bottom_include)
 
 </body>
-
-#if ($show_edit_profile_button)
-	<script type="text/javascript">
-		Liferay.provide(
-			window,
-			'_2_changeLogo',
-			function(logoURL) {
-				A.all('#${themeNamespace}avatar, #content .avatar img, .user-fullname.user-portrait img').attr('src', logoURL);
-			},
-			['aui-base']
-		);
-
-		AUI().use(
-			'liferay-logo-selector',
-			'aui-base',
-			function(A) {
-				var editPortraitButton = A.one('#${themeNamespace}editPortraitButton');
-
-				var editPortrait = null;
-
-				if (editPortraitButton) {
-					editPortraitButton.on(
-						'click',
-						function(event) {
-							if (!editPortrait) {
-								editPortrait = new Liferay.LogoSelector(
-									{
-										boundingBox: '#${themeNamespace}taglibLogoSelector',
-										contentBox: '#${themeNamespace}taglibLogoSelectorContent',
-										defaultLogoURL: '$current_user_profile_portrait_url',
-										editLogoURL: '$current_user_edit_profile_portrait_url',
-										logoDisplaySelector: '#${themeNamespace}avatar',
-										portletNamespace: '',
-										randomNamespace: '${themeNamespace}'
-									}
-								);
-							}
-
-							editPortrait._openEditLogoWindow();
-						}
-					);
-				}
-			}
-		);
-	</script>
-#end
 
 $theme.include($bottom_include)
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -22,6 +22,9 @@ package com.liferay.so.util;
  */
 public class PortletKeys extends com.liferay.portal.util.PortletKeys {
 
+	public static final String MICROBLOGS_STATUS_UPDATE =
+		com.liferay.microblogs.util.PortletKeys.MICROBLOGS_STATUS_UPDATE;
+
 	public static final String SO_ACTIVITIES = "1_WAR_soportlet";
 
 	public static final String SO_ANNOUNCEMENTS =
@@ -32,8 +35,6 @@ public class PortletKeys extends com.liferay.portal.util.PortletKeys {
 	public static final String SO_EXPERTISE = "4_WAR_soportlet";
 
 	public static final String SO_INVITE_MEMBERS = "2_WAR_soportlet";
-
-	public static final String SO_NOTIFICATION = "6_WAR_soportlet";
 
 	public static final String SO_SITES = "5_WAR_soportlet";
 

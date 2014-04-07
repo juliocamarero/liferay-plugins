@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -66,7 +66,7 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 	 */
 	public static final String TABLE_NAME = "SyncDLObject";
 	public static final Object[][] TABLE_COLUMNS = {
-			{ "objectId", Types.BIGINT },
+			{ "syncDLObjectId", Types.BIGINT },
 			{ "companyId", Types.BIGINT },
 			{ "createTime", Types.BIGINT },
 			{ "modifiedTime", Types.BIGINT },
@@ -89,7 +89,7 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 			{ "typePK", Types.BIGINT },
 			{ "typeUuid", Types.VARCHAR }
 		};
-	public static final String TABLE_SQL_CREATE = "create table SyncDLObject (objectId LONG not null primary key,companyId LONG,createTime LONG,modifiedTime LONG,repositoryId LONG,parentFolderId LONG,name VARCHAR(255) null,extension VARCHAR(75) null,mimeType VARCHAR(75) null,description STRING null,changeLog VARCHAR(75) null,extraSettings TEXT null,version VARCHAR(75) null,size_ LONG,checksum VARCHAR(75) null,event VARCHAR(75) null,lockExpirationDate DATE null,lockUserId LONG,lockUserName VARCHAR(75) null,type_ VARCHAR(75) null,typePK LONG,typeUuid VARCHAR(75) null)";
+	public static final String TABLE_SQL_CREATE = "create table SyncDLObject (syncDLObjectId LONG not null primary key,companyId LONG,createTime LONG,modifiedTime LONG,repositoryId LONG,parentFolderId LONG,name VARCHAR(255) null,extension VARCHAR(75) null,mimeType VARCHAR(75) null,description STRING null,changeLog VARCHAR(75) null,extraSettings TEXT null,version VARCHAR(75) null,size_ LONG,checksum VARCHAR(75) null,event VARCHAR(75) null,lockExpirationDate DATE null,lockUserId LONG,lockUserName VARCHAR(75) null,type_ VARCHAR(75) null,typePK LONG,typeUuid VARCHAR(75) null)";
 	public static final String TABLE_SQL_DROP = "drop table SyncDLObject";
 	public static final String ORDER_BY_JPQL = " ORDER BY syncDLObject.companyId ASC, syncDLObject.modifiedTime ASC, syncDLObject.repositoryId ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY SyncDLObject.companyId ASC, SyncDLObject.modifiedTime ASC, SyncDLObject.repositoryId ASC";
@@ -108,7 +108,8 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 	public static long COMPANYID_COLUMN_BITMASK = 1L;
 	public static long MODIFIEDTIME_COLUMN_BITMASK = 2L;
 	public static long REPOSITORYID_COLUMN_BITMASK = 4L;
-	public static long TYPEPK_COLUMN_BITMASK = 8L;
+	public static long TYPE_COLUMN_BITMASK = 8L;
+	public static long TYPEPK_COLUMN_BITMASK = 16L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -123,7 +124,7 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 
 		SyncDLObject model = new SyncDLObjectImpl();
 
-		model.setObjectId(soapModel.getObjectId());
+		model.setSyncDLObjectId(soapModel.getSyncDLObjectId());
 		model.setCompanyId(soapModel.getCompanyId());
 		model.setCreateTime(soapModel.getCreateTime());
 		model.setModifiedTime(soapModel.getModifiedTime());
@@ -177,17 +178,17 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 
 	@Override
 	public long getPrimaryKey() {
-		return _objectId;
+		return _syncDLObjectId;
 	}
 
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		setObjectId(primaryKey);
+		setSyncDLObjectId(primaryKey);
 	}
 
 	@Override
 	public Serializable getPrimaryKeyObj() {
-		return _objectId;
+		return _syncDLObjectId;
 	}
 
 	@Override
@@ -209,7 +210,7 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 	public Map<String, Object> getModelAttributes() {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 
-		attributes.put("objectId", getObjectId());
+		attributes.put("syncDLObjectId", getSyncDLObjectId());
 		attributes.put("companyId", getCompanyId());
 		attributes.put("createTime", getCreateTime());
 		attributes.put("modifiedTime", getModifiedTime());
@@ -237,10 +238,10 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 
 	@Override
 	public void setModelAttributes(Map<String, Object> attributes) {
-		Long objectId = (Long)attributes.get("objectId");
+		Long syncDLObjectId = (Long)attributes.get("syncDLObjectId");
 
-		if (objectId != null) {
-			setObjectId(objectId);
+		if (syncDLObjectId != null) {
+			setSyncDLObjectId(syncDLObjectId);
 		}
 
 		Long companyId = (Long)attributes.get("companyId");
@@ -372,13 +373,13 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 
 	@JSON
 	@Override
-	public long getObjectId() {
-		return _objectId;
+	public long getSyncDLObjectId() {
+		return _syncDLObjectId;
 	}
 
 	@Override
-	public void setObjectId(long objectId) {
-		_objectId = objectId;
+	public void setSyncDLObjectId(long syncDLObjectId) {
+		_syncDLObjectId = syncDLObjectId;
 	}
 
 	@JSON
@@ -688,7 +689,17 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 
 	@Override
 	public void setType(String type) {
+		_columnBitmask |= TYPE_COLUMN_BITMASK;
+
+		if (_originalType == null) {
+			_originalType = _type;
+		}
+
 		_type = type;
+	}
+
+	public String getOriginalType() {
+		return GetterUtil.getString(_originalType);
 	}
 
 	@JSON
@@ -761,7 +772,7 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 	public Object clone() {
 		SyncDLObjectImpl syncDLObjectImpl = new SyncDLObjectImpl();
 
-		syncDLObjectImpl.setObjectId(getObjectId());
+		syncDLObjectImpl.setSyncDLObjectId(getSyncDLObjectId());
 		syncDLObjectImpl.setCompanyId(getCompanyId());
 		syncDLObjectImpl.setCreateTime(getCreateTime());
 		syncDLObjectImpl.setModifiedTime(getModifiedTime());
@@ -881,6 +892,8 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 
 		syncDLObjectModelImpl._setOriginalRepositoryId = false;
 
+		syncDLObjectModelImpl._originalType = syncDLObjectModelImpl._type;
+
 		syncDLObjectModelImpl._originalTypePK = syncDLObjectModelImpl._typePK;
 
 		syncDLObjectModelImpl._setOriginalTypePK = false;
@@ -892,7 +905,7 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 	public CacheModel<SyncDLObject> toCacheModel() {
 		SyncDLObjectCacheModel syncDLObjectCacheModel = new SyncDLObjectCacheModel();
 
-		syncDLObjectCacheModel.objectId = getObjectId();
+		syncDLObjectCacheModel.syncDLObjectId = getSyncDLObjectId();
 
 		syncDLObjectCacheModel.companyId = getCompanyId();
 
@@ -1022,8 +1035,8 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 	public String toString() {
 		StringBundler sb = new StringBundler(45);
 
-		sb.append("{objectId=");
-		sb.append(getObjectId());
+		sb.append("{syncDLObjectId=");
+		sb.append(getSyncDLObjectId());
 		sb.append(", companyId=");
 		sb.append(getCompanyId());
 		sb.append(", createTime=");
@@ -1080,8 +1093,8 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 		sb.append("</model-name>");
 
 		sb.append(
-			"<column><column-name>objectId</column-name><column-value><![CDATA[");
-		sb.append(getObjectId());
+			"<column><column-name>syncDLObjectId</column-name><column-value><![CDATA[");
+		sb.append(getSyncDLObjectId());
 		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>companyId</column-name><column-value><![CDATA[");
@@ -1177,7 +1190,7 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			SyncDLObject.class
 		};
-	private long _objectId;
+	private long _syncDLObjectId;
 	private long _companyId;
 	private long _originalCompanyId;
 	private boolean _setOriginalCompanyId;
@@ -1204,6 +1217,7 @@ public class SyncDLObjectModelImpl extends BaseModelImpl<SyncDLObject>
 	private String _lockUserUuid;
 	private String _lockUserName;
 	private String _type;
+	private String _originalType;
 	private long _typePK;
 	private long _originalTypePK;
 	private boolean _setOriginalTypePK;

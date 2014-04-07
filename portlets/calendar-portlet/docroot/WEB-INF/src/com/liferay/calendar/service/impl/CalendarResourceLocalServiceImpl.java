@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -36,7 +36,6 @@ import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.SystemEventConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.util.PortalUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -67,7 +66,9 @@ public class CalendarResourceLocalServiceImpl
 
 		long calendarResourceId = counterLocalService.increment();
 
-		if (classNameId == PortalUtil.getClassNameId(CalendarResource.class)) {
+		if (classNameId ==
+				classNameLocalService.getClassNameId(CalendarResource.class)) {
+
 			classPK = calendarResourceId;
 		}
 

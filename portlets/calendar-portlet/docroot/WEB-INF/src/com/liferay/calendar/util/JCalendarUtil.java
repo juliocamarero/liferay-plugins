@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -49,6 +49,27 @@ public class JCalendarUtil {
 		long endTime = endTimeJCalendar.getTimeInMillis();
 
 		return (endTime - startTime) / DAY;
+	}
+
+	public static int getDSTShift(
+		Calendar calendar1, Calendar calendar2, TimeZone timeZone) {
+
+		calendar1 = JCalendarUtil.getJCalendar(
+			calendar1.getTimeInMillis(), timeZone);
+		calendar2 = JCalendarUtil.getJCalendar(
+			calendar2.getTimeInMillis(), timeZone);
+
+		Calendar sameDayCalendar = JCalendarUtil.getJCalendar(
+			calendar1.get(Calendar.YEAR), calendar1.get(Calendar.MONTH),
+			calendar1.get(Calendar.DAY_OF_MONTH),
+			calendar2.get(Calendar.HOUR_OF_DAY), calendar2.get(Calendar.MINUTE),
+			calendar2.get(Calendar.SECOND), calendar2.get(Calendar.MILLISECOND),
+			timeZone);
+
+		Long shift =
+			calendar1.getTimeInMillis() - sameDayCalendar.getTimeInMillis();
+
+		return shift.intValue();
 	}
 
 	public static Calendar getJCalendar(

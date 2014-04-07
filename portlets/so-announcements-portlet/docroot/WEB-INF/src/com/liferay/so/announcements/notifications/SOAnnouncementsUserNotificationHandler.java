@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -79,12 +79,11 @@ public class SOAnnouncementsUserNotificationHandler
 		sb.append(
 			serviceContext.translate(
 				"x-sent-a-new-announcement",
-				PortalUtil.getUserName(
-					announcementEntry.getUserId(), StringPool.BLANK)));
+				HtmlUtil.escape(
+					PortalUtil.getUserName(
+						announcementEntry.getUserId(), StringPool.BLANK))));
 		sb.append("</div><div class=\"body\">");
-		sb.append(
-			HtmlUtil.escape(
-				StringUtil.shorten(announcementEntry.getContent())));
+		sb.append(StringUtil.shorten(announcementEntry.getContent(), 50));
 		sb.append("</div>");
 
 		return sb.toString();

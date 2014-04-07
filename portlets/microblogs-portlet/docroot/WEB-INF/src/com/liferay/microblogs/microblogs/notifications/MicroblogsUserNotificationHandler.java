@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.model.UserNotificationEvent;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.UserNotificationEventLocalServiceUtil;
@@ -72,8 +73,9 @@ public class MicroblogsUserNotificationHandler
 		sb.append("<div class=\"title\">");
 
 		if (microblogsEntry.getType() == MicroblogsEntryConstants.TYPE_REPLY) {
-			String userFullName = PortalUtil.getUserName(
-				microblogsEntry.getUserId(), StringPool.BLANK);
+			String userFullName = HtmlUtil.escape(
+				PortalUtil.getUserName(
+					microblogsEntry.getUserId(), StringPool.BLANK));
 
 			sb.append(
 				serviceContext.translate(
@@ -81,7 +83,9 @@ public class MicroblogsUserNotificationHandler
 		}
 
 		sb.append("</div><div class=\"body\">");
-		sb.append(HtmlUtil.escape(microblogsEntry.getContent()));
+		sb.append(
+			HtmlUtil.escape(
+				StringUtil.shorten(microblogsEntry.getContent(), 50)));
 		sb.append("</div>");
 
 		return sb.toString();

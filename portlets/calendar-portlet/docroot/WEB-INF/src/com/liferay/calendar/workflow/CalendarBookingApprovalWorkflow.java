@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,7 @@
 
 package com.liferay.calendar.workflow;
 
+import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.security.permission.PermissionChecker;
@@ -33,12 +34,13 @@ public interface CalendarBookingApprovalWorkflow {
 		throws PortalException, SystemException;
 
 	public void invokeTransition(
-			long userId, long calendarBookingId, int status,
+			long userId, CalendarBooking calendarBooking, int status,
 			ServiceContext serviceContext)
 		throws PortalException, SystemException;
 
 	public void startWorkflow(
-			long userId, long calendarBookingId, ServiceContext serviceContext)
+			long userId, CalendarBooking calendarBooking,
+			ServiceContext serviceContext)
 		throws PortalException, SystemException;
 
 }

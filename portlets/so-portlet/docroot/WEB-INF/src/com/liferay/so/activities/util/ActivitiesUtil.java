@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -18,6 +18,8 @@
 package com.liferay.so.activities.util;
 
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
+import com.liferay.portlet.documentlibrary.model.DLFileVersion;
+import com.liferay.portlet.documentlibrary.service.DLFileVersionLocalServiceUtil;
 import com.liferay.portlet.social.model.SocialActivitySet;
 
 /**
@@ -32,11 +34,23 @@ public class ActivitiesUtil {
 		String className = activitySet.getClassName();
 		long classPK = activitySet.getClassPK();
 
-		if (className.equals(DLFileEntry.class.getName()) &&
-			(activitySet.getActivityCount() > 1)) {
+		if (className.equals(DLFileEntry.class.getName())) {
+			if ((activitySet.getActivityCount() > 1) &&
+				(activitySet.getType() ==
+					SocialActivityKeyConstants.DL_ADD_FILE_ENTRY)) {
 
-			className = SocialActivitySet.class.getName();
-			classPK = activitySet.getActivitySetId();
+				className = SocialActivitySet.class.getName();
+				classPK = activitySet.getActivitySetId();
+			}
+			else {
+				className = DLFileVersion.class.getName();
+
+				DLFileVersion dlFileVersion =
+					DLFileVersionLocalServiceUtil.getLatestFileVersion(
+						classPK, false);
+
+				classPK = dlFileVersion.getFileVersionId();
+			}
 		}
 
 		return new Object[] {className, classPK};

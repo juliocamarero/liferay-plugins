@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -402,11 +402,11 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 
 		int activity = TasksActivityKeys.UPDATE_ENTRY;
 
-		if (status == TasksEntryConstants.STATUS_RESOLVED) {
-			activity = TasksActivityKeys.RESOLVE_ENTRY;
-		}
-		else if (status == TasksEntryConstants.STATUS_REOPENED) {
+		if (status == TasksEntryConstants.STATUS_REOPENED) {
 			activity = TasksActivityKeys.REOPEN_ENTRY;
+		}
+		else if (status == TasksEntryConstants.STATUS_RESOLVED) {
+			activity = TasksActivityKeys.RESOLVE_ENTRY;
 		}
 
 		JSONObject extraDataJSONObject = JSONFactoryUtil.createJSONObject();
@@ -423,15 +423,6 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 			TasksEntry tasksEntry, int oldStatus, long oldAssigneeUserId,
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
-
-		int status = tasksEntry.getStatus();
-
-		if ((status != TasksEntryConstants.STATUS_OPEN) &&
-			(status != TasksEntryConstants.STATUS_RESOLVED) &&
-			(status != TasksEntryConstants.STATUS_REOPENED)) {
-
-			return;
-		}
 
 		HashSet<Long> receiverUserIds = new HashSet<Long>(3);
 
@@ -471,7 +462,17 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 					title = "x-assigned-you-a-task";
 				}
 			}
-			else if (status != oldStatus) {
+			else if (tasksEntry.getStatus() != oldStatus) {
+				if ((tasksEntry.getStatus() !=
+						TasksEntryConstants.STATUS_OPEN) &&
+					(tasksEntry.getStatus() !=
+						TasksEntryConstants.STATUS_REOPENED) &&
+					(tasksEntry.getStatus() !=
+						TasksEntryConstants.STATUS_RESOLVED)) {
+
+					return;
+				}
+
 				String statusLabel = TasksEntryConstants.getStatusLabel(
 					tasksEntry.getStatus());
 
@@ -481,12 +482,7 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 				title = "x-modified-the-task";
 			}
 
-			notificationEventJSONObject.put(
-				"title",
-				serviceContext.translate(
-					title,
-					PortalUtil.getUserName(
-						serviceContext.getUserId(), StringPool.BLANK)));
+			notificationEventJSONObject.put("title", title);
 
 			NotificationEvent notificationEvent =
 				NotificationEventFactoryUtil.createNotificationEvent(

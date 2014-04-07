@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,8 +14,6 @@
 
 package com.liferay.sync.service;
 
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.portal.kernel.log.Log;
@@ -25,6 +23,7 @@ import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.BaseModel;
 
+import com.liferay.sync.model.SyncDLFileVersionDiffClp;
 import com.liferay.sync.model.SyncDLObjectClp;
 
 import java.io.ObjectInputStream;
@@ -102,6 +101,10 @@ public class ClpSerializer {
 
 		String oldModelClassName = oldModelClass.getName();
 
+		if (oldModelClassName.equals(SyncDLFileVersionDiffClp.class.getName())) {
+			return translateInputSyncDLFileVersionDiff(oldModel);
+		}
+
 		if (oldModelClassName.equals(SyncDLObjectClp.class.getName())) {
 			return translateInputSyncDLObject(oldModel);
 		}
@@ -119,6 +122,17 @@ public class ClpSerializer {
 		}
 
 		return newList;
+	}
+
+	public static Object translateInputSyncDLFileVersionDiff(
+		BaseModel<?> oldModel) {
+		SyncDLFileVersionDiffClp oldClpModel = (SyncDLFileVersionDiffClp)oldModel;
+
+		BaseModel<?> newModel = oldClpModel.getSyncDLFileVersionDiffRemoteModel();
+
+		newModel.setModelAttributes(oldClpModel.getModelAttributes());
+
+		return newModel;
 	}
 
 	public static Object translateInputSyncDLObject(BaseModel<?> oldModel) {
@@ -147,6 +161,11 @@ public class ClpSerializer {
 		Class<?> oldModelClass = oldModel.getClass();
 
 		String oldModelClassName = oldModelClass.getName();
+
+		if (oldModelClassName.equals(
+					"com.liferay.sync.model.impl.SyncDLFileVersionDiffImpl")) {
+			return translateOutputSyncDLFileVersionDiff(oldModel);
+		}
 
 		if (oldModelClassName.equals(
 					"com.liferay.sync.model.impl.SyncDLObjectImpl")) {
@@ -207,6 +226,13 @@ public class ClpSerializer {
 
 				return throwable;
 			}
+			catch (ClassNotFoundException cnfe) {
+				if (_log.isInfoEnabled()) {
+					_log.info("Do not use reflection to translate throwable");
+				}
+
+				_useReflectionToTranslateThrowable = false;
+			}
 			catch (SecurityException se) {
 				if (_log.isInfoEnabled()) {
 					_log.info("Do not use reflection to translate throwable");
@@ -225,23 +251,34 @@ public class ClpSerializer {
 
 		String className = clazz.getName();
 
-		if (className.equals(PortalException.class.getName())) {
-			return new PortalException();
-		}
-
-		if (className.equals(SystemException.class.getName())) {
-			return new SystemException();
-		}
-
 		if (className.equals("com.liferay.sync.SyncDLObjectChecksumException")) {
-			return new com.liferay.sync.SyncDLObjectChecksumException();
+			return new com.liferay.sync.SyncDLObjectChecksumException(throwable.getMessage(),
+				throwable.getCause());
+		}
+
+		if (className.equals(
+					"com.liferay.sync.NoSuchDLFileVersionDiffException")) {
+			return new com.liferay.sync.NoSuchDLFileVersionDiffException(throwable.getMessage(),
+				throwable.getCause());
 		}
 
 		if (className.equals("com.liferay.sync.NoSuchDLObjectException")) {
-			return new com.liferay.sync.NoSuchDLObjectException();
+			return new com.liferay.sync.NoSuchDLObjectException(throwable.getMessage(),
+				throwable.getCause());
 		}
 
 		return throwable;
+	}
+
+	public static Object translateOutputSyncDLFileVersionDiff(
+		BaseModel<?> oldModel) {
+		SyncDLFileVersionDiffClp newModel = new SyncDLFileVersionDiffClp();
+
+		newModel.setModelAttributes(oldModel.getModelAttributes());
+
+		newModel.setSyncDLFileVersionDiffRemoteModel(oldModel);
+
+		return newModel;
 	}
 
 	public static Object translateOutputSyncDLObject(BaseModel<?> oldModel) {

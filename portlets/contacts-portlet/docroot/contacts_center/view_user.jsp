@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -254,7 +254,7 @@ request.setAttribute("view_user.jsp-user", user2);
 													<portlet:param name="privateLayout" value="<%= String.valueOf(!curGroup.hasPublicLayouts()) %>" />
 												</liferay-portlet:actionURL>
 
-												<li class="user-information-sites"><a href="<%= siteURL %>"><%= HtmlUtil.escape(curGroup.getDescriptiveName(locale)) %></a></li>
+												<li class="user-information-sites <%= SocialOfficeServiceUtil.isSocialOfficeGroup(curGroup.getGroupId()) ? "social-office-enabled" : "social-office-disabled" %>"><a href="<%= siteURL %>"><%= HtmlUtil.escape(curGroup.getDescriptiveName(locale)) %></a></li>
 
 											<%
 											}
@@ -263,7 +263,7 @@ request.setAttribute("view_user.jsp-user", user2);
 										</c:when>
 										<c:otherwise>
 											<div class="empty">
-												<liferay-ui:message arguments="<%= HtmlUtil.escape(PortalUtil.getUserName(user2.getUserId(), group.getDescriptiveName(locale))) %>" key="x-does-not-belong-to-any-sites" />
+												<liferay-ui:message arguments="<%= HtmlUtil.escape(PortalUtil.getUserName(user2.getUserId(), group.getDescriptiveName(locale))) %>" key="x-does-not-belong-to-any-sites" translateArguments="<%= false %>" />
 											</div>
 										</c:otherwise>
 									</c:choose>
@@ -316,7 +316,7 @@ request.setAttribute("view_user.jsp-user", user2);
 										Group group = themeDisplay.getScopeGroup();
 										%>
 
-										<liferay-ui:message arguments="<%= HtmlUtil.escape(PortalUtil.getUserName(user2.getUserId(), group.getDescriptiveName(locale))) %>" key="x-does-not-have-any-tags" />
+										<liferay-ui:message arguments="<%= HtmlUtil.escape(PortalUtil.getUserName(user2.getUserId(), group.getDescriptiveName(locale))) %>" key="x-does-not-have-any-tags" translateArguments="<%= false %>" />
 									</c:otherwise>
 								</c:choose>
 							</c:if>
@@ -382,7 +382,7 @@ request.setAttribute("view_user.jsp-user", user2);
 							destroyOnClose: true,
 							modal: true,
 							resizable: false,
-							width: 500
+							width: 800
 						},
 						id: '<portlet:namespace />Dialog',
 						title: node.getAttribute('data-title'),

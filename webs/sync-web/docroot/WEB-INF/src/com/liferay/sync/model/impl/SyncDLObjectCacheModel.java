@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -40,8 +40,8 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 	public String toString() {
 		StringBundler sb = new StringBundler(45);
 
-		sb.append("{objectId=");
-		sb.append(objectId);
+		sb.append("{syncDLObjectId=");
+		sb.append(syncDLObjectId);
 		sb.append(", companyId=");
 		sb.append(companyId);
 		sb.append(", createTime=");
@@ -93,7 +93,7 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 	public SyncDLObject toEntityModel() {
 		SyncDLObjectImpl syncDLObjectImpl = new SyncDLObjectImpl();
 
-		syncDLObjectImpl.setObjectId(objectId);
+		syncDLObjectImpl.setSyncDLObjectId(syncDLObjectId);
 		syncDLObjectImpl.setCompanyId(companyId);
 		syncDLObjectImpl.setCreateTime(createTime);
 		syncDLObjectImpl.setModifiedTime(modifiedTime);
@@ -204,7 +204,7 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 
 	@Override
 	public void readExternal(ObjectInput objectInput) throws IOException {
-		objectId = objectInput.readLong();
+		syncDLObjectId = objectInput.readLong();
 		companyId = objectInput.readLong();
 		createTime = objectInput.readLong();
 		modifiedTime = objectInput.readLong();
@@ -231,7 +231,7 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 	@Override
 	public void writeExternal(ObjectOutput objectOutput)
 		throws IOException {
-		objectOutput.writeLong(objectId);
+		objectOutput.writeLong(syncDLObjectId);
 		objectOutput.writeLong(companyId);
 		objectOutput.writeLong(createTime);
 		objectOutput.writeLong(modifiedTime);
@@ -330,7 +330,7 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 		}
 	}
 
-	public long objectId;
+	public long syncDLObjectId;
 	public long companyId;
 	public long createTime;
 	public long modifiedTime;

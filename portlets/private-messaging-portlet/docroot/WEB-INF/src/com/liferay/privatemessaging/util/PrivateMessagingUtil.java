@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -98,6 +98,7 @@ public class PrivateMessagingUtil {
 				user.getCompanyId(), RoleConstants.SOCIAL_OFFICE_USER);
 
 			if (role != null) {
+				params.put("inherit", Boolean.TRUE);
 				params.put("usersRoles", new Long(role.getRoleId()));
 			}
 		}

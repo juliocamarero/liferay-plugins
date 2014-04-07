@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -15,6 +15,7 @@
 package com.liferay.opensocial.messaging;
 
 import com.liferay.opensocial.model.Gadget;
+import com.liferay.opensocial.service.ClpSerializer;
 import com.liferay.opensocial.service.GadgetLocalServiceUtil;
 import com.liferay.opensocial.shindig.servlet.GuiceServletContextListener;
 import com.liferay.opensocial.shindig.util.ShindigUtil;
@@ -94,7 +95,8 @@ public class OpenSocialHotDeployMessageListener
 
 		try {
 			currentThread.setContextClassLoader(
-				PortletClassLoaderUtil.getClassLoader());
+				PortletClassLoaderUtil.getClassLoader(
+					ClpSerializer.getServletContextName()));
 
 			_guiceServletContextListener.contextInitialized(
 				GuiceServletContextListener.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -131,6 +131,15 @@ public class GadgetLocalServiceImpl extends GadgetLocalServiceBaseImpl {
 		Gadget gadget = gadgetPersistence.findByPrimaryKey(gadgetId);
 
 		return deleteGadget(gadget);
+	}
+
+	@Override
+	public void deleteGadgets(long companyId) throws SystemException {
+		List<Gadget> gadgets = gadgetPersistence.findByCompanyId(companyId);
+
+		for (Gadget gadget : gadgets) {
+			gadgetLocalService.deleteGadget(gadget);
+		}
 	}
 
 	@Clusterable

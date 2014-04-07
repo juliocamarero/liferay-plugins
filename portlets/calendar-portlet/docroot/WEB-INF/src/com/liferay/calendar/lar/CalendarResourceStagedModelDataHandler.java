@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -25,15 +25,19 @@ import com.liferay.portal.kernel.lar.ExportImportPathUtil;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.User;
+import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -129,10 +133,12 @@ public class CalendarResourceStagedModelDataHandler
 		StagedModelDataHandlerUtil.importReferenceStagedModels(
 			portletDataContext, calendarResource, Calendar.class);
 
+		long classPK = getClassPK(portletDataContext, calendarResource, userId);
+		Map<Locale, String> calendarResourceNameMap =
+			getCalendarResourceNameMap(portletDataContext, calendarResource);
+
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
 			calendarResource);
-
-		long classPK = getClassPK(portletDataContext, calendarResource, userId);
 
 		CalendarResource importedCalendarResource = null;
 
@@ -157,8 +163,7 @@ public class CalendarResourceStagedModelDataHandler
 						userId, portletDataContext.getScopeGroupId(),
 						calendarResource.getClassNameId(), classPK,
 						calendarResource.getClassUuid(),
-						calendarResource.getCode(),
-						calendarResource.getNameMap(),
+						calendarResource.getCode(), calendarResourceNameMap,
 						calendarResource.getDescriptionMap(),
 						calendarResource.isActive(), serviceContext);
 			}
@@ -177,7 +182,7 @@ public class CalendarResourceStagedModelDataHandler
 					userId, portletDataContext.getScopeGroupId(),
 					calendarResource.getClassNameId(), classPK,
 					calendarResource.getClassUuid(), calendarResource.getCode(),
-					calendarResource.getNameMap(),
+					calendarResourceNameMap,
 					calendarResource.getDescriptionMap(),
 					calendarResource.isActive(), serviceContext);
 		}
@@ -187,6 +192,35 @@ public class CalendarResourceStagedModelDataHandler
 
 		portletDataContext.importClassedModel(
 			calendarResource, importedCalendarResource);
+	}
+
+	protected Map<Locale, String> getCalendarResourceNameMap(
+			PortletDataContext portletDataContext,
+			CalendarResource calendarResource)
+		throws Exception {
+
+		String calendarResourceName = calendarResource.getName(
+			LocaleUtil.getDefault());
+
+		Group sourceGroup = GroupLocalServiceUtil.fetchGroup(
+			portletDataContext.getSourceGroupId());
+
+		if ((sourceGroup == null) ||
+			!calendarResourceName.equals(sourceGroup.getName())) {
+
+			return calendarResource.getNameMap();
+		}
+
+		Map<Locale, String> calendarResourceNameMap =
+			new HashMap<Locale, String>();
+
+		Group scopeGroup = GroupLocalServiceUtil.getGroup(
+			portletDataContext.getScopeGroupId());
+
+		calendarResourceNameMap.put(
+			LocaleUtil.getDefault(), scopeGroup.getName());
+
+		return calendarResourceNameMap;
 	}
 
 	protected long getClassPK(

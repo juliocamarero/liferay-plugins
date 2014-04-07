@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -37,10 +37,10 @@
 
 		<div class="signed-in-as portlet-login">
 			<div class="profile-image">
-				<a href="<%= portletURL %>"><img src="<%= user.getPortraitURL(themeDisplay) %>" alt="<%= user.getFullName() %>"></a>
+				<a href="<%= portletURL %>"><img src="<%= user.getPortraitURL(themeDisplay) %>" alt="<%= HtmlUtil.escape(user.getFullName()) %>"></a>
 			</div>
 
-			<a class="user-name aui-state-default aui-buttonitem-content" href="<%= portletURL %>"><span class="aui-button-label"><liferay-ui:message key="dashboard" /></span></a>
+			<a class="user-name aui-state-default aui-buttonitem-content" href="<%= portletURL %>"><span class="aui-button-label"><liferay-ui:message key="my-dashboard" /></span></a>
 		</div>
 	</c:when>
 	<c:otherwise>

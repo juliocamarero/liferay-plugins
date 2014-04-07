@@ -10,6 +10,21 @@ $default-border-color: #E7E7E7;
 		border-bottom: 1px solid $default-border-color;
 		min-height: 45px;
 		padding: 1em;
+
+		.control-group {
+			margin-bottom: 0;
+			margin-left: 35px;
+			padding: 0 5px;
+
+			input {
+				display: block;
+				margin-bottom: 0;
+				padding-left: 0;
+				padding-right: 0;
+				text-indent: 0.5em;
+				width: 100%;
+			}
+		}
 	}
 
 	.user-portrait {
@@ -32,6 +47,7 @@ $default-border-color: #E7E7E7;
 	.activity-data {
 		margin-left: 55px;
 		overflow: hidden;
+		word-wrap: break-word;
 	}
 
 	.activity-header {
@@ -57,6 +73,9 @@ $default-border-color: #E7E7E7;
 
 	.activity-body, .grouped-activity-body-container {
 		border: 1px solid $default-border-color;
+
+		@include hyphenation;
+
 		margin: 0.8em 0 0;
 
 		span {
@@ -99,13 +118,17 @@ $default-border-color: #E7E7E7;
 			position: relative;
 
 			.document-thumbnail {
+				left: 0;
 				overflow: hidden;
 				padding-right: 0;
 				position: absolute;
 				width: 75px;
 
 				img {
+					display: block;
 					height: 75px;
+					margin: auto;
+					max-width: none;
 				}
 			}
 
@@ -129,7 +152,7 @@ $default-border-color: #E7E7E7;
 	}
 
 	.grouped-activity-body-container {
-		max-height: 93px;
+		max-height: 107px;
 		overflow: hidden;
 
 		.activity-subentry {
@@ -203,14 +226,17 @@ $default-border-color: #E7E7E7;
 	}
 
 	.activity-footer-toolbar {
-		background: #EAEAEA;
-		padding: 0.5em 1em;
+		background: #EAEAEA;;
+		padding: 0 1em;
 
 		.action {
 			border-left: 1px solid #2571AD;
 			display: inline-block;
 			height: 16px;
-			padding: 0 0.5em 0 0.6em;
+			line-height: 16px;
+			margin: .5em 0;
+			padding: 0 .6em 0 .8em;
+			vertical-align: middle;
 
 			&:first-child {
 				border-left-width: 0;
@@ -238,11 +264,29 @@ $default-border-color: #E7E7E7;
 		}
 	}
 
+	.comments-container {
+		.user-portrait {
+			left: 2px;
+			position: absolute;
+		}
+
+		.control-group {
+			margin: 0 2px 0 34px;
+			padding: 0;
+
+			.comment-form {
+				padding: 5px 0;
+			}
+		}
+	}
+
 	.comment-entry, .comments-container .form {
 		background: #EAEAEA;
 		border-top: 1px solid #FFF;
+		margin-bottom: 0;
 		overflow: hidden;
 		padding: 2px;
+		position: relative;
 	}
 
 	.comment-entry {
@@ -320,11 +364,11 @@ $default-border-color: #E7E7E7;
 	}
 
 	.loading-bar.loaded {
-		visibility: hidden;
+		display: none;
 	}
 
-	.no-activities {
-		padding: 5px;
+	.manual-loader, .no-activities {
+		padding: 10px;
 		text-align: center;
 	}
 }
@@ -333,7 +377,7 @@ $default-border-color: #E7E7E7;
 
 .ie7 {
 	.so-portlet-activities .grouped-activity-body-container {
-		height: 93px;
+		height: 107px;
 		max-height: none;
 
 		.activity-subentry-title {

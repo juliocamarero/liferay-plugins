@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -128,6 +128,30 @@ public class CalendarResourceUtil {
 		}
 
 		return orderByComparator;
+	}
+
+	public static CalendarResource getScopedGroupCalendarResource(
+			long groupId, ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		Group group = GroupLocalServiceUtil.getGroup(groupId);
+
+		if (group.isUser()) {
+			return getUserCalendarResource(group.getClassPK(), serviceContext);
+		}
+		else {
+			return getGroupCalendarResource(groupId, serviceContext);
+		}
+	}
+
+	public static CalendarResource getScopedGroupCalendarResource(
+			PortletRequest portletRequest, long groupId)
+		throws PortalException, SystemException {
+
+		ServiceContext serviceContext = ServiceContextFactory.getInstance(
+			portletRequest);
+
+		return getScopedGroupCalendarResource(groupId, serviceContext);
 	}
 
 	public static CalendarResource getUserCalendarResource(

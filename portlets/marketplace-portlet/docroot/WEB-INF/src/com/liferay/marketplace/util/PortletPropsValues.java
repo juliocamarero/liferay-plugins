@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -26,7 +26,9 @@ public class PortletPropsValues {
 		GetterUtil.getBoolean(
 			PortletProps.get(PortletPropsKeys.MARKETPLACE_STORE_ENABLED), true);
 
-	public static final String MARKETPLACE_URL_LOGOUT = PortletProps.get(
-		PortletPropsKeys.MARKETPLACE_URL_LOGOUT);
+	public static final String MARKETPLACE_URL =
+		GetterUtil.getString(
+			PortletProps.get(PortletPropsKeys.MARKETPLACE_URL),
+			"https://mp.liferay.com");
 
 }

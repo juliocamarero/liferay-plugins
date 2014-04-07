@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -48,7 +48,7 @@ public class CalendarBookingFinderImpl
 			".countByC_G_C_C_P_T_D_L_S_E_S";
 
 	public static final String FIND_BY_FUTURE_REMINDERS =
-	CalendarBookingFinder.class.getName() + ".findByFutureReminders";
+		CalendarBookingFinder.class.getName() + ".findByFutureReminders";
 
 	public static final String FIND_BY_C_G_C_C_P_T_D_L_S_E_S =
 		CalendarBookingFinder.class.getName() +
@@ -583,7 +583,7 @@ public class CalendarBookingFinderImpl
 		}
 
 		StringBundler sb = new StringBundler(
-				calendarResourceIds.length * 2 + 1);
+			calendarResourceIds.length * 2 + 1);
 
 		sb.append(" (");
 
@@ -637,7 +637,7 @@ public class CalendarBookingFinderImpl
 
 		StringBundler sb = new StringBundler(statuses.length * 2 + 1);
 
-		sb.append(" (");
+		sb.append("AND (");
 
 		for (int i = 0; i < statuses.length; i++) {
 			sb.append("status = ? ");

@@ -18,10 +18,28 @@ $defaultTextColor: #202020;
 		margin: 1em 0;
 
 		li {
-			background: url(@portal_ctx@/html/icons/sites_admin.png) no-repeat 10px 50%;
+			background: no-repeat 10px 50%;
 			border: 1px solid #E8EFF4;
 			margin: 4px;
 			padding: 3px 10px 3px 30px;
+			position: relative;
+
+			&:before {
+				-webkit-font-smoothing: antialiased;
+				color: #DDD;
+				content: "\f0ac";
+				font-family: 'fontawesome-alloy';
+				font-size: 18px;
+				font-style: normal;
+				font-variant: normal;
+				font-weight: normal;
+				left: 10px;
+				line-height: 1;
+				position: absolute;
+				speak: none;
+				text-transform: none;
+				top: 7px;
+			}
 
 			span {
 				display: block;
@@ -45,6 +63,16 @@ $defaultTextColor: #202020;
 			.favorite a {
 				background: url(../images/star_empty.png) no-repeat 0 50%;
 				float: right;
+
+				&.disabled {
+					filter: alpha(opacity=20);
+					height: 16px;
+					margin: 10px 5px;
+					opacity: 0.2;
+					position: relative;
+					width: 16px;
+					z-index: 1;
+				}
 			}
 
 			.unfavorite a {
@@ -73,6 +101,10 @@ $defaultTextColor: #202020;
 					background-color: transparent;
 					border: 1px solid #E8EFF4;
 				}
+
+				&:before {
+					display: none;
+				}
 			}
 
 			&.more {
@@ -84,10 +116,18 @@ $defaultTextColor: #202020;
 					display: block;
 					padding: 0.5em 33px;
 				}
+
+				&:before {
+					display: none;
+				}
 			}
 
 			&.social-office-enabled {
 				background-image: url(@portal_ctx@/html/icons/social_office.png);
+
+				&:before {
+					display: none;
+				}
 			}
 		}
 
@@ -149,6 +189,14 @@ $defaultTextColor: #202020;
 			.favorite a {
 				background: url(../images/star_empty.png) no-repeat 0 50%;
 				float: right;
+
+				&.disabled {
+					filter: alpha(opacity=20);
+					height: 16px;
+					margin: 0 5px;
+					opacity: 0.2;
+					width: 16px;
+				}
 			}
 
 			.unfavorite a {
@@ -166,10 +214,27 @@ $defaultTextColor: #202020;
 
 			.leave a {
 				background: url(@theme_image_path@/common/leave.png) no-repeat 0 50%;
+
+				&.disabled {
+					filter: alpha(opacity=20);
+					height: 16px;
+					margin: 0 5px;
+					opacity: 0.2;
+					width: 16px;
+				}
 			}
 
 			.delete a {
 				background: url(@theme_image_path@/common/delete.png) no-repeat 0 50%;
+
+				&.disabled {
+					filter: alpha(opacity=20);
+					float: right;
+					height: 16px;
+					margin: 0 5px;
+					opacity: 0.2;
+					width: 16px;
+				}
 			}
 
 			.description {
@@ -327,14 +392,11 @@ $defaultTextColor: #202020;
 .portlet-dockbar {
 	.so-portlet-sites {
 		display: block;
-		margin-left: -300px;
-		max-width: 450px;
-		min-width: 350px;
 		position: relative;
 		right: 0;
 		top: 0;
 		vertical-align: middle;
-		width: 350px;
+		width: 100px;
 
 		.portlet {
 			background: transparent;
@@ -349,7 +411,6 @@ $defaultTextColor: #202020;
 		}
 
 		.portlet-body {
-			left: 0;
 			margin: -1.125em 0 0;
 
 			@include menu-mix;
@@ -358,6 +419,7 @@ $defaultTextColor: #202020;
 			position: absolute;
 			right: 0;
 			visibility: hidden;
+			width: 100px;
 			z-index: 1;
 
 			a, a:hover, li.has-menu:hover a {
@@ -381,12 +443,13 @@ $defaultTextColor: #202020;
 			position: absolute;
 			right: 0;
 			text-align: right;
-			top: 0.65em;
+			top: 0.6em;
 			visibility: visible;
 			width: auto;
 
 			.search-input {
 				background: #FFF;
+				border: 1px solid #1C2125;
 
 				@include border-radius(20px);
 				@include box-shadow(0 1px 2px rgba(0,0,0, 0.4) inset);
@@ -395,13 +458,13 @@ $defaultTextColor: #202020;
 				cursor: pointer;
 				display: block;
 				float: right;
-
-				@include transition-duration(0.5s);
-				@include transition-property(width);
-
 				text-align: left;
 				text-indent: 0.5em;
-				width: 20%;
+				width: 75%;
+
+				&:hover {
+					border-color: #2571AD;
+				}
 			}
 
 			input[type=image] {
@@ -417,6 +480,10 @@ $defaultTextColor: #202020;
 			border-top: 1px solid rgba(0,0,0, 0.1);
 			float: none;
 			padding: 1em;
+
+			.control-group, select {
+				margin-bottom: 0;
+			}
 
 			select {
 				display: block;
@@ -485,31 +552,40 @@ $defaultTextColor: #202020;
 		.control-container {
 			.toolbar-content {
 				display: block;
+				margin-top: 0;
 			}
 
 			button {
+				margin-top: 0;
 				width: 50%;
 			}
 		}
 	}
 
-	.search-focus .so-portlet-sites .portlet-body {
-		visibility: visible;
-		z-index: 3;
+	.search-focus .so-portlet-sites {
+		width: 350px;
 
-		.search {
-			width: auto;
+		.portlet-body {
+			position: absolute;
+			visibility: visible;
+			width: 100%;
+			z-index: 3;
 
-			.search-input {
-				background: #FFF;
-				border: 1px solid $defaultBorderColor;
+			.search {
+				top: .7em;
+				width: auto;
 
-				@include box-shadow(0 1px 2px rgba(0,0,0, 0) inset);
+				.search-input {
+					background: #FFF;
+					border: 1px solid $defaultBorderColor;
 
-				color: $defaultTextColor;
-				cursor: text;
-				text-shadow: none;
-				width: 97%;
+					@include box-shadow(0 1px 2px rgba(0,0,0, 0) inset);
+
+					color: $defaultTextColor;
+					cursor: text;
+					text-shadow: none;
+					width: 97%;
+				}
 			}
 		}
 
@@ -520,22 +596,31 @@ $defaultTextColor: #202020;
 
 	.go-to {
 		display: block;
-		padding-left: 50px;
+		height: 43px;
 		width: auto;
-
-		.so-portlet-sites {
-			top: -5px;
-		}
 	}
 }
 
-.dockbar-split {
-	.go-to {
-		height: 44px;
+.ie7 .portlet-dockbar .so-portlet-sites {
+	.site-list-container {
+		.member {
+			height: 32px;
+			position: relative;
+		}
 
-		.so-portlet-sites {
+		.favorite, .name {
+			position: absolute;
 			top: 0;
 		}
+
+		.name a {
+			width: 280px;
+		}
+	}
+
+	.toolbar-content button {
+		display: inline;
+		width: 49%;
 	}
 }
 

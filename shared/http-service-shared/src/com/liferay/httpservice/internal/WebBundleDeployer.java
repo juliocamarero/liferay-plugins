@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -96,6 +96,8 @@ public class WebBundleDeployer {
 					_webExtenderServlet.getServletContext());
 
 			bundleServletContext.open();
+
+			ServletContextPool.put(servletContextName, bundleServletContext);
 		}
 		catch (Exception e) {
 			EventUtil.sendEvent(bundle, EventUtil.FAILED, e, false);
@@ -119,6 +121,8 @@ public class WebBundleDeployer {
 		if (bundleServletContext == null) {
 			EventUtil.sendEvent(bundle, EventUtil.UNDEPLOYED, null, false);
 
+			ServletContextPool.remove(servletContextName);
+
 			return;
 		}
 
@@ -130,6 +134,8 @@ public class WebBundleDeployer {
 		}
 
 		EventUtil.sendEvent(bundle, EventUtil.UNDEPLOYED, null, false);
+
+		ServletContextPool.remove(servletContextName);
 
 		handleCollidedWABs(bundle, servletContextName);
 	}

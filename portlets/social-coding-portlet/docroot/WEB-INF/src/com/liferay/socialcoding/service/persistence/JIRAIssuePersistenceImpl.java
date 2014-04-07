@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -2011,7 +2011,8 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		if ((list != null) && !list.isEmpty()) {
 			for (JIRAIssue jiraIssue : list) {
-				if (!Validator.equals(modifiedDate, jiraIssue.getModifiedDate()) ||
+				if ((modifiedDate.getTime() >= jiraIssue.getModifiedDate()
+															.getTime()) ||
 						(projectId != jiraIssue.getProjectId())) {
 					list = null;
 
@@ -3728,7 +3729,8 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		if ((list != null) && !list.isEmpty()) {
 			for (JIRAIssue jiraIssue : list) {
-				if (!Validator.equals(modifiedDate, jiraIssue.getModifiedDate()) ||
+				if ((modifiedDate.getTime() >= jiraIssue.getModifiedDate()
+															.getTime()) ||
 						(projectId != jiraIssue.getProjectId()) ||
 						!Validator.equals(reporterJiraUserId,
 							jiraIssue.getReporterJiraUserId())) {
@@ -4367,7 +4369,8 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		if ((list != null) && !list.isEmpty()) {
 			for (JIRAIssue jiraIssue : list) {
-				if (!Validator.equals(modifiedDate, jiraIssue.getModifiedDate()) ||
+				if ((modifiedDate.getTime() >= jiraIssue.getModifiedDate()
+															.getTime()) ||
 						(projectId != jiraIssue.getProjectId()) ||
 						!Validator.equals(assigneeJiraUserId,
 							jiraIssue.getAssigneeJiraUserId())) {

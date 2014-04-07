@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -17,6 +17,7 @@
 
 package com.liferay.microblogs.service.persistence;
 
+import com.liferay.compat.portal.kernel.util.PortalClassInvoker;
 import com.liferay.microblogs.model.MicroblogsEntry;
 import com.liferay.microblogs.model.MicroblogsEntryConstants;
 import com.liferay.microblogs.model.impl.MicroblogsEntryImpl;
@@ -30,7 +31,6 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ClassResolverUtil;
 import com.liferay.portal.kernel.util.MethodKey;
-import com.liferay.portal.kernel.util.PortalClassInvoker;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.util.dao.orm.CustomSQLUtil;
@@ -52,7 +52,7 @@ public class MicroblogsEntryFinderImpl
 		MicroblogsEntryFinder.class.getName() + ".countByU_MU";
 
 	public static final String COUNT_BY_U_ATN =
-	MicroblogsEntryFinder.class.getName() + ".countByU_ATN";
+		MicroblogsEntryFinder.class.getName() + ".countByU_ATN";
 
 	public static final String COUNT_BY_U_T_MU =
 		MicroblogsEntryFinder.class.getName() + ".countByU_T_MU";
@@ -64,7 +64,7 @@ public class MicroblogsEntryFinderImpl
 		MicroblogsEntryFinder.class.getName() + ".findByU_MU";
 
 	public static final String FIND_BY_U_ATN =
-	MicroblogsEntryFinder.class.getName() + ".findByU_ATN";
+		MicroblogsEntryFinder.class.getName() + ".findByU_ATN";
 
 	public static final String FIND_BY_U_T_MU =
 		MicroblogsEntryFinder.class.getName() + ".findByU_T_MU";
@@ -77,7 +77,7 @@ public class MicroblogsEntryFinderImpl
 				"get", String.class);
 
 			_joinBySocialRelationSQL = (String)PortalClassInvoker.invoke(
-				true, methodKey,
+				methodKey,
 				"com.liferay.portal.service.persistence." +
 					"UserFinder.joinBySocialRelation");
 		}

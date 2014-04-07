@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -55,10 +55,22 @@ public class EmailNotificationSender implements NotificationSender {
 				CalendarNotificationTemplateConstants.PROPERTY_FROM_NAME,
 				defaultSenderUser.getFullName());
 
+			notificationTemplateContext.setFromAddress(fromAddress);
+			notificationTemplateContext.setFromName(fromName);
+			notificationTemplateContext.setToAddress(
+				notificationRecipient.getEmailAddress());
+			notificationTemplateContext.setToName(
+				notificationRecipient.getName());
+
+			String subject = NotificationTemplateRenderer.render(
+				notificationTemplateContext, NotificationField.SUBJECT);
+			String body = NotificationTemplateRenderer.render(
+				notificationTemplateContext, NotificationField.BODY);
+
 			sendNotification(
-				fromAddress, fromName, notificationRecipient,
-				notificationTemplateContext.getSubject(),
-				notificationTemplateContext.getBody());
+				notificationTemplateContext.getFromAddress(),
+				notificationTemplateContext.getFromName(),
+				notificationRecipient, subject, body);
 		}
 		catch (Exception e) {
 			throw new NotificationSenderException(e);

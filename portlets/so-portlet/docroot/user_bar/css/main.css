@@ -1,344 +1,480 @@
 @import "compass/css3";
 
-$blue: #0E50A9;
-$defaultBorderColor: #C9C9C9;
+$defaultBackgroundColor: #252D31;
 $defaultTextColor: #202020;
 
-@mixin default-border {
-	border: 1px solid $defaultBorderColor;
+@mixin hover-transition {
+	@include transition-duration(0.5s);
+	@include transition-property(background-color);
 }
 
-@mixin clear-both {
-	&:after {
-		clear: both;
-		content: "";
-		display: block;
-	}
+@mixin primary-hover-state {
+	background-color: #181B1D;
+	background-color: rgba(0,0,0, 0.48);
 }
 
-@mixin menu-mix {
-	background-color: #FFF;
-
-	@include border-radius(4px);
-	@include box-shadow(0 1px 3px rgba(0,0,0, 0.78));
-}
-
-body.show-dockbar, html > body.lfr-dockbar-pinned, body.controls-visible {
-	.portlet-dockbar {
-		overflow: visible;
-	}
-
-	#dockbar {
-		@include opacity(1);
-
-		margin-top: 0;
-	}
-}
-
-.aui .so-portlet-user-bar {
-	background: #252D31 url(../images/user_bar_default_bg.png) 0 0 repeat-x;
-
-	@include background-image(linear-gradient(bottom, #252D31 0, #32363A 100%));
-
-	font: 14px/2em 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	font-weight: 200;
-	padding-right: 30%;
-	position: relative;
-	z-index: 301;
-
-	&, a {
-		&, &:hover, &:visited, &:active {
-			color: #FFF;
-			font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-			font-size: 14px;
+.aui {
+	.so-portlet-user-bar, .portlet-dockbar {
+		&, a {
+			font: 14px/1em 'Helvetica Neue', Helvetica, Arial, sans-serif;
 			font-weight: 400;
-			line-height: 2em;
-			text-decoration: none;
 		}
+	}
+}
+
+/* ---------- User bar ---------- */
+
+.so-portlet-user-bar {
+	background: $defaultBackgroundColor url(../images/user_bar_default_bg.png) 0 0 repeat-x;
+
+	@include background-image(linear-gradient(bottom, $defaultBackgroundColor 0, #32363A 100%));
+
+	position: relative;
+	width: 100%;
+
+	&, .so-logo, > nav {
+		float: left;
 	}
 
 	.so-logo {
-		display: inline-block;
-		padding: 6px 3px 6px 8px;
-		vertical-align: middle;
+		@include hover-transition;
 
-		&, &:hover {
-			background-color: transparent;
+		left: 0;
+		padding: .42em .5em .42em .6em;
+		position: absolute;
+		top: 0;
 
-			@include box-shadow(none);
+
+		&:hover {
+			@include primary-hover-state;
 		}
 	}
 
 	.dashboard-nav {
-		font-size: 0;
-		position: relative;
-		width: 100%;
-		z-index: 2;
+		margin: 0;
+		overflow: hidden;
+		padding: 0 25em 0 3.3em;
+
+		&, a {
+			&, &:hover, &:visited, &:active {
+				color: #FFF;
+				text-decoration: none;
+			}
+		}
 
 		li {
-			font-size: 14px;
+			display: block;
+			float: left;
+			list-style: none;
+
+			a {
+				display: block;
+
+				@include hover-transition;
+
+				height: 2em;
+				line-height: 2em;
+				padding: .58em .8em;
+
+
+				&:hover, &.selected {
+					@include primary-hover-state;
+				}
+			}
 		}
 	}
 
-	a {
-		color: #FFF;
-		background-color: rgba(0,0,0, 0);
-
-		font-size: 1em;
-		padding: 0.58em 0.8em;
-
-		@include transition-duration(0.5s);
-		@include transition-property(background-color);
-	}
-
-	li.selected a, a:hover, .hover a {
-		background-color: rgba(0,0,0, 0.48);
-
-		text-decoration: none;
-	}
-
-	ul, li {
-		display: inline-block;
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		vertical-align: middle;
-	}
-
-	li a {
-		display: block;
-	}
-
-	nav {
-		display: inline-block;
-		width: 90%;
-	}
-
-	.has-submenu {
-		position: relative;
+	&.portlet-static {
+		display: none;
 	}
 }
 
-.aui .dockbar-split .portlet-dockbar .dockbar .navbar-inner .nav-account-controls {
-	background-color: transparent;
-	background-image: none;
-	border-top-color: transparent;
-	right: 0;
-}
+/* ---------- Dockbar ---------- */
 
-html.aui {
-	.dockbar,
-	.dockbar-split .dockbar,
-	.dockbar.navbar-static-top .dockbar {
-		.navbar-inner, .container {
-			width: auto;
+.aui .portlet-dockbar {
+	z-index: 301;
+
+	.dockbar {
+		.my-sites.dropdown {
+			display: none;
 		}
 
 		.navbar-inner .container {
-			.nav-account-controls {
-				bottom: 100%;
-				left: auto;
-				position: absolute;
-				right: 0;
-				z-index: 301;
+			.collapse .nav-account-controls {
+				border-top-width: 0;
+				margin: 0;
+				position: static;
+				right: 0px;
 
-				.divider-vertical {
-					display: none;
-				}
+				> li {
+					background: $defaultBackgroundColor url(../images/user_bar_default_bg.png) 0 0 repeat-x;
 
-				li.dropdown {
-					> .dropdown-toggle {
-						background-color: rgba(0,0,0, 0);
+					@include background-image(linear-gradient(bottom, $defaultBackgroundColor 0, #32363A 100%));
 
-						@include transition-duration(0.5s);
-						@include transition-property(background-color);
+					> a {
+						@include hover-transition;
+
+						line-height: 1.7em;
+						margin: 0;
+						padding: .7em;
+
+						> i {
+							background-color: transparent;
+							margin: 3px 0 0;
+							padding: 0;
+						}
 					}
 
-					&.open > .dropdown-toggle {
-						background-color: rgba(0,0,0, 0.48);
-					}
-				}
-
-				&.nav > li > a {
-					margin: 0 0;
-					padding-bottom: 0.45em;
-					padding-top: 0.45em;
-				}
-
-				.user-avatar {
-					.nav-item-label {
-						padding-left: 20px;
-						position: relative;
-					}
-
-					img {
-						border-width: 0;
-
-						@include border-radius(0);
-
-						clip: rect(0px, 20px, 20px, 0px);
-						left: -6px;
-						position: absolute;
-						top: 0;
+					> a:hover, > a.selected, &.open > a {
+						@include primary-hover-state;
 					}
 				}
 			}
 		}
 
-		.navbar-inner .nav-account-controls > li {
-			background-color: transparent;
-			background-image: none;
+		.go-to {
+			position: relative;
+		}
 
-			> a {
+		.user-notifications-count {
+			background-color: #FFF;
+
+			@include border-radius(50%);
+
+			border-width: 0;
+			color: $defaultTextColor;
+			font-size: .86em;
+			font-weight: bold;
+			margin: 0;
+			padding: .33em .66em;
+
+			&.alert {
+				background-color: #A20F0F;
 				color: #FFF;
 				text-shadow: none;
 			}
 		}
 
-		.portlet, .portlet-content {
-			background: transparent none;
-			border-width: 0;
-		}
+		.navbar-inner .container .btn-navbar, .nav .user-avatar .user-avatar-link {
+			.user-avatar-image {
+				@include border-radius(50%);
+				@include box-shadow(none);
 
-		.info-items, .info-link-container {
-			left: auto;
-			position: absolute;
-			right: 16px;
-			top: 43px;
-		}
-
-		.info-items {
-			width: 660px;
-		}
-	}
-
-	.dockbar .navbar-inner .container .nav-account-controls,
-	.dockbar.navbar-static-top .collapse .nav-account-controls {
-		position: absolute;
-		top: -45px;
-
-		.go-to .so-portlet-sites {
-			top: 0;
-		}
-
-		&.nav > li > a {
-			line-height: 1em;
-			padding-bottom: 12px;
-			padding-top: 12px;
-		}
-	}
-
-	.dockbar-split .dockbar .navbar-inner .container .nav.nav-account-controls,
-	.dockbar-split .dockbar.navbar-static-top .collapse .nav.nav-account-controls {
-		position: absolute;
-		top: 0;
-	}
-
-	.my-sites.dropdown {
-		display: none;
-	}
-
-	.dockbar-user-notifications .user-notifications-count, .notifications-portlet .user-notifications-count {
-		background: #FFF;
-
-		@include border-radius(12px);
-
-		border-width: 0;
-		color: #202020;
-		padding: 4px 8px;
-	}
-
-	.navbar .dockbar-user-notifications .nav>li>.dropdown-menu {
-		&:after {
-			left: auto;
-			right: 9px;
-		}
-
-		&:before {
-			left: auto;
-			right: 10px;
-		}
-	}
-
-	.navbar .nav > .user-avatar > .dropdown-menu:after {
-		left: 18px;
-	}
-}
-
-.portlet-dockbar .nav-account-controls .go-to .so-portlet-sites {
-	.alert, .alert-success, .portlet-msg-alert, .portlet-msg-error, .portlet-msg-help, .portlet-msg-info, .portlet-msg-progress, .portlet-msg-success {
-		display: block;
-		margin-bottom: -1px;
-	}
-
-	.search .search-input {
-		border: 1px solid #1C2125;
-	}
-}
-
-@media (max-width:860px) {
-	.so-portlet-user-bar {
-		a {
-			padding: 0.25em 0.7em;
-		}
-
-		.user-info a {
-			padding: 0;
-
-			.avatar {
-				@include border-radius(4px);
-
-				margin: 0;
+				height: 22px;
+				top: 0;
+				vertical-align: middle;
+				width: auto;
 			}
 		}
 
-		.full-name {
+		.nav .user-avatar {
+			.dropdown-menu {
+				left: auto;
+				right: 0;
+
+				&:after {
+					left: auto;
+					right: 12px;
+				}
+
+				&:before {
+					left: auto;
+					right: 11px;
+				}
+			}
+		}
+	}
+}
+
+.aui .dockbar-split .portlet-dockbar {
+	position: absolute;
+	right: 0;
+	top: 0;
+
+	.dockbar {
+		height: auto;
+		position: static;
+
+		.navbar-inner {
+			background: none;
+
+			@include box-shadow(none);
+
+			filter: none;
+			width: auto;
+
+			.container {
+				width: auto;
+			}
+		}
+	}
+}
+
+#wrapper {
+	clear: both;
+}
+
+.ie7.aui {
+	.portlet-dockbar {
+		clear: both;
+
+		.navbar-inner .container .collapse .nav-account-controls {
+			bottom: 100%;
+			position: relative;
+		}
+
+		.search-focus .so-portlet-sites .portlet {
+			width: 350px;
+		}
+	}
+
+	.default .portlet-dockbar {
+		height: 0;
+		position: relative;
+	}
+}
+
+/* ---------- Control panel ---------- */
+
+.aui {
+	.so-portlet-user-bar {
+		z-index: 1;
+	}
+
+	.dockbar #_145_navAccountControlsNavbarCollapse {
+		position: absolute;
+		right: 0;
+		top: 0;
+		z-index: 1;
+	}
+
+	.dockbar-split {
+		.so-portlet-user-bar {
+			z-index: auto;
+		}
+
+		.dockbar #_145_navAccountControlsNavbarCollapse {
+			position: relative;
+			right: auto;
+			top: auto;
+		}
+	}
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 979px) {
+	.aui .so-portlet-user-bar {
+		height: 3.15em;
+		z-index: auto;
+
+		.so-logo {
+			z-index: 302;
+		}
+
+		nav {
 			display: none;
 		}
 	}
-}
 
-.ie7 .so-portlet-user-bar {
-	.dashboard-nav, .user-toolbar {
-		@include clear-both;
+	.aui .portlet-dockbar {
+		position: absolute;
+		right: 0;
+		top: 0;
+		width: 100%;
 
-		li {
-			display: block;
-			float: left;
+		.dockbar {
+			border-top-width: 0;
+			width: 100%;
 
-			li {
-				float: none;
+			&.navbar-static-top {
+				position: absolute;
+			}
+
+			.navbar-inner {
+				background: transparent;
+				.container {
+					z-index: 301;
+
+					.btn-navbar {
+						background-color: transparent;
+						background-image: none;
+						border-width: 0;
+						color: #FFF;
+						float: right;
+						font-size: 1.6em;
+						margin: .17em;
+						padding: .28em .35em;
+
+						&:hover {
+							background-color: #E6E6E6;
+						}
+
+						i {
+							margin-top: 0;
+
+							&:before {
+								padding: 1px;
+							}
+						}
+					}
+
+					#_145_navSiteNavigationNavbarBtn {
+						float: right;
+					}
+
+					.brand {
+						float: right;
+						padding: .75em;
+					}
+
+					.nav-collapse.open {
+						ul {
+							background-color: #DDD;
+							margin-left: 0;
+							min-width: 100%;
+							padding: 0;
+
+							li {
+								background-color: transparent;
+								border-top: 1px solid #FFF;
+								margin: 0;
+							}
+
+							a {
+								background: transparent;
+
+								@include border-radius(0);
+
+								font-size: 1em;
+								line-height: 2.4em;
+								margin: 0;
+								padding: .4em 1em;
+								text-align: left;
+							}
+
+							i {
+								display: inline;
+								margin: 0;
+							}
+
+							a, .toggle-controls i {
+								color: #555;
+
+								@include hover-transition;
+							}
+
+							.nav-item-label {
+								background: transparent;
+								display: inline;
+								left: 0;
+								margin: 0;
+								padding: 0;
+								position: static;
+							}
+
+							a:hover, li.dropdown.open > .dropdown-toggle {
+								background: rgba(0,0,0,0.2);
+							}
+
+							.dropdown > .dropdown-menu {
+								a {
+									font-size: 1em;
+									font-weight: bold;
+									padding: 5px 15px 5px 30px;
+								}
+
+								ul a {
+									padding: 5px 15px 5px 55px;
+								}
+							}
+						}
+
+						.nav-navigation {
+							display: block;
+						}
+
+						.nav-add-controls a {
+							position: static;
+						}
+					}
+
+					.nav-add-controls i {
+						font-size: 1.8em;
+						padding-right: .5em;
+					}
+
+					.collapse .nav-account-controls > li {
+						background: transparent;
+					}
+
+					.go-to {
+						display: none;
+					}
+
+					.my-sites {
+						display: block;
+					}
+
+					.dockbar-user-notifications {
+						.dropdown-menu {
+							padding: 0;
+							width: 100%;
+
+							> li {
+								text-align: left;
+							}
+						}
+
+						.user-notification-link .user-notifications-count {
+							background-color: #333;
+							color: #FFF;
+							display: inline;
+						}
+
+						.user-notification {
+							background-color: #DDD;
+
+							@include border-radius(0);
+							@include hover-transition;
+
+							margin-bottom: 0;
+							padding-left: 30px;
+
+							&:hover {
+								background-color: rgba(0,0,0,0.2);
+							}
+						}
+					}
+				}
 			}
 		}
+
+		#_145_navAccountControlsNavbarCollapse {
+			position: relative;
+			right: auto;
+			top: auto;
+		}
 	}
 
-	.user-toolbar .go-to .portlet-body {
-		margin-top: -0.75em;
-
-		input {
-			color: $defaultTextColor;
-		}
+	html.aui #heading {
+		position: static;
 	}
 }
 
-.ie8 .so-portlet-user-bar {
-	.search-input {
-		background: #181C1F;
+@media (max-width: 767px) {
+	html.aui body {
+		padding: 0;
 	}
 
-	.notifications-menu {
-		margin-top: 0.2em;
+	.aui .navbar-static-top {
+		margin-left: 0;
+		margin-right: 0;
+	}
 
-		.notification-count {
-			margin: 0 0.1em;
+	.nav-add-controls {
+		.page-edit-controls, .site-add-controls {
+			display: none;
 		}
-	}
-
-	.user-toolbar .full-name {
-		display: inline;
-	}
-
-	.config-item {
-		float: right;
 	}
 }

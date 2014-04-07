@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -196,10 +196,22 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 			DeployManagerUtil.getInstalledPluginPackages();
 
 		for (PluginPackage pluginPackage : pluginPackages) {
-			int count = modulePersistence.countByContextName(
+			List<Module> modules = modulePersistence.findByContextName(
 				pluginPackage.getContext());
 
-			if (count > 0) {
+			boolean installedApp = false;
+
+			for (Module module : modules) {
+				App app = appPersistence.fetchByPrimaryKey(module.getAppId());
+
+				if ((app != null) && app.isInstalled()) {
+					installedApp = true;
+
+					break;
+				}
+			}
+
+			if (installedApp) {
 				continue;
 			}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,7 +14,6 @@
 
 package com.liferay.marketplace.util;
 
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
 import com.liferay.portal.kernel.util.StringPool;
 
@@ -23,9 +22,8 @@ import com.liferay.portal.kernel.util.StringPool;
  */
 public class MarketplaceConstants {
 
-	public static final String MARKETPLACE_URL_LOGOUT = GetterUtil.getString(
-		PortletPropsValues.MARKETPLACE_URL_LOGOUT,
-		"https://mp.liferay.com/c/portal/logout");
+	public static final String MARKETPLACE_URL_LOGOUT =
+		PortletPropsValues.MARKETPLACE_URL + "/c/portal/logout";
 
 	public static String getPathPurchased() {
 		if (_pathPurchased == null) {
@@ -47,7 +45,7 @@ public class MarketplaceConstants {
 		return _pathStore + ReleaseInfo.getBuildNumber();
 	}
 
-	private static final String _MARKETPLACE_CLIENT_BUILD = "1";
+	private static final String _MARKETPLACE_CLIENT_BUILD = "2";
 
 	private static final String _MARKETPLACE_PATH_PURCHASED =
 		"/widget/web/guest/mpserver/-/mp_server/purchased/";

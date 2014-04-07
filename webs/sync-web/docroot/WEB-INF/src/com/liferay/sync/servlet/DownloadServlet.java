@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,8 @@
 
 package com.liferay.sync.servlet;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.servlet.PortalSessionThreadLocal;
@@ -25,14 +27,23 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.User;
+import com.liferay.portal.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.documentlibrary.NoSuchFileEntryException;
+import com.liferay.portlet.documentlibrary.model.DLFileVersion;
 import com.liferay.portlet.documentlibrary.service.DLAppServiceUtil;
+import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
+import com.liferay.portlet.documentlibrary.service.DLFileVersionLocalServiceUtil;
+import com.liferay.sync.model.SyncDLFileVersionDiff;
+import com.liferay.sync.service.SyncDLFileVersionDiffLocalServiceUtil;
+import com.liferay.sync.util.PortletPropsValues;
 import com.liferay.sync.util.SyncUtil;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -90,6 +101,19 @@ public class DownloadServlet extends HttpServlet {
 		}
 	}
 
+	protected File getDeltaFile(
+			long userId, long fileEntryId, String sourceVersion,
+			String targetVersion)
+		throws PortalException, SystemException {
+
+		File sourceFile = DLFileEntryLocalServiceUtil.getFile(
+			userId, fileEntryId, sourceVersion, false);
+		File targetFile = DLFileEntryLocalServiceUtil.getFile(
+			userId, fileEntryId, targetVersion, false);
+
+		return SyncUtil.getFileDelta(sourceFile, targetFile);
+	}
+
 	protected void sendFile(
 			HttpServletRequest request, HttpServletResponse response, User user,
 			long groupId, String uuid)
@@ -97,6 +121,10 @@ public class DownloadServlet extends HttpServlet {
 
 		FileEntry fileEntry = DLAppServiceUtil.getFileEntryByUuidAndGroupId(
 			uuid, groupId);
+
+		String contentType = fileEntry.getMimeType();
+
+		response.setContentType(contentType);
 
 		String version = ParamUtil.getString(request, "version");
 
@@ -125,18 +153,58 @@ public class DownloadServlet extends HttpServlet {
 			throw new IllegalArgumentException("Missing source version");
 		}
 
-		String destinationVersion = ParamUtil.getString(
-			request, "destinationVersion");
+		String targetVersion = ParamUtil.getString(request, "targetVersion");
 
-		if (Validator.isNull(destinationVersion)) {
-			throw new IllegalArgumentException("Missing destination version");
+		if (Validator.isNull(targetVersion)) {
+			throw new IllegalArgumentException("Missing target version");
 		}
 
-		InputStream inputStream = SyncUtil.getFileDeltaAsStream(
-			user.getUserId(), fileEntry.getFileEntryId(), sourceVersion,
-			destinationVersion);
+		DLFileVersion sourceFileVersion =
+			DLFileVersionLocalServiceUtil.getFileVersion(
+				fileEntry.getFileEntryId(), sourceVersion);
+		DLFileVersion targetFileVersion =
+			DLFileVersionLocalServiceUtil.getFileVersion(
+				fileEntry.getFileEntryId(), targetVersion);
 
-		ServletResponseUtil.write(response, inputStream);
+		if (!PortletPropsValues.SYNC_FILE_DIFF_CACHE_ENABLED) {
+			File deltaFile = getDeltaFile(
+				user.getUserId(), fileEntry.getFileEntryId(), sourceVersion,
+				targetVersion);
+
+			ServletResponseUtil.write(
+				response, new FileInputStream(deltaFile), deltaFile.length());
+
+			return;
+		}
+
+		SyncDLFileVersionDiff syncDLFileVersionDiff =
+			SyncDLFileVersionDiffLocalServiceUtil.fetchSyncDLFileVersionDiff(
+				fileEntry.getFileEntryId(),
+				sourceFileVersion.getFileVersionId(),
+				targetFileVersion.getFileVersionId());
+
+		if (syncDLFileVersionDiff != null) {
+			SyncDLFileVersionDiffLocalServiceUtil.refreshExpirationDate(
+				syncDLFileVersionDiff.getSyncDLFileVersionDiffId());
+		}
+		else {
+			File deltaFile = getDeltaFile(
+				user.getUserId(), fileEntry.getFileEntryId(), sourceVersion,
+				targetVersion);
+
+			syncDLFileVersionDiff =
+				SyncDLFileVersionDiffLocalServiceUtil.addSyncDLFileVersionDiff(
+					fileEntry.getFileEntryId(),
+					sourceFileVersion.getFileVersionId(),
+					targetFileVersion.getFileVersionId(), deltaFile);
+		}
+
+		FileEntry dataFileEntry = PortletFileRepositoryUtil.getPortletFileEntry(
+			syncDLFileVersionDiff.getDataFileEntryId());
+
+		ServletResponseUtil.write(
+			response, dataFileEntry.getContentStream(),
+			dataFileEntry.getSize());
 	}
 
 }

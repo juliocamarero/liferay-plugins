@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -92,7 +92,7 @@ boolean helpful = BeanParamUtil.getBoolean(kbComment, request, "helpful", true);
 							<div class="separator"><!-- --></div>
 
 							<div class="kb-all-comments">
-								<%= LanguageUtil.format(pageContext, "all-comments-x", total) %>
+								<%= LanguageUtil.format(pageContext, "all-comments-x", total, false) %>
 							</div>
 						</c:if>
 

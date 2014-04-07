@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -17,23 +17,19 @@
  */
 --%>
 
-<aui:nav-bar>
-	<aui:nav cssClass="controls">
-		<aui:nav-item>
-			<aui:input cssClass="check-all" inline="<%= true %>" label="" name="checkAllMessages" title='<%= LanguageUtil.get(pageContext, "check-all-messages") %>' type="checkbox" />
-		</aui:nav-item>
+<aui:button-row cssClass="controls">
+	<c:if test="<%= UserThreadLocalServiceUtil.getUserUserThreadCount(themeDisplay.getUserId(), false) > 0 %>">
+		<aui:input cssClass="check-all" inline="<%= true %>" label="" name="checkAllMessages" title='<%= LanguageUtil.get(pageContext, "check-all-messages") %>' type="checkbox" />
+	</c:if>
 
-		<aui:button name="markMessagesAsUnread" value="mark-as-unread" />
+	<aui:button cssClass="hide" name="markMessagesAsUnread" value="mark-as-unread" />
 
-		<aui:button name="markMessagesAsRead" value="mark-as-read" />
+	<aui:button cssClass="hide" name="markMessagesAsRead" value="mark-as-read" />
 
-		<aui:button name="deleteMessages" value="delete" />
-	</aui:nav>
+	<aui:button cssClass="hide" name="deleteMessages" value="delete" />
 
-	<aui:nav cssClass="pull-right">
-		<aui:button name="newMessage" primary="<%= true %>" value="new-message" />
-	</aui:nav>
-</aui:nav-bar>
+	<aui:button cssClass="pull-right" name="newMessage" primary="<%= true %>" value="new-message" />
+</aui:button-row>
 
 <liferay-ui:search-container
 	emptyResultsMessage="no-messages-found"

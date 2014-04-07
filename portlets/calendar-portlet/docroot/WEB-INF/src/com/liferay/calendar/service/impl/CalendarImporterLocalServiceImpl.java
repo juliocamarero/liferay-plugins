@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -39,7 +39,6 @@ import com.liferay.portal.model.ResourcePermission;
 import com.liferay.portal.model.Subscription;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.UserLocalServiceUtil;
-import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.asset.model.AssetCategory;
 import com.liferay.portlet.asset.model.AssetCategoryConstants;
 import com.liferay.portlet.asset.model.AssetEntry;
@@ -132,9 +131,10 @@ public class CalendarImporterLocalServiceImpl
 		// Ratings
 
 		importRatings(
-			PortalUtil.getClassNameId(CalEvent.class.getName()),
+			classNameLocalService.getClassNameId(CalEvent.class.getName()),
 			calEvent.getEventId(),
-			PortalUtil.getClassNameId(CalendarBooking.class.getName()),
+			classNameLocalService.getClassNameId(
+				CalendarBooking.class.getName()),
 			calendarBookingId);
 	}
 
@@ -527,11 +527,15 @@ public class CalendarImporterLocalServiceImpl
 
 		serviceContext.setUserId(userId);
 
-		CalendarResource calendarResource =
-			CalendarResourceUtil.getGroupCalendarResource(
-				groupId, serviceContext);
+		Group group = groupLocalService.getGroup(groupId);
 
-		return calendarResource;
+		if (group.isUser()) {
+			return CalendarResourceUtil.getUserCalendarResource(
+				group.getCreatorUserId(), serviceContext);
+		}
+
+		return CalendarResourceUtil.getGroupCalendarResource(
+			groupId, serviceContext);
 	}
 
 	protected String getRecurrence(TZSRecurrence tzsRecurrence) {
@@ -587,26 +591,54 @@ public class CalendarImporterLocalServiceImpl
 		return RecurrenceSerializer.serialize(recurrence);
 	}
 
-	protected void importAssetLink(AssetLink assetLink, long entryId1)
+	protected void importAssetLink(
+			AssetLink assetLink, long oldEntryId, long newEntryId)
 		throws PortalException, SystemException {
 
-		long entryId2 = assetLink.getEntryId2();
+		long entryId1 = 0;
+		long entryId2 = 0;
 
-		AssetEntry assetEntry2 = assetEntryPersistence.findByPrimaryKey(
-			entryId2);
+		AssetEntry linkedAssetEntry;
 
-		if (assetEntry2.getClassNameId() ==
-				PortalUtil.getClassNameId(CalEvent.class)) {
+		if (assetLink.getEntryId1() == oldEntryId) {
+			entryId1 = newEntryId;
+			entryId2 = assetLink.getEntryId2();
+
+			linkedAssetEntry = assetEntryPersistence.findByPrimaryKey(entryId2);
+		}
+		else {
+			entryId1 = assetLink.getEntryId1();
+			entryId2 = newEntryId;
+
+			linkedAssetEntry = assetEntryPersistence.findByPrimaryKey(entryId1);
+		}
+
+		if (linkedAssetEntry.getClassNameId() ==
+				classNameLocalService.getClassNameId(CalEvent.class)) {
 
 			CalEvent calEvent = calEventPersistence.findByPrimaryKey(
-				assetEntry2.getClassPK());
+				linkedAssetEntry.getClassPK());
 
 			importCalEvent(calEvent);
 
-			assetEntry2 = assetEntryPersistence.findByG_CU(
-				calEvent.getGroupId(), calEvent.getUuid());
+			CalendarResource calendarResource = getCalendarResource(
+				calEvent.getCompanyId(), calEvent.getGroupId());
 
-			entryId2 = assetEntry2.getEntryId();
+			linkedAssetEntry = assetEntryPersistence.findByG_CU(
+				calendarResource.getGroupId(), calEvent.getUuid());
+
+			if (assetLink.getEntryId1() == oldEntryId) {
+				entryId2 = linkedAssetEntry.getEntryId();
+			}
+			else {
+				entryId1 = linkedAssetEntry.getEntryId();
+			}
+
+			if (assetLinkPersistence.countByE_E_T(
+					entryId1, entryId2, assetLink.getType()) > 0) {
+
+				return;
+			}
 		}
 
 		long linkId = counterLocalService.increment();
@@ -623,7 +655,7 @@ public class CalendarImporterLocalServiceImpl
 		// Asset entry
 
 		AssetEntry assetEntry = assetEntryPersistence.fetchByC_C(
-			PortalUtil.getClassNameId(CalEvent.class.getName()),
+			classNameLocalService.getClassNameId(CalEvent.class.getName()),
 			calEvent.getEventId());
 
 		if (assetEntry == null) {
@@ -636,7 +668,8 @@ public class CalendarImporterLocalServiceImpl
 			entryId, assetEntry.getGroupId(), assetEntry.getCompanyId(),
 			assetEntry.getUserId(), assetEntry.getUserName(),
 			assetEntry.getCreateDate(), assetEntry.getModifiedDate(),
-			PortalUtil.getClassNameId(CalendarBooking.class.getName()),
+			classNameLocalService.getClassNameId(
+				CalendarBooking.class.getName()),
 			calendarBookingId, calEvent.getUuid(), assetEntry.isVisible(),
 			assetEntry.getStartDate(), assetEntry.getEndDate(),
 			assetEntry.getPublishDate(), assetEntry.getExpirationDate(),
@@ -664,11 +697,11 @@ public class CalendarImporterLocalServiceImpl
 
 		// Asset links
 
-		List<AssetLink> assetLinks = assetLinkLocalService.getDirectLinks(
+		List<AssetLink> assetLinks = assetLinkLocalService.getLinks(
 			assetEntry.getEntryId());
 
 		for (AssetLink assetLink : assetLinks) {
-			importAssetLink(assetLink, entryId);
+			importAssetLink(assetLink, assetEntry.getEntryId(), entryId);
 		}
 
 		// Asset tags
@@ -719,7 +752,8 @@ public class CalendarImporterLocalServiceImpl
 		throws PortalException, SystemException {
 
 		MBDiscussion mbDiscussion = mbDiscussionPersistence.fetchByC_C(
-			PortalUtil.getClassNameId(CalEvent.class), calEvent.getEventId());
+			classNameLocalService.getClassNameId(CalEvent.class),
+			calEvent.getEventId());
 
 		if (mbDiscussion == null) {
 			return;
@@ -733,7 +767,8 @@ public class CalendarImporterLocalServiceImpl
 			mbDiscussion.getGroupId(), mbDiscussion.getCompanyId(),
 			mbDiscussion.getUserId(), mbDiscussion.getUserName(),
 			mbDiscussion.getCreateDate(), mbDiscussion.getModifiedDate(),
-			PortalUtil.getClassNameId(CalendarBooking.class.getName()),
+			classNameLocalService.getClassNameId(
+				CalendarBooking.class.getName()),
 			calendarBookingId, threadId);
 	}
 
@@ -766,7 +801,8 @@ public class CalendarImporterLocalServiceImpl
 			mbMessage.getCompanyId(), mbMessage.getUserId(),
 			mbMessage.getUserName(), mbMessage.getCreateDate(),
 			mbMessage.getModifiedDate(),
-			PortalUtil.getClassNameId(CalendarBooking.class.getName()),
+			classNameLocalService.getClassNameId(
+				CalendarBooking.class.getName()),
 			calendarBookingId, mbMessage.getCategoryId(), threadId,
 			mbMessage.getRootMessageId(), mbMessage.getParentMessageId(),
 			mbMessage.getSubject(), mbMessage.getBody(), mbMessage.getFormat(),
@@ -776,7 +812,7 @@ public class CalendarImporterLocalServiceImpl
 			mbMessage.getStatusByUserName(), mbMessage.getStatusDate(),
 			mbMessageIds);
 
-		long mbDiscussionClassNameId = PortalUtil.getClassNameId(
+		long mbDiscussionClassNameId = classNameLocalService.getClassNameId(
 			MBDiscussion.class.getName());
 
 		importRatings(
@@ -864,7 +900,7 @@ public class CalendarImporterLocalServiceImpl
 
 		List<SocialActivity> socialActivities =
 			socialActivityPersistence.findByC_C(
-				PortalUtil.getClassNameId(CalEvent.class),
+				classNameLocalService.getClassNameId(CalEvent.class),
 				calEvent.getEventId());
 
 		for (SocialActivity socialActivity : socialActivities) {
@@ -881,9 +917,9 @@ public class CalendarImporterLocalServiceImpl
 			socialActivity.getGroupId(), socialActivity.getCompanyId(),
 			socialActivity.getUserId(), socialActivity.getCreateDate(),
 			socialActivity.getMirrorActivityId(),
-			PortalUtil.getClassNameId(CalendarBooking.class), calendarBookingId,
-			socialActivity.getType(), socialActivity.getExtraData(),
-			socialActivity.getReceiverUserId());
+			classNameLocalService.getClassNameId(CalendarBooking.class),
+			calendarBookingId, socialActivity.getType(),
+			socialActivity.getExtraData(), socialActivity.getReceiverUserId());
 	}
 
 	protected void importSubscription(
@@ -894,8 +930,8 @@ public class CalendarImporterLocalServiceImpl
 			counterLocalService.increment(), subscription.getCompanyId(),
 			subscription.getUserId(), subscription.getUserName(),
 			subscription.getCreateDate(), subscription.getModifiedDate(),
-			PortalUtil.getClassNameId(CalendarBooking.class), calendarBookingId,
-			subscription.getFrequency());
+			classNameLocalService.getClassNameId(CalendarBooking.class),
+			calendarBookingId, subscription.getFrequency());
 	}
 
 	protected void importSubscriptions(
@@ -903,7 +939,8 @@ public class CalendarImporterLocalServiceImpl
 		throws SystemException {
 
 		List<Subscription> subscriptions = subscriptionPersistence.findByC_C_C(
-			calEvent.getCompanyId(), PortalUtil.getClassNameId(CalEvent.class),
+			calEvent.getCompanyId(),
+			classNameLocalService.getClassNameId(CalEvent.class),
 			calEvent.getEventId());
 
 		for (Subscription subscription : subscriptions) {
@@ -914,12 +951,12 @@ public class CalendarImporterLocalServiceImpl
 	protected boolean isImported(CalEvent calEvent)
 		throws PortalException, SystemException {
 
-		Group group = groupLocalService.getCompanyGroup(
-			calEvent.getCompanyId());
+		CalendarResource calendarResource = getCalendarResource(
+			calEvent.getCompanyId(), calEvent.getGroupId());
 
 		CalendarBooking calendarBooking =
 			calendarBookingPersistence.fetchByUUID_G(
-				calEvent.getUuid(), group.getGroupId());
+				calEvent.getUuid(), calendarResource.getGroupId());
 
 		if (calendarBooking != null) {
 			return true;

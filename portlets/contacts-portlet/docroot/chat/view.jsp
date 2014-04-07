@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -20,13 +20,13 @@
 <%@ include file="/init.jsp" %>
 
 <%
-Portlet portlet = PortletLocalServiceUtil.getPortletById(company.getCompanyId(), PortletKeys.CONTACTS_CENTER);
+Portlet portlet = PortletLocalServiceUtil.getPortletById(company.getCompanyId(), PortletKeys.SITE_REDIRECTOR);
 %>
 
-<liferay-portlet:renderURL portletName="<%= PortletKeys.CONTACTS_CENTER %>" varImpl="profileURL" windowState="<%= WindowState.MAXIMIZED.toString() %>">
-	<portlet:param name="mvcPath" value="/contacts_center/view_user.jsp" />
-	<portlet:param name="backURL" value="<%= PortalUtil.getCurrentURL(request) %>" />
-</liferay-portlet:renderURL>
+<liferay-portlet:actionURL portletName="<%= PortletKeys.SITE_REDIRECTOR %>" varImpl="profileURL">
+	<portlet:param name="struts_action" value="/my_sites/view" />
+	<portlet:param name="privateLayout" value="<%= Boolean.FALSE.toString() %>" />
+</liferay-portlet:actionURL>
 
 <aui:script>
 	Liferay.on(
@@ -35,9 +35,9 @@ Portlet portlet = PortletLocalServiceUtil.getPortletById(company.getCompanyId(),
 			Liferay.Chat.Manager.registerBuddyService(
 				{
 					fn: function(user) {
-						var userId = user.getAttribute('userId');
+						var groupId = user.getAttribute('data-groupId');
 
-						url = Liferay.Util.addParams("_1_WAR_contactsportlet_userId=" + userId, '<%= profileURL %>');
+						var url = Liferay.Util.addParams("<%= PortalUtil.getPortletNamespace(PortletKeys.SITE_REDIRECTOR) %>groupId=" + groupId, '<%= profileURL %>');
 
 						window.location = url;
 					},

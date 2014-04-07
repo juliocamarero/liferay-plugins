@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,10 +14,10 @@
 
 package com.liferay.knowledgebase.hook.upgrade.v1_1_0;
 
+import com.liferay.compat.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.knowledgebase.hook.upgrade.v1_1_0.util.KBTemplateTable;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.upgrade.util.UpgradeTable;
 import com.liferay.portal.kernel.upgrade.util.UpgradeTableFactoryUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -32,8 +32,7 @@ public class UpgradeKBTemplate extends UpgradeProcess {
 	@Override
 	protected void doUpgrade() throws Exception {
 		renameAndUpdateTable(
-			StringUtil.replaceFirst(
-				KBTemplateTable.TABLE_NAME, "KB", "KB_"),
+			StringUtil.replaceFirst(KBTemplateTable.TABLE_NAME, "KB", "KB_"),
 			KBTemplateTable.TABLE_NAME, KBTemplateTable.TABLE_COLUMNS,
 			KBTemplateTable.TABLE_SQL_CREATE, KBTemplateTable.TABLE_SQL_DROP);
 	}

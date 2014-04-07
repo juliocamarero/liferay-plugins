@@ -1,15 +1,59 @@
 @import "compass";
 
+@mixin keyframes($name) {
+	@-o-keyframes #{$name} {
+		@content;
+	}
+
+	@-moz-keyframes #{$name} {
+		@content;
+	}
+
+	@-webkit-keyframes #{$name} {
+		@content;
+	}
+
+	@keyframes #{$name} {
+		@content;
+	}
+}
+
+@include keyframes(shakeNotificationCount) {
+	0% {
+		@include transform(rotate(5deg));
+	}
+	25% {
+		@include transform(translate(3px, -4px), rotate(0deg));
+	}
+	50% {
+		@include transform(rotate(-5deg));
+	}
+	75% {
+		@include transform(rotate(0deg));
+	}
+	100% {
+		@include transform(translate(0, 0), rotate(5deg));
+	}
+}
+
 .dockbar-user-notifications, .notifications-portlet {
 	.user-notifications-count {
 		background-color: #0066B3;
 		border: 1px solid #0066B3;
+		display: block;
+		line-height: 1.25em;
+		margin: 4px 0;
 		padding: 2px 6px;
+		position: relative;
 
 		&.alert {
 			background-color: #FAA732;
 			border: 1px solid #FAA732;
 			color: #FFF;
+
+			@include experimental(animation, shakeNotificationCount 0.8s linear infinite);
+			@include experimental(animation-iteration-count, 2);
+			@include experimental(transform-origin, 50% 50%);
 		}
 	}
 
@@ -19,8 +63,10 @@
 
 	.user-notifications-list {
 		list-style: none;
+		padding: 5px;
 
 		.message {
+			padding: 5px;
 			text-align: center;
 
 			.left-nav {
@@ -70,12 +116,18 @@
 				float: left;
 				position: relative;
 
-				.user-thumbnail img {
+				.user-thumbnail {
 					@include border-radius(50%);
 					@include box-shadow(0 0 0 2px #5594E0);
 
+					display: block;
+					height: 30px;
 					margin: 5px 10px 0 0;
-					width: 30px;
+					overflow: hidden;
+
+					img {
+						width: 30px;
+					}
 				}
 
 				.portlet-icon {
@@ -98,17 +150,17 @@
 			.content {
 				margin-left: 40px;
 			}
+
+			.body {
+				color: #222;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
 		}
 	}
 }
 
 .notifications-portlet {
-	.user-notifications-sidebar {
-		float: left;
-		padding: 0 10px 0 0;
-		width: 18%;
-	}
-
 	.nav {
 		margin-bottom: 10px;
 
@@ -135,10 +187,12 @@
 		}
 	}
 
+	.notifications-container, .user-notifications-list-container {
+		@include box-sizing(border-box);
+	}
+
 	.user-notifications-list-container {
 		border: 1px solid #D5D5D5;
-		float: left;
-		width: 80%;
 
 		.loading-mask {
 			min-height: 30px;
@@ -146,19 +200,14 @@
 	}
 
 	.user-notifications-list {
+		margin: 0;
+
 		.user-notification {
 			color: #000;
 
 			&:hover {
 				color: #FFF;
-			}
-
-			&.unread {
-				background-color: #FAFAFA;
-
-				&:hover {
-					background: #2FA4F5;
-				}
+				background: #2FA4F5
 			}
 
 			a {
@@ -172,7 +221,11 @@
 	}
 
 	.manage-notifications {
-		padding: 5px;
+		overflow: auto;
+
+		.table {
+			max-width: none;
+		}
 
 		.title {
 			margin-bottom: 10px;
@@ -195,6 +248,15 @@
 	}
 }
 
+.span1, .span2, .span3, .span4, .span5, .span6 {
+	.notifications-portlet {
+		.user-notifications-sidebar, .user-notifications-list-container {
+			margin-left: 0;
+			width: 100%;
+		}
+	}
+}
+
 /* ---------- Extras ---------- */
 
 .dockbar-user-notifications .user-notifications-count, .notifications-portlet .nav a:hover, .notifications-portlet .nav a.selected, .notifications-portlet .user-notifications-list-container {
@@ -208,6 +270,7 @@
 
 	.dockbar .nav li.dropdown.dockbar-user-notifications .dropdown-menu {
 		left: auto;
+		max-height: none;
 		padding: 10px;
 		right: 0;
 
@@ -215,4 +278,8 @@
 			right: 20px;
 		}
 	}
+}
+
+.ie8 .user-thumbnail img {
+	max-width: none;
 }

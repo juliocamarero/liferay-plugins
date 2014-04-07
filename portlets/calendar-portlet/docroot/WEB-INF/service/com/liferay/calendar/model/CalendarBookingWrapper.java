@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -1419,6 +1419,13 @@ public class CalendarBookingWrapper implements CalendarBooking,
 	@Override
 	public com.liferay.calendar.notification.NotificationType getSecondReminderNotificationType() {
 		return _calendarBooking.getSecondReminderNotificationType();
+	}
+
+	@Override
+	public java.util.TimeZone getTimeZone()
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _calendarBooking.getTimeZone();
 	}
 
 	@Override

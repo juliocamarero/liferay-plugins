@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,38 +16,40 @@
 
 <%@ include file="/init.jsp" %>
 
-<div class="clearfix">
-	<div class="nav-bar user-notifications-sidebar">
-		<div class="nav">
-			<a class="clearfix selected unread" href="javascript:;">
-				<span class="title"><liferay-ui:message key="unread" /></span>
+<div class="clearfix notifications-container">
+	<aui:row>
+		<aui:col cssClass="nav-bar user-notifications-sidebar" width="<%= 25 %>">
+			<div class="nav">
+				<a class="clearfix selected unread" href="javascript:;">
+					<span class="title"><liferay-ui:message key="unread" /></span>
 
-				<%
-				int unreadUserNotificationsCount = UserNotificationEventLocalServiceUtil.getArchivedUserNotificationEventsCount(themeDisplay.getUserId(), false);
-				%>
+					<%
+					int unreadUserNotificationsCount = UserNotificationEventLocalServiceUtil.getArchivedUserNotificationEventsCount(themeDisplay.getUserId(), false);
+					%>
 
-				<span class="count"><%= unreadUserNotificationsCount %></span>
-			</a>
-		</div>
+					<span class="count"><%= unreadUserNotificationsCount %></span>
+				</a>
+			</div>
 
-		<div class="nav">
-			<a class="all-notifications clearfix" href="javascript:;">
-				<span class="title"><liferay-ui:message key="all-notifications" /></span>
-			</a>
-		</div>
+			<div class="nav">
+				<a class="all-notifications clearfix" href="javascript:;">
+					<span class="title"><liferay-ui:message key="all-notifications" /></span>
+				</a>
+			</div>
 
-		<div class="nav">
-			<a class="manage clearfix" href="javascript:;">
-				<span class="title"><liferay-ui:message key="notification-delivery" /></span>
-			</a>
-		</div>
-	</div>
+			<div class="nav">
+				<a class="manage clearfix" href="javascript:;">
+					<span class="title"><liferay-ui:message key="notification-delivery" /></span>
+				</a>
+			</div>
+		</aui:col>
 
-	<div class="user-notifications-list-container">
-		<ul class="user-notifications-list">
-			<div class="loading-mask"></div>
-		</ul>
-	</div>
+		<aui:col cssClass="user-notifications-list-container" width="<%= 75 %>">
+			<ul class="unstyled user-notifications-list">
+				<div class="loading-mask"></div>
+			</ul>
+		</aui:col>
+	</aui:row>
 </div>
 
 <aui:script use="aui-base,aui-io-plugin-deprecated">
@@ -69,7 +71,7 @@
 			userNotificationsList.io.set('uri', uri);
 			userNotificationsList.io.start();
 		}
-	}
+	};
 
 	<portlet:renderURL var="unreadURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
 		<portlet:param name="mvcPath" value="/notifications/view_entries.jsp" />

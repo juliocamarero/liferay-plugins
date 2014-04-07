@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,16 +16,18 @@
 
 <%@ include file="/search/init.jsp" %>
 
-<div class="navbar-search pull-left knowledge-search">
-	<div class="form-search">
-		<liferay-portlet:renderURL varImpl="searchURL" windowState="<%= WindowState.MAXIMIZED.toString() %>">
-			<portlet:param name="mvcPath" value="/search/search.jsp" />
-		</liferay-portlet:renderURL>
+<liferay-portlet:renderURL varImpl="searchURL" windowState="<%= WindowState.MAXIMIZED.toString() %>">
+	<portlet:param name="mvcPath" value="/search/search.jsp" />
+</liferay-portlet:renderURL>
 
-		<aui:form action="<%= searchURL %>" method="get" name="searchFm">
-			<liferay-portlet:renderURLParams varImpl="searchURL" />
+<aui:nav-bar>
+	<aui:nav-bar-search cssClass="pull-right">
+		<div class="form-search">
+			<aui:form action="<%= searchURL %>" method="get" name="searchFm">
+				<liferay-portlet:renderURLParams varImpl="searchURL" />
 
-			<liferay-ui:input-search />
-		</aui:form>
-	</div>
-</div>
+				<liferay-ui:input-search />
+			</aui:form>
+		</div>
+	</aui:nav-bar-search>
+</aui:nav-bar>
