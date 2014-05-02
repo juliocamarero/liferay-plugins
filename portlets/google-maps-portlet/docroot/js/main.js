@@ -17,11 +17,25 @@ AUI.add(
 
 		var STR_DIRECTION_ADDRESS = 'directionsAddress';
 
+		var STR_GOOGLE_MAPS_URL = 'googleMapsURL';
+
 		var STR_KEY = 'key';
+
+		var STR_KEY_MAP = 'mapKey';
+
+		var STR_LANGUAGE_ID = 'languageId';
 
 		var STR_MAP_ADDRESS = 'mapAddress';
 
+		var STR_MAP_INPUT_ENABLED = 'mapInputEnabled';
+
+		var STR_MAP_PARAMS = 'mapParams';
+
+		var STR_PORTLET_ID = 'portletId';
+
 		var STR_TRAVELING_MODE = 'travelingMode';
+
+		var STR_ZOOM_MAP = 'zoomDisplay';
 
 		var WIN = A.config.win;
 
@@ -34,7 +48,7 @@ AUI.add(
 
 					googleMapsURL: {
 						validator: Lang.isString,
-						value: 'http://maps.google.com/maps/api/js'
+						value: 'https://maps.googleapis.com/maps/api/js'
 					},
 
 					languageId: {
@@ -51,11 +65,14 @@ AUI.add(
 						value: false
 					},
 
+					mapKey: {
+						validator: Lang.isString
+					},
+
 					mapParams: {
 						validator: Lang.isObject,
 						value: {
-							mapTypeId: MAP_TYPE_ROADMAP,
-							zoom: 8
+							mapTypeId: MAP_TYPE_ROADMAP
 						}
 					},
 
@@ -70,6 +87,11 @@ AUI.add(
 					showDirectionSteps: {
 						validator: Lang.isBoolean,
 						value: false
+					},
+
+					zoomDisplay: {
+						validator: Lang.isNumber,
+						value: 13
 					}
 				},
 
@@ -139,7 +161,7 @@ AUI.add(
 							);
 						}
 
-						eventHandles.push(Liferay.on(instance.get('portletId') + ':portletRefreshed', A.bind(instance.destructor, instance)));
+						eventHandles.push(Liferay.on(instance.get(STR_PORTLET_ID) + ':portletRefreshed', A.bind(instance.destructor, instance)));
 
 						instance._eventHandles = eventHandles;
 					},
@@ -231,7 +253,7 @@ AUI.add(
 					_getMapAddress: function(value) {
 						var instance = this;
 
-						if (instance.get('mapInputEnabled')) {
+						if (instance.get(STR_MAP_INPUT_ENABLED)) {
 							var mapAddressNode = instance.byId(STR_MAP_ADDRESS);
 
 							var mapAddress = mapAddressNode.val();
@@ -249,9 +271,11 @@ AUI.add(
 
 						Liferay.namespace('GOOGLE_MAPS').onGoogleMapsLoaded = A.bind(instance._renderMap, instance);
 
-						var googleMapsURL = instance.get('googleMapsURL');
+						var googleMapsURL = instance.get(STR_GOOGLE_MAPS_URL);
 
-						googleMapsURL = googleMapsURL + '?sensor=true&language=' + instance.get('languageId') + '&callback=Liferay.GOOGLE_MAPS.onGoogleMapsLoaded';
+						var mapKey = instance.get(STR_KEY_MAP);
+
+						googleMapsURL = googleMapsURL + '?key='+ mapKey + '&sensor=true&language=' + instance.get(STR_LANGUAGE_ID) + '&callback=Liferay.GOOGLE_MAPS.onGoogleMapsLoaded';
 
 						A.Get.script(googleMapsURL);
 					},
@@ -401,12 +425,15 @@ AUI.add(
 					_renderMap: function() {
 						var instance = this;
 
-						var mapParams = instance.get('mapParams');
+						var mapParams = instance.get(STR_MAP_PARAMS);
+
+						var zoomDisplay = instance.get(STR_ZOOM_MAP);
 
 						mapParams = A.merge(
 							mapParams,
 							{
-								mapTypeId: instance._getGoogleMapType(mapParams.mapTypeId)
+								mapTypeId: instance._getGoogleMapType(mapParams.mapTypeId),
+								zoom: zoomDisplay
 							}
 						);
 
