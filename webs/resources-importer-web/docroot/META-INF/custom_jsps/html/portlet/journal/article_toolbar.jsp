@@ -30,6 +30,10 @@ long classNameId = BeanParamUtil.getLong(article, request, "classNameId");
 			<aui:button data-title='<%= LanguageUtil.get(pageContext, "in-order-to-preview-your-changes,-the-web-content-will-be-saved-as-a-draft") %>' icon="icon-search" name="basicPreviewButton" value="basic-preview" />
 		</c:if>
 
+		<c:if test="<%= article != null %>">
+			<aui:button icon="icon-download" name="articleDownloadButton" value="download" />
+		</c:if>
+
 		<c:if test="<%= JournalArticlePermission.contains(permissionChecker, article, ActionKeys.PERMISSIONS) %>">
 			<aui:button icon="icon-lock" name="articlePermissionsButton" value="permissions" />
 		</c:if>
@@ -44,3 +48,23 @@ long classNameId = BeanParamUtil.getLong(article, request, "classNameId");
 		<aui:button href="<%= viewHistoryURL %>" icon="icon-time" name="articleHistoryButton" value="view-history" />
 	</div>
 </div>
+
+<c:if test="<%= article != null %>">
+	<aui:script use="aui-base">
+		A.one('#<portlet:namespace />articleDownloadButton').on(
+			'click',
+			function(event) {
+				Liferay.Util.openWindow(
+					{
+						dialog: {
+							bodyContent: '<pre><%= HtmlUtil.escapeJS(HtmlUtil.escape(article.getContent())) %></pre>',
+							modal: true
+						},
+						id: '<portlet:namespace />articleDownload',
+						title: '<%= article.getTitle(locale) %>'
+					}
+				);
+			}
+		);
+	</aui:script>
+</c:if>
