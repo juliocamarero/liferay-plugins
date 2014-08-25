@@ -42,6 +42,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.portlet.PortletResponseUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.upload.UploadException;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
 import com.liferay.portal.kernel.util.Constants;
@@ -161,6 +162,8 @@ public class AdminPortlet extends MVCPortlet {
 		long kbCommentId = ParamUtil.getLong(actionRequest, "kbCommentId");
 
 		KBCommentServiceUtil.deleteKBComment(kbCommentId);
+
+		SessionMessages.add(actionRequest, "feedbackDeleted");
 	}
 
 	public void deleteKBTemplate(
@@ -559,6 +562,8 @@ public class AdminPortlet extends MVCPortlet {
 			KBComment.class.getName(), actionRequest);
 
 		KBCommentServiceUtil.updateStatus(kbCommentId, status, serviceContext);
+
+		SessionMessages.add(actionRequest, "feedbackStatusUpdated");
 	}
 
 	public void updateKBTemplate(

@@ -5,6 +5,7 @@ AUI.add(
 		var AObject = A.Object;
 		var DateMath = A.DataType.DateMath;
 		var Lang = A.Lang;
+		var LString = Lang.String;
 
 		var RecurrenceUtil = Liferay.RecurrenceUtil;
 		var Workflow = Liferay.Workflow;
@@ -139,7 +140,7 @@ AUI.add(
 							startTimeMonth: startDate.getMonth(),
 							startTimeYear: startDate.getFullYear(),
 							timeZoneId: instance.USER_TIME_ZONE,
-							titleMap: instance.getLocalizationMap(Liferay.Util.unescapeHTML(schedulerEvent.get('content')))
+							titleMap: instance.getLocalizationMap(LString.unescapeHTML(schedulerEvent.get('content')))
 						}
 					},
 					{
@@ -484,6 +485,7 @@ AUI.add(
 				var instance = this;
 
 				var map = {};
+
 				map[themeDisplay.getLanguageId()] = value;
 
 				return A.JSON.stringify(map);
@@ -718,7 +720,7 @@ AUI.add(
 							secondReminder: schedulerEvent.get('secondReminder'),
 							secondReminderType: schedulerEvent.get('secondReminderType'),
 							status: schedulerEvent.get('status'),
-							titleMap: instance.getLocalizationMap(Liferay.Util.unescapeHTML(schedulerEvent.get('content')))
+							titleMap: instance.getLocalizationMap(LString.unescapeHTML(schedulerEvent.get('content')))
 						}
 					},
 					{
@@ -782,7 +784,7 @@ AUI.add(
 							startTimeYear: startDate.getFullYear(),
 							status: schedulerEvent.get('status'),
 							timeZoneId: instance.USER_TIME_ZONE,
-							titleMap: instance.getLocalizationMap(Liferay.Util.unescapeHTML(schedulerEvent.get('content')))
+							titleMap: instance.getLocalizationMap(LString.unescapeHTML(schedulerEvent.get('content')))
 						}
 					},
 					{
@@ -868,7 +870,7 @@ AUI.add(
 					content: {
 						getter: function(val) {
 							if (val) {
-								val = Liferay.Util.escapeHTML(val);
+								val = LString.escapeHTML(val);
 							}
 
 							return val;
@@ -1710,7 +1712,7 @@ AUI.add(
 								'<p class="calendar-portlet-confirmation-text">',
 								Lang.sub(
 									Liferay.Language.get('you-are-about-to-make-changes-that-will-only-effect-your-calendar-x'),
-									[Liferay.Util.escapeHTML(calendar.get('name'))]
+									[LString.escapeHTML(calendar.get('name'))]
 								),
 								'</p>'
 							].join(STR_BLANK);
@@ -2282,6 +2284,6 @@ AUI.add(
 	},
 	'',
 	{
-		requires: ['aui-datatype', 'aui-io', 'aui-scheduler', 'aui-toolbar', 'async-queue', 'autocomplete', 'autocomplete-highlighters', 'dd-plugin', 'liferay-calendar-message-util', 'liferay-calendar-recurrence-util', 'liferay-node', 'liferay-portlet-url', 'liferay-store', 'promise', 'resize-plugin']
+		requires: ['async-queue', 'aui-datatype', 'aui-io', 'aui-scheduler', 'aui-toolbar', 'autocomplete', 'autocomplete-highlighters', 'dd-plugin', 'liferay-calendar-message-util', 'liferay-calendar-recurrence-util', 'liferay-node', 'liferay-portlet-url', 'liferay-store', 'promise', 'resize-plugin']
 	}
 );

@@ -36,6 +36,7 @@ import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.asset.AssetRendererFactoryRegistryUtil;
+import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.model.AssetRenderer;
 import com.liferay.portlet.asset.model.AssetRendererFactory;
 import com.liferay.portlet.messageboards.model.MBMessage;
@@ -159,6 +160,8 @@ public abstract class SOSocialActivityInterpreter
 			sb.append(subfeedEntry.getTitle());
 			sb.append("</span><span class=\"activity-subentry-body\">");
 			sb.append(subfeedEntry.getBody());
+			sb.append("</span><span class=\"activity-subentry-link\">");
+			sb.append(subfeedEntry.getLink());
 			sb.append("</span></div>");
 		}
 
@@ -240,6 +243,8 @@ public abstract class SOSocialActivityInterpreter
 			SocialActivity activity, ServiceContext serviceContext)
 		throws Exception {
 
+		String link = getLink(activity, serviceContext);
+
 		String className = activity.getClassName();
 
 		String title = getPageTitle(
@@ -262,7 +267,7 @@ public abstract class SOSocialActivityInterpreter
 
 		body = StringUtil.shorten(HtmlUtil.escape(body), 200);
 
-		return new SocialActivityFeedEntry(title, body);
+		return new SocialActivityFeedEntry(link, title, body);
 	}
 
 	protected String getTitle(
@@ -463,9 +468,11 @@ public abstract class SOSocialActivityInterpreter
 			String actionId, ServiceContext serviceContext)
 		throws Exception {
 
-		return permissionChecker.hasPermission(
-			activity.getGroupId(), activity.getClassName(),
-			activity.getClassPK(), ActionKeys.VIEW);
+		AssetEntry assetEntry = activity.getAssetEntry();
+
+		AssetRenderer assetRenderer = assetEntry.getAssetRenderer();
+
+		return assetRenderer.hasViewPermission(permissionChecker);
 	}
 
 	protected boolean hasPermissions(

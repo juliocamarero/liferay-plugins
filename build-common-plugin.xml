@@ -35,7 +35,7 @@
 				<available file="bnd.bnd" />
 				<then>
 					<var name="service.osgi.module" value="true" />
-					<var name="service.plugin.name" value="" />
+					<var name="service.plugin.name" value="${plugin.name}" />
 					<var name="service.spring.namespaces" value="beans,osgi" />
 				</then>
 				<else>
@@ -261,11 +261,27 @@
 	</target>
 
 	<target name="build-lang">
-		<antcall target="build-lang-cmd">
-			<param name="lang.dir" value="docroot/WEB-INF/src/content" />
-			<param name="lang.file" value="Language" />
-			<param name="lang.translate" value="true" />
-		</antcall>
+		<if>
+			<available file="docroot/WEB-INF/src/content" />
+			<then>
+				<antcall target="build-lang-cmd">
+					<param name="lang.dir" value="docroot/WEB-INF/src/content" />
+					<param name="lang.file" value="Language" />
+					<param name="lang.translate" value="true" />
+				</antcall>
+			</then>
+		</if>
+
+		<if>
+			<available file="src/content" />
+			<then>
+				<antcall target="build-lang-cmd">
+					<param name="lang.dir" value="src/content" />
+					<param name="lang.file" value="Language" />
+					<param name="lang.translate" value="true" />
+				</antcall>
+			</then>
+		</if>
 	</target>
 
 	<target name="build-lang-cmd">
@@ -310,6 +326,7 @@
 		<path id="service.classpath">
 			<path refid="lib.classpath" />
 			<fileset dir="${app.server.lib.global.dir}" includes="*.jar" />
+			<fileset dir="${sdk.dir}/dependencies/aQute.bnd/lib" includes="*.jar" />
 			<fileset dir="${service.base.dir}/lib" excludes="${plugin.name}-service.jar" includes="*.jar" />
 		</path>
 

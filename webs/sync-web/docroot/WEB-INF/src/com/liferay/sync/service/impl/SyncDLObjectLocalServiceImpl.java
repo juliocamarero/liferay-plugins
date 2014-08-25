@@ -103,6 +103,13 @@ public class SyncDLObjectLocalServiceImpl
 	}
 
 	@Override
+	public void deleteSyncDLObjects(String version, String type)
+		throws SystemException {
+
+		syncDLObjectPersistence.removeByV_T(version, type);
+	}
+
+	@Override
 	public long getLatestModifiedTime() throws SystemException {
 		DynamicQuery dynamicQuery = DynamicQueryFactoryUtil.forClass(
 			SyncDLObject.class, SyncDLObject.class.getClassLoader());

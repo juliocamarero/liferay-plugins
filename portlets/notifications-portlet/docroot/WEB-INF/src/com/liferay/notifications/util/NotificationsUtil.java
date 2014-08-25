@@ -79,12 +79,12 @@ public class NotificationsUtil {
 
 		dynamicQuery.setProjection(ProjectionFactoryUtil.rowCount());
 
-		Iterator<Long> itr =
+		Iterator<Long> iterator =
 			UserNotificationEventLocalServiceUtil.dynamicQuery(
 				dynamicQuery).iterator();
 
-		if (itr.hasNext()) {
-			Long count = itr.next();
+		if (iterator.hasNext()) {
+			Long count = iterator.next();
 
 			if (count != null) {
 				return count.intValue();
@@ -120,12 +120,12 @@ public class NotificationsUtil {
 
 		dynamicQuery.setProjection(ProjectionFactoryUtil.rowCount());
 
-		Iterator<Long> itr =
+		Iterator<Long> iterator =
 			UserNotificationEventLocalServiceUtil.dynamicQuery(
 				dynamicQuery).iterator();
 
-		if (itr.hasNext()) {
-			Long count = itr.next();
+		if (iterator.hasNext()) {
+			Long count = iterator.next();
 
 			if (count != null) {
 				return count.intValue();
@@ -164,6 +164,41 @@ public class NotificationsUtil {
 		catch (Exception e) {
 			return null;
 		}
+	}
+
+	public static List<UserNotificationEvent> getUserNotificationEvents(
+			long userId, boolean actionable, int start, int end)
+		throws SystemException {
+
+		DynamicQuery dynamicQuery = getDynamicQuery(userId, actionable);
+
+		dynamicQuery.addOrder(OrderFactoryUtil.desc("timestamp"));
+
+		return UserNotificationEventLocalServiceUtil.dynamicQuery(
+			dynamicQuery, start, end);
+	}
+
+	public static int getUserNotificationEventsCount(
+			long userId, boolean actionable)
+		throws SystemException {
+
+		DynamicQuery dynamicQuery = getDynamicQuery(userId, actionable);
+
+		dynamicQuery.setProjection(ProjectionFactoryUtil.rowCount());
+
+		Iterator<Long> iterator =
+			UserNotificationEventLocalServiceUtil.dynamicQuery(
+				dynamicQuery).iterator();
+
+		if (iterator.hasNext()) {
+			Long count = iterator.next();
+
+			if (count != null) {
+				return count.intValue();
+			}
+		}
+
+		return 0;
 	}
 
 	public static void sendNotificationEvent(

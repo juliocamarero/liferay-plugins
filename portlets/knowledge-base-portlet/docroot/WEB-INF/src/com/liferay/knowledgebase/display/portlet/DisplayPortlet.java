@@ -35,6 +35,7 @@ import com.liferay.knowledgebase.util.WebKeys;
 import com.liferay.knowledgebase.util.comparator.KBArticlePriorityComparator;
 import com.liferay.portal.NoSuchSubscriptionException;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.portlet.PortletResponseUtil;
@@ -144,6 +145,8 @@ public class DisplayPortlet extends MVCPortlet {
 		long kbCommentId = ParamUtil.getLong(actionRequest, "kbCommentId");
 
 		KBCommentServiceUtil.deleteKBComment(kbCommentId);
+
+		SessionMessages.add(actionRequest, "feedbackDeleted");
 	}
 
 	public void deleteTempAttachment(
@@ -451,6 +454,24 @@ public class DisplayPortlet extends MVCPortlet {
 				kbCommentId, classNameId, classPK, content, helpful,
 				serviceContext);
 		}
+
+		SessionMessages.add(actionRequest, "feedbackSaved");
+	}
+
+	public void updateKBCommentStatus(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws PortalException, SystemException {
+
+		long kbCommentId = ParamUtil.getLong(actionRequest, "kbCommentId");
+
+		int status = ParamUtil.getInteger(actionRequest, "status");
+
+		ServiceContext serviceContext = ServiceContextFactory.getInstance(
+			KBComment.class.getName(), actionRequest);
+
+		KBCommentServiceUtil.updateStatus(kbCommentId, status, serviceContext);
+
+		SessionMessages.add(actionRequest, "feedbackStatusUpdated");
 	}
 
 	@Override

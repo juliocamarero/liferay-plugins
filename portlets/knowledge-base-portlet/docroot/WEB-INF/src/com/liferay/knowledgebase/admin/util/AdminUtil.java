@@ -169,16 +169,16 @@ public class AdminUtil {
 	public static String getEmailKBArticleFeedbackNotificationBody(
 		int status, PortletPreferences portletPreferences) {
 
-		if (status == KBCommentConstants.STATUS_IN_PROGRESS) {
+		if (status == KBCommentConstants.STATUS_COMPLETED) {
+			return AdminUtil.getEmailKBArticleFeedbackResolvedBody(
+				portletPreferences);
+		}
+		else if (status == KBCommentConstants.STATUS_IN_PROGRESS) {
 			return AdminUtil.getEmailKBArticleFeedbackInProgressBody(
 				portletPreferences);
 		}
-		else if (status == KBCommentConstants.STATUS_PENDING) {
+		else if (status == KBCommentConstants.STATUS_NEW) {
 			return AdminUtil.getEmailKBArticleFeedbackReceivedBody(
-				portletPreferences);
-		}
-		else if (status == KBCommentConstants.STATUS_RESOLVED) {
-			return AdminUtil.getEmailKBArticleFeedbackResolvedBody(
 				portletPreferences);
 		}
 		else {
@@ -190,16 +190,16 @@ public class AdminUtil {
 	public static String getEmailKBArticleFeedbackNotificationSubject(
 		int status, PortletPreferences portletPreferences) {
 
-		if (status == KBCommentConstants.STATUS_IN_PROGRESS) {
+		if (status == KBCommentConstants.STATUS_COMPLETED) {
+			return AdminUtil.getEmailKBArticleFeedbackResolvedSubject(
+				portletPreferences);
+		}
+		else if (status == KBCommentConstants.STATUS_IN_PROGRESS) {
 			return AdminUtil.getEmailKBArticleFeedbackInProgressSubject(
 				portletPreferences);
 		}
-		else if (status == KBCommentConstants.STATUS_PENDING) {
+		else if (status == KBCommentConstants.STATUS_NEW) {
 			return AdminUtil.getEmailKBArticleFeedbackReceivedSubject(
-				portletPreferences);
-		}
-		else if (status == KBCommentConstants.STATUS_RESOLVED) {
-			return AdminUtil.getEmailKBArticleFeedbackResolvedSubject(
 				portletPreferences);
 		}
 		else {
@@ -374,6 +374,10 @@ public class AdminUtil {
 
 			Attributes attributes = element.getAttributes();
 
+			if (attributes == null) {
+				continue;
+			}
+
 			Attribute changeTypeAttribute = attributes.get("changeType");
 
 			if (changeTypeAttribute != null) {
@@ -428,14 +432,14 @@ public class AdminUtil {
 	public static boolean isFeedbackStatusChangeNotificationEnabled(
 		int status, PortletPreferences preferences) {
 
-		if (status == KBCommentConstants.STATUS_IN_PROGRESS) {
+		if (status == KBCommentConstants.STATUS_COMPLETED) {
+			return getEmailKBArticleFeedbackResolvedEnabled(preferences);
+		}
+		else if (status == KBCommentConstants.STATUS_IN_PROGRESS) {
 			return getEmailKBArticleFeedbackInProgressEnabled(preferences);
 		}
-		else if (status == KBCommentConstants.STATUS_PENDING) {
+		else if (status == KBCommentConstants.STATUS_NEW) {
 			return getEmailKBArticleFeedbackReceivedEnabled(preferences);
-		}
-		else if (status == KBCommentConstants.STATUS_RESOLVED) {
-			return getEmailKBArticleFeedbackResolvedEnabled(preferences);
 		}
 		else {
 			return false;
