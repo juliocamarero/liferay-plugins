@@ -45,29 +45,6 @@ public class WebBundleDeployer {
 	}
 
 	public void close() {
-		Set<String> servletContextNames = ServletContextPool.keySet();
-
-		for (String servletContextName : servletContextNames) {
-			ServletContext servletContext = ServletContextPool.get(
-				servletContextName);
-
-			if (!(servletContext instanceof BundleServletContext)) {
-				continue;
-			}
-
-			BundleServletContext bundleServletContext =
-				(BundleServletContext)servletContext;
-
-			Bundle bundle = bundleServletContext.getBundle();
-
-			try {
-				doStop(bundle, servletContextName);
-			}
-			catch (Exception e) {
-				_log.error(e, e);
-			}
-		}
-
 		_webExtenderServlet = null;
 	}
 

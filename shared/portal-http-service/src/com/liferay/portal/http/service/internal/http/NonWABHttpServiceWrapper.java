@@ -135,14 +135,6 @@ public class NonWABHttpServiceWrapper extends HttpServiceWrapper {
 
 	protected void removeRegistration(Object object) {
 		_registrations.remove(object);
-
-		if (!_registrations.isEmpty()) {
-			return;
-		}
-
-		ServletContextPool.remove(bundleServletContext.getServletContextName());
-
-		bundleServletContext = null;
 	}
 
 	private List<Object> _registrations = new ArrayList<Object>();
