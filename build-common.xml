@@ -528,10 +528,10 @@ Error-Prone was automatically installed. Please rerun your task.
 							<if>
 								<isset property="compile-import-shared.import.shared" />
 								<then>
-									<var name="compile-import-shared.import.shared" value="portal-compat-shared,${compile-import-shared.import.shared}" />
+									<var name="compile-import-shared.import.shared" value="${compile-import-shared.import.shared}" />
 								</then>
 								<else>
-									<var name="compile-import-shared.import.shared" value="portal-compat-shared" />
+									<!-- <var name="compile-import-shared.import.shared" value="portal-compat-shared" /> -->
 								</else>
 							</if>
 						</then>

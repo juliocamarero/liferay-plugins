@@ -24,12 +24,7 @@ import java.io.UnsupportedEncodingException;
 
 import java.net.URLDecoder;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletRequestEvent;
-import javax.servlet.ServletRequestListener;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -40,15 +35,13 @@ public class BundleRequestDispatcher implements RequestDispatcher {
 
 	public BundleRequestDispatcher(
 		String servletMapping, boolean extensionMapping, String requestURI,
-		BundleServletContext bundleServletContext,
-		BundleFilterChain bundleFilterChain) {
+		BundleServletContext bundleServletContext) {
 
 		_servletMapping = servletMapping;
 		_extensionMapping = extensionMapping;
 		_requestURI = StringUtil.replace(
 			requestURI, StringPool.DOUBLE_SLASH, StringPool.SLASH);
 		_bundleServletContext = bundleServletContext;
-		_bundleFilterChain = bundleFilterChain;
 
 		if (!_extensionMapping) {
 			_servletPath = _servletMapping;
@@ -73,7 +66,8 @@ public class BundleRequestDispatcher implements RequestDispatcher {
 	}
 
 	public void doDispatch(
-			ServletRequest servletRequest, ServletResponse servletResponse)
+			ServletRequest servletRequest, ServletResponse servletResponse,
+			DispatcherType dispatcherType)
 		throws IOException, ServletException {
 
 		ClassLoader contextClassLoader =
@@ -95,7 +89,11 @@ public class BundleRequestDispatcher implements RequestDispatcher {
 				servletRequestListener.requestInitialized(servletRequestEvent);
 			}
 
-			_bundleFilterChain.doFilter(servletRequest, servletResponse);
+			BundleFilterChain bundleFilterChain =
+				_bundleServletContext.getFilterChain(
+					_requestURI, dispatcherType);
+
+			bundleFilterChain.doFilter(servletRequest, servletResponse);
 
 			for (ServletRequestListener servletRequestListener :
 					_bundleServletContext.getServletRequestListeners()) {
@@ -120,7 +118,8 @@ public class BundleRequestDispatcher implements RequestDispatcher {
 		BundleServletRequest bundleServletRequest = new BundleServletRequest(
 			this, (HttpServletRequest)servletRequest);
 
-		doDispatch(bundleServletRequest, servletResponse);
+		doDispatch(
+			bundleServletRequest, servletResponse, DispatcherType.FORWARD);
 	}
 
 	@Override
@@ -159,7 +158,8 @@ public class BundleRequestDispatcher implements RequestDispatcher {
 				JavaConstants.JAVAX_SERVLET_INCLUDE_PATH_INFO, _pathInfo);
 		}
 
-		doDispatch(bundleServletRequest, servletResponse);
+		doDispatch(
+			bundleServletRequest, servletResponse, DispatcherType.INCLUDE);
 	}
 
 	protected BundleServletContext getBundleServletContext() {
@@ -178,7 +178,6 @@ public class BundleRequestDispatcher implements RequestDispatcher {
 		return _servletPath;
 	}
 
-	private BundleFilterChain _bundleFilterChain;
 	private BundleServletContext _bundleServletContext;
 	private boolean _extensionMapping;
 	private String _pathInfo;

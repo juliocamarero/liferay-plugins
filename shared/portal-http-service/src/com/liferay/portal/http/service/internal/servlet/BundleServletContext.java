@@ -66,6 +66,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.RequestDispatcher;
@@ -237,6 +238,51 @@ public class BundleServletContext
 		return _bundle;
 	}
 
+	public BundleFilterChain getFilterChain(
+		String path, DispatcherType dispatcherType) {
+
+		BundleFilterChain bundleFilterChain = new BundleFilterChain();
+
+		for (FilterServiceRanking filterServiceRanking :
+			_filterServiceRankings) {
+
+			if (!matchDispatcherType(filterServiceRanking, dispatcherType)) {
+				continue;
+			}
+
+			String filterName = filterServiceRanking.getFilterName();
+
+			Filter filter = _filtersByFilterNames.get(filterName);
+
+			List<String> urlPatterns = filterServiceRanking.getUrlPatterns();
+
+			for (String urlPattern : urlPatterns) {
+				if (urlPattern.equals(path)) {
+					bundleFilterChain.addFilter(filter);
+
+					break;
+				}
+
+				if (urlPattern.contains(StringPool.STAR)) {
+					urlPattern = urlPattern.replaceAll(
+						"\\".concat(StringPool.STAR), ".*");
+				}
+
+				if (path.matches(urlPattern)) {
+					bundleFilterChain.addFilter(filter);
+				}
+			}
+		}
+
+		ExtensionMapping extensionMapping = getMatchingServletKey(path);
+
+		Servlet servlet = _servletsByURLPatterns.get(extensionMapping.getPath());
+
+		bundleFilterChain.setServlet(servlet);
+
+		return bundleFilterChain;
+	}
+
 	@Override
 	public ClassLoader getClassLoader() {
 		ClassLoader classLoader = (ClassLoader)_contextAttributes.get(
@@ -303,6 +349,50 @@ public class BundleServletContext
 		return path;
 	}
 
+	public ExtensionMapping getMatchingServletKey(String path) {
+		if (_servletsByURLPatterns.containsKey(path)) {
+			return new ExtensionMapping(false, path);
+		}
+
+		String extension = StringUtil.toLowerCase(FileUtil.getExtension(path));
+
+		boolean extensionMapping = false;
+
+		if (Validator.isNotNull(extension)) {
+			extension = "*.".concat(extension);
+
+			extensionMapping = true;
+		}
+
+		String alias = path.substring(0, path.lastIndexOf(StringPool.SLASH));
+
+		while (alias.length() != 0) {
+			if (_servletsByURLPatterns.containsKey(alias)) {
+				return new ExtensionMapping(false, alias);
+			}
+			else if (_servletsByURLPatterns.containsKey(
+				alias.concat(extension))) {
+
+				return new ExtensionMapping(true, alias.concat(extension));
+			}
+
+			alias = path.substring(0, alias.lastIndexOf(StringPool.SLASH));
+		}
+
+		if (_servletsByURLPatterns.containsKey(
+			StringPool.SLASH.concat(extension))) {
+
+			return new ExtensionMapping(
+				extensionMapping,StringPool.SLASH.concat(extension));
+		}
+
+		if (_servletsByURLPatterns.containsKey(StringPool.SLASH)) {
+			return new ExtensionMapping(false, StringPool.SLASH);
+		}
+
+		return null;
+	}
+
 	@Override
 	public RequestDispatcher getRequestDispatcher(String path) {
 		String portalContextPath = PortalUtil.getPathContext();
@@ -329,65 +419,12 @@ public class BundleServletContext
 			return null;
 		}
 
-		BundleFilterChain bundleFilterChain = getFilterChain(path);
+		ExtensionMapping extensionMapping =  getMatchingServletKey(path);
 
-		if (_servletsByURLPatterns.containsKey(path)) {
-			bundleFilterChain.setServlet(_servletsByURLPatterns.get(path));
-
+		if (extensionMapping != null) {
 			return new BundleRequestDispatcher(
-				path, false, path, this, bundleFilterChain);
-		}
-
-		String extension = StringUtil.toLowerCase(FileUtil.getExtension(path));
-
-		boolean extensionMapping = false;
-
-		if (Validator.isNotNull(extension)) {
-			extension = "*.".concat(extension);
-
-			extensionMapping = true;
-		}
-
-		String alias = path.substring(0, path.lastIndexOf(StringPool.SLASH));
-
-		while (alias.length() != 0) {
-			if (_servletsByURLPatterns.containsKey(alias)) {
-				bundleFilterChain.setServlet(_servletsByURLPatterns.get(alias));
-
-				return new BundleRequestDispatcher(
-					alias, false, path, this, bundleFilterChain);
-			}
-			else if (_servletsByURLPatterns.containsKey(
-						alias.concat(extension))) {
-
-				bundleFilterChain.setServlet(
-					_servletsByURLPatterns.get(alias.concat(extension)));
-
-				return new BundleRequestDispatcher(
-					alias.concat(extension), true, path, this,
-					bundleFilterChain);
-			}
-
-			alias = path.substring(0, alias.lastIndexOf(StringPool.SLASH));
-		}
-
-		if (_servletsByURLPatterns.containsKey(
-				StringPool.SLASH.concat(extension))) {
-
-			bundleFilterChain.setServlet(
-				_servletsByURLPatterns.get(StringPool.SLASH.concat(extension)));
-
-			return new BundleRequestDispatcher(
-				StringPool.SLASH.concat(extension), extensionMapping, path,
-				this, bundleFilterChain);
-		}
-
-		if (_servletsByURLPatterns.containsKey(StringPool.SLASH)) {
-			bundleFilterChain.setServlet(
-				_servletsByURLPatterns.get(StringPool.SLASH));
-
-			return new BundleRequestDispatcher(
-				StringPool.SLASH, false, path, this, bundleFilterChain);
+				extensionMapping.getPath(), extensionMapping.isExtension(),
+				path, this);
 		}
 
 		return null;
@@ -529,6 +566,8 @@ public class BundleServletContext
 
 			filterServiceRanking.setServiceRanking(serviceRanking);
 			filterServiceRanking.setUrlPattterns(urlPatterns);
+			filterServiceRanking.setDispatcherType(
+				getDispatcher(initParameters));
 
 			// Filters are sorted based on their service ranking value where the
 			// default service ranking is 10 for those filters that do not
@@ -597,7 +636,7 @@ public class BundleServletContext
 
 			if (listener instanceof HttpSessionAttributeListener) {
 				PortletSessionListenerManager.addHttpSessionAttributeListener(
-					(HttpSessionAttributeListener)listener);
+					(HttpSessionAttributeListener) listener);
 			}
 
 			if (listener instanceof HttpSessionBindingListener) {
@@ -894,37 +933,30 @@ public class BundleServletContext
 		}
 	}
 
-	protected BundleFilterChain getFilterChain(String path) {
-		BundleFilterChain bundleFilterChain = new BundleFilterChain();
+	protected boolean matchDispatcherType(
+		FilterServiceRanking filterServiceRanking,
+		DispatcherType dispatcherType) {
 
-		for (FilterServiceRanking filterServiceRanking :
-				_filterServiceRankings) {
+		return filterServiceRanking.getDispatcherType().equals(dispatcherType);
+	}
 
-			String filterName = filterServiceRanking.getFilterName();
+	protected DispatcherType getDispatcher(Map<String, String> parameters) {
+		String dispatcher = parameters.get("dispatcher");
 
-			Filter filter = _filtersByFilterNames.get(filterName);
-
-			List<String> urlPatterns = filterServiceRanking.getUrlPatterns();
-
-			for (String urlPattern : urlPatterns) {
-				if (urlPattern.equals(path)) {
-					bundleFilterChain.addFilter(filter);
-
-					break;
-				}
-
-				if (urlPattern.contains(StringPool.STAR)) {
-					urlPattern = urlPattern.replaceAll(
-						"\\".concat(StringPool.STAR), ".*");
-				}
-
-				if (path.matches(urlPattern)) {
-					bundleFilterChain.addFilter(filter);
-				}
-			}
+		if (dispatcher.equals(DispatcherType.FORWARD.name())) {
+			return DispatcherType.FORWARD;
+		}
+		else if (dispatcher.equals(DispatcherType.INCLUDE.name())) {
+			return DispatcherType.INCLUDE;
+		}
+		else if (dispatcher.equals(DispatcherType.ERROR.name())) {
+			return DispatcherType.ERROR;
+		}
+		else if (dispatcher.equals(DispatcherType.ASYNC.name())) {
+			return DispatcherType.ASYNC;
 		}
 
-		return bundleFilterChain;
+		return DispatcherType.REQUEST;
 	}
 
 	protected File getTempDir() {
@@ -1113,6 +1145,24 @@ public class BundleServletContext
 		new ConcurrentHashMap<String, Servlet>();
 	private File _tempDir;
 
+	private class ExtensionMapping {
+		public ExtensionMapping(boolean extension, String path) {
+			_extension = extension;
+			_path = path;
+		}
+
+		public boolean isExtension() {
+			return _extension;
+		}
+
+		public String getPath() {
+			return _path;
+		}
+
+		private boolean _extension;
+		private String _path;
+	}
+
 	private class FilterServiceRanking {
 
 		@Override
@@ -1131,6 +1181,10 @@ public class BundleServletContext
 			return false;
 		}
 
+		public DispatcherType getDispatcherType() {
+			return _dispatcherType;
+		}
+
 		public String getFilterName() {
 			return _filterName;
 		}
@@ -1147,6 +1201,9 @@ public class BundleServletContext
 			return _urlPatterns;
 		}
 
+		public void setDispatcherType(DispatcherType dispatcherType) {
+			_dispatcherType = dispatcherType;
+		}
 		public void setFilterName(String filterName) {
 			_filterName = filterName;
 		}
@@ -1159,6 +1216,7 @@ public class BundleServletContext
 			_urlPatterns = urlMappings;
 		}
 
+		private DispatcherType _dispatcherType;
 		private String _filterName;
 		private int _serviceRanking;
 		private long _timestamp = System.currentTimeMillis();
