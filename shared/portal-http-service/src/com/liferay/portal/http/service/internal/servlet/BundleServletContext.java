@@ -14,8 +14,6 @@
 
 package com.liferay.portal.http.service.internal.servlet;
 
-import com.liferay.compat.portal.kernel.util.HttpUtil;
-import com.liferay.compat.portal.kernel.util.StringUtil;
 import com.liferay.portal.apache.bridges.struts.LiferayServletContext;
 import com.liferay.portal.http.service.internal.http.DefaultHttpContext;
 import com.liferay.portal.http.service.internal.http.HttpServiceTracker;
@@ -29,10 +27,12 @@ import com.liferay.portal.kernel.servlet.PortletSessionListenerManager;
 import com.liferay.portal.kernel.servlet.ServletContextPool;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.PropertiesUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.DocumentException;
@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.lang.System;
 import java.net.URL;
 
 import java.util.ArrayList;
@@ -1275,6 +1276,13 @@ public class BundleServletContext
 		public int compare(
 			FilterServiceRanking filterServiceRanking1,
 			FilterServiceRanking filterServiceRanking2) {
+
+			int compareTo = filterServiceRanking1.getFilterName().compareTo(
+				filterServiceRanking2.getFilterName());
+
+			if (compareTo != 0) {
+				return compareTo;
+			}
 
 			if (filterServiceRanking1.getServiceRanking() <
 					filterServiceRanking2.getServiceRanking()) {
