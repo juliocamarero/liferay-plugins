@@ -1,0 +1,9 @@
+Bundle-Name: Shipping Impl
+Bundle-SymbolicName: com.liferay.shipping.impl
+Bundle-Version: 1.0.0
+Import-Package:\
+	com.liferay.shipping.api.model,\
+	com.liferay.shipping.api.util,\
+	*;resolution:="optional"
+Private-Package: com.liferay.shipping.impl.*
+Service-Component: com.liferay.shipping.impl.*

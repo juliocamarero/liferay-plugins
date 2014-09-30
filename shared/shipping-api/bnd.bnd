@@ -1,0 +1,7 @@
+Bundle-Name: Shipping API
+Bundle-SymbolicName: com.liferay.shipping.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.shipping.api.model,\
+	com.liferay.shipping.api.util
+Service-Component: com.liferay.shipping.api.*

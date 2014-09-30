@@ -1,0 +1,5 @@
+Bundle-Name: Shipping Extension Europe
+Bundle-SymbolicName: com.liferay.shipping.extension.europe
+Bundle-Version: 1.0.0
+Include-Resource: classes
+Service-Component: com.liferay.shipping.extension.europe.*

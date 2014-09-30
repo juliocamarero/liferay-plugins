@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<project name="shipping-api" basedir="." default="compile">
+	<property name="plugin.version" value="1" />
+
+	<property name="import.shared" value="shipping-api" />
+
+	<import file="../../build-common-osgi-plugin.xml" />
+</project>
