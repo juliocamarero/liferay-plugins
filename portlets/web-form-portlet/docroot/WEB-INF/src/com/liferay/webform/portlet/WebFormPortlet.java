@@ -287,12 +287,8 @@ public class WebFormPortlet extends MVCPortlet {
 
 			fieldLabels.add(fieldLabel);
 
-			sb.append(prepareFieldForCSVExport(localizedfieldLabel));
+			sb.append(prepareFieldForCSVExport(localizedfieldLabel, i == 1));
 		}
-
-		sb.delete(
-			sb.length() - PortletPropsValues.CSV_SEPARATOR.length(),
-			sb.length());
 
 		sb.append(CharPool.NEW_LINE);
 
@@ -302,18 +298,18 @@ public class WebFormPortlet extends MVCPortlet {
 				databaseTableName, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 
 			for (ExpandoRow row : rows) {
+				boolean firstField = true;
+
 				for (String fieldName : fieldLabels) {
 					String data = ExpandoValueLocalServiceUtil.getData(
 						themeDisplay.getCompanyId(),
 						WebFormUtil.class.getName(), databaseTableName,
 						fieldName, row.getClassPK(), StringPool.BLANK);
 
-					sb.append(prepareFieldForCSVExport(data));
-				}
+					sb.append(prepareFieldForCSVExport(data, firstField));
 
-				sb.delete(
-					sb.length() - PortletPropsValues.CSV_SEPARATOR.length(),
-					sb.length());
+					firstField = false;
+				}
 
 				sb.append(CharPool.NEW_LINE);
 			}
@@ -342,15 +338,20 @@ public class WebFormPortlet extends MVCPortlet {
 		return sb.toString();
 	}
 
-	protected String prepareFieldForCSVExport(String fieldValue) {
+	protected String prepareFieldForCSVExport(
+		String fieldValue, boolean firstField) {
+
 		StringBundler sb = new StringBundler(4);
+
+		if (!firstField) {
+			sb.append(PortletPropsValues.CSV_SEPARATOR);
+		}
 
 		sb.append(CharPool.QUOTE);
 		sb.append(
 			StringUtil.replace(
 				fieldValue, CharPool.QUOTE, StringPool.DOUBLE_QUOTE));
 		sb.append(CharPool.QUOTE);
-		sb.append(PortletPropsValues.CSV_SEPARATOR);
 
 		return sb.toString();
 	}
@@ -392,20 +393,19 @@ public class WebFormPortlet extends MVCPortlet {
 
 		StringBuilder sb = new StringBuilder();
 
+		boolean firstField = true;
+
 		for (String fieldLabel : fieldsMap.keySet()) {
 			String fieldValue = fieldsMap.get(fieldLabel);
 
-			sb.append(prepareFieldForCSVExport(fieldValue));
+			sb.append(prepareFieldForCSVExport(fieldValue, firstField));
+			firstField = false;
 		}
 
-		String s =
-			sb.substring(
-				0,
-				sb.length() - PortletPropsValues.CSV_SEPARATOR.length()) +
-					StringPool.NEW_LINE;
+		sb.append(CharPool.NEW_LINE);
 
 		try {
-			FileUtil.write(fileName, s, false, true);
+			FileUtil.write(fileName, sb.toString(), false, true);
 
 			return true;
 		}
