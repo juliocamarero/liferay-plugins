@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+
+<project name="shipping-web" basedir="." default="compile">
+	<property name="osgi.ide.dependencies" value="bnd.jar,freemarker.jar" />
+
+	<property name="import.shared" value="shipping-api" />
+
+	<import file="../../build-common-osgi-plugin.xml" />
+</project>

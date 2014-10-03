@@ -1,0 +1,5 @@
+Bundle-Activator: com.liferay.shipping.runtime.dependencies.internal.osgi.RuntimeDependenciesActivator
+Bundle-Name: Shipping Runtime Dependencies
+Bundle-SymbolicName: com.liferay.shipping.runtime.dependencies
+Bundle-Version: 1.0.0
+Include-Resource: classes

@@ -1,0 +1,5 @@
+Bundle-Name: Shipping Extension USA
+Bundle-SymbolicName: com.liferay.shipping.extension.usa
+Bundle-Version: 1.0.0
+Include-Resource: classes
+Service-Component: com.liferay.shipping.extension.usa.*
