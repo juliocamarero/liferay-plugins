@@ -270,7 +270,7 @@ public class WebFormPortlet extends MVCPortlet {
 			"databaseTableName", StringPool.BLANK);
 		String title = preferences.getValue("title", "no-title");
 
-		StringBuilder sb = new StringBuilder();
+		StringBundler sb = new StringBundler();
 
 		List<String> fieldLabels = new ArrayList<String>();
 
@@ -287,8 +287,11 @@ public class WebFormPortlet extends MVCPortlet {
 
 			fieldLabels.add(fieldLabel);
 
-			sb.append(prepareFieldForCSVExport(localizedfieldLabel, i == 1));
+			sb.append(getCSVFormatedValue(localizedfieldLabel));
+			sb.append(PortletPropsValues.CSV_SEPARATOR);
 		}
+
+		sb.setIndex(sb.index() - 1);
 
 		sb.append(CharPool.NEW_LINE);
 
@@ -298,18 +301,17 @@ public class WebFormPortlet extends MVCPortlet {
 				databaseTableName, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 
 			for (ExpandoRow row : rows) {
-				boolean firstField = true;
-
 				for (String fieldName : fieldLabels) {
 					String data = ExpandoValueLocalServiceUtil.getData(
 						themeDisplay.getCompanyId(),
 						WebFormUtil.class.getName(), databaseTableName,
 						fieldName, row.getClassPK(), StringPool.BLANK);
 
-					sb.append(prepareFieldForCSVExport(data, firstField));
-
-					firstField = false;
+					sb.append(getCSVFormatedValue(data));
+					sb.append(PortletPropsValues.CSV_SEPARATOR);
 				}
+
+				sb.setIndex(sb.index() - 1);
 
 				sb.append(CharPool.NEW_LINE);
 			}
@@ -323,8 +325,19 @@ public class WebFormPortlet extends MVCPortlet {
 			resourceRequest, resourceResponse, fileName, bytes, contentType);
 	}
 
+	protected String getCSVFormatedValue(String value) {
+		StringBundler sb = new StringBundler(3);
+
+		sb.append(CharPool.QUOTE);
+		sb.append(
+			StringUtil.replace(value, CharPool.QUOTE, StringPool.DOUBLE_QUOTE));
+		sb.append(CharPool.QUOTE);
+
+		return sb.toString();
+	}
+
 	protected String getMailBody(Map<String, String> fieldsMap) {
-		StringBuilder sb = new StringBuilder();
+		StringBundler sb = new StringBundler();
 
 		for (String fieldLabel : fieldsMap.keySet()) {
 			String fieldValue = fieldsMap.get(fieldLabel);
@@ -334,24 +347,6 @@ public class WebFormPortlet extends MVCPortlet {
 			sb.append(fieldValue);
 			sb.append(CharPool.NEW_LINE);
 		}
-
-		return sb.toString();
-	}
-
-	protected String prepareFieldForCSVExport(
-		String fieldValue, boolean firstField) {
-
-		StringBundler sb = new StringBundler(4);
-
-		if (!firstField) {
-			sb.append(PortletPropsValues.CSV_SEPARATOR);
-		}
-
-		sb.append(CharPool.QUOTE);
-		sb.append(
-			StringUtil.replace(
-				fieldValue, CharPool.QUOTE, StringPool.DOUBLE_QUOTE));
-		sb.append(CharPool.QUOTE);
 
 		return sb.toString();
 	}
@@ -391,16 +386,16 @@ public class WebFormPortlet extends MVCPortlet {
 		// CSV_SEPARATOR, quote each entry with double quotes, and escape
 		// double quotes in values a two double quotes.
 
-		StringBuilder sb = new StringBuilder();
-
-		boolean firstField = true;
+		StringBundler sb = new StringBundler();
 
 		for (String fieldLabel : fieldsMap.keySet()) {
 			String fieldValue = fieldsMap.get(fieldLabel);
 
-			sb.append(prepareFieldForCSVExport(fieldValue, firstField));
-			firstField = false;
+			sb.append(getCSVFormatedValue(fieldValue));
+			sb.append(PortletPropsValues.CSV_SEPARATOR);
 		}
+
+		sb.setIndex(sb.index() - 1);
 
 		sb.append(CharPool.NEW_LINE);
 
