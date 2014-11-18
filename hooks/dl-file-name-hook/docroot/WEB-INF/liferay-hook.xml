@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hook PUBLIC "-//Liferay//DTD Hook 6.2.0//EN" "http://www.liferay.com/dtd/liferay-hook_6_2_0.dtd">
+
+<hook>
+	<portal-properties>portal.properties</portal-properties>
+	<indexer-post-processor>
+		<indexer-class-name>com.liferay.portlet.documentlibrary.model.DLFileEntry</indexer-class-name>
+		<indexer-post-processor-impl>com.liferay.dlfilename.hook.util.DLFileNameIndexerPostProcessor</indexer-post-processor-impl>
+	</indexer-post-processor>
+	<service>
+		<service-type>com.liferay.portlet.asset.service.AssetEntryLocalService</service-type>
+		<service-impl>com.liferay.dlfilename.hook.service.impl.DLFileNameAssetEntryLocalServiceImpl</service-impl>
+	</service>
+	<service>
+		<service-type>com.liferay.portlet.asset.service.AssetEntryService</service-type>
+		<service-impl>com.liferay.dlfilename.hook.service.impl.DLFileNameAssetEntryServiceImpl</service-impl>
+	</service>
+	<service>
+		<service-type>com.liferay.portal.service.BackgroundTaskLocalService</service-type>
+		<service-impl>com.liferay.dlfilename.hook.service.impl.DLFileNameBackgroundTaskLocalServiceImpl</service-impl>
+	</service>
+	<service>
+		<service-type>com.liferay.portal.service.BackgroundTaskService</service-type>
+		<service-impl>com.liferay.dlfilename.hook.service.impl.DLFileNameBackgroundTaskServiceImpl</service-impl>
+	</service>
+	<service>
+		<service-type>com.liferay.portlet.documentlibrary.service.DLAppLocalService</service-type>
+		<service-impl>com.liferay.dlfilename.hook.service.impl.DLFileNameDLAppLocalServiceImpl</service-impl>
+	</service>
+	<service>
+		<service-type>com.liferay.portlet.documentlibrary.service.DLAppService</service-type>
+		<service-impl>com.liferay.dlfilename.hook.service.impl.DLFileNameDLAppServiceImpl</service-impl>
+	</service>
+	<service>
+		<service-type>com.liferay.portlet.documentlibrary.service.DLFileEntryLocalService</service-type>
+		<service-impl>com.liferay.dlfilename.hook.service.impl.DLFileNameDLFileEntryLocalServiceImpl</service-impl>
+	</service>
+</hook>

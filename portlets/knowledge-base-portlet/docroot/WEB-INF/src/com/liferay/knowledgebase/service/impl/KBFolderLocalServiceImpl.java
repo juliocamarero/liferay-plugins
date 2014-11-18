@@ -14,7 +14,8 @@
 
 package com.liferay.knowledgebase.service.impl;
 
-import com.liferay.knowledgebase.InvalidKBFolderException;
+import com.liferay.knowledgebase.DuplicateKBFolderNameException;
+import com.liferay.knowledgebase.InvalidKBFolderNameException;
 import com.liferay.knowledgebase.NoSuchFolderException;
 import com.liferay.knowledgebase.model.KBFolder;
 import com.liferay.knowledgebase.model.KBFolderConstants;
@@ -23,6 +24,7 @@ import com.liferay.knowledgebase.util.KnowledgeBaseUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
 
@@ -49,6 +51,7 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 		User user = userPersistence.findByPrimaryKey(userId);
 		Date now = new Date();
 
+		validateName(groupId, parentResourcePrimKey, name);
 		validateParent(parentResourceClassNameId, parentResourcePrimKey);
 
 		long kbFolderId = counterLocalService.increment();
@@ -237,6 +240,23 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 		return uniqueUrlTitle;
 	}
 
+	protected void validateName(
+			long groupId, long parentKBFolderId, String name)
+		throws PortalException, SystemException {
+
+		if (Validator.isNull(name)) {
+			throw new InvalidKBFolderNameException("KB folder name is null");
+		}
+
+		KBFolder kbFolder = kbFolderPersistence.fetchByG_P_N(
+			groupId, parentKBFolderId, name);
+
+		if (kbFolder != null) {
+			throw new DuplicateKBFolderNameException(
+				String.format("A KB folder with name %s already exists", name));
+		}
+	}
+
 	protected void validateParent(KBFolder kbFolder, KBFolder parentKBFolder)
 		throws PortalException, SystemException {
 
@@ -252,7 +272,7 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 		getSubfolderIds(kbFolder, subfolderIds);
 
 		if (subfolderIds.contains(parentKBFolder.getKbFolderId())) {
-			throw new InvalidKBFolderException(
+			throw new InvalidKBFolderNameException(
 				String.format(
 					"Cannot move KBFolder %s inside its descendant KBFolder %s",
 					kbFolder.getKbFolderId(), parentKBFolder.getKbFolderId()));

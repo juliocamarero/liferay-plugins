@@ -20,9 +20,11 @@ import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.pushnotifications.service.ClpSerializer;
 import com.liferay.pushnotifications.service.PushNotificationsDeviceLocalServiceUtil;
 import com.liferay.pushnotifications.service.PushNotificationsDeviceServiceUtil;
+import com.liferay.pushnotifications.service.PushNotificationsEntryLocalServiceUtil;
+import com.liferay.pushnotifications.service.PushNotificationsEntryServiceUtil;
 
 /**
- * @author Silvio Santos
+ * @author Bruno Farache
  */
 public class ClpMessageListener extends BaseMessageListener {
 	public static String getServletContextName() {
@@ -39,6 +41,9 @@ public class ClpMessageListener extends BaseMessageListener {
 			PushNotificationsDeviceLocalServiceUtil.clearService();
 
 			PushNotificationsDeviceServiceUtil.clearService();
+			PushNotificationsEntryLocalServiceUtil.clearService();
+
+			PushNotificationsEntryServiceUtil.clearService();
 		}
 	}
 }

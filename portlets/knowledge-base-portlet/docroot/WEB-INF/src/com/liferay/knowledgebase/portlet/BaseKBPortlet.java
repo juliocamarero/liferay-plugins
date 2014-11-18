@@ -30,6 +30,7 @@ import com.liferay.knowledgebase.service.KBArticleServiceUtil;
 import com.liferay.knowledgebase.service.KBCommentLocalServiceUtil;
 import com.liferay.knowledgebase.service.KBCommentServiceUtil;
 import com.liferay.knowledgebase.service.KBFolderServiceUtil;
+import com.liferay.knowledgebase.util.KnowledgeBaseConstants;
 import com.liferay.knowledgebase.util.WebKeys;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -100,7 +101,7 @@ public abstract class BaseKBPortlet extends MVCPortlet {
 
 			KBArticleServiceUtil.addTempAttachment(
 				themeDisplay.getScopeGroupId(), resourcePrimKey, sourceFileName,
-				_TEMP_FOLDER_NAME, inputStream, mimeType);
+				KnowledgeBaseConstants.TEMP_FOLDER_NAME, inputStream, mimeType);
 		}
 		finally {
 			StreamUtil.cleanUp(inputStream);
@@ -132,7 +133,7 @@ public abstract class BaseKBPortlet extends MVCPortlet {
 
 		KBCommentServiceUtil.deleteKBComment(kbCommentId);
 
-		SessionMessages.add(actionRequest, "feedbackDeleted");
+		SessionMessages.add(actionRequest, "suggestionDeleted");
 	}
 
 	public void deleteTempAttachment(
@@ -151,7 +152,7 @@ public abstract class BaseKBPortlet extends MVCPortlet {
 		try {
 			KBArticleServiceUtil.deleteTempAttachment(
 				themeDisplay.getScopeGroupId(), resourcePrimKey, fileName,
-				_TEMP_FOLDER_NAME);
+				KnowledgeBaseConstants.TEMP_FOLDER_NAME);
 
 			jsonObject.put("deleted", Boolean.TRUE);
 		}
@@ -394,7 +395,7 @@ public abstract class BaseKBPortlet extends MVCPortlet {
 				serviceContext);
 		}
 
-		SessionMessages.add(actionRequest, "feedbackSaved");
+		SessionMessages.add(actionRequest, "suggestionSaved");
 	}
 
 	public void updateKBCommentStatus(
@@ -410,7 +411,7 @@ public abstract class BaseKBPortlet extends MVCPortlet {
 
 		KBCommentServiceUtil.updateStatus(kbCommentId, status, serviceContext);
 
-		SessionMessages.add(actionRequest, "feedbackStatusUpdated");
+		SessionMessages.add(actionRequest, "suggestionStatusUpdated");
 	}
 
 	protected String buildEditURL(
@@ -480,8 +481,5 @@ public abstract class BaseKBPortlet extends MVCPortlet {
 
 		return false;
 	}
-
-	private static final String _TEMP_FOLDER_NAME =
-		BaseKBPortlet.class.getName();
 
 }

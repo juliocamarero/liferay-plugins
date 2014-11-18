@@ -15,7 +15,6 @@
 package com.liferay.sync.filter;
 
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.StringPool;
@@ -24,6 +23,7 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.sync.SyncServicesUnavailableException;
 import com.liferay.sync.util.PortletPropsKeys;
 import com.liferay.sync.util.PortletPropsValues;
+import com.liferay.sync.util.SyncUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -83,9 +83,10 @@ public class SyncJSONFilter implements Filter {
 
 		OutputStream outputStream = servletResponse.getOutputStream();
 
-		String json = JSONFactoryUtil.serializeThrowable(
-			new SyncServicesUnavailableException(
-				SyncServicesUnavailableException.class.getName()));
+		String json = SyncUtil.buildExceptionMessage(
+			new SyncServicesUnavailableException());
+
+		json = "{\"exception\": \"" + json + "\"}";
 
 		outputStream.write(json.getBytes(StringPool.UTF8));
 

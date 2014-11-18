@@ -419,9 +419,9 @@
 					/>
 
 					<path id="plugin-lib.classpath">
-						<path refid="portal.classpath" />
 						<fileset dir="@{module.dir}/lib" erroronmissingdir="false" includes="*.jar" />
 						<pathelement path="${plugin-lib.classpath.path}" />
+						<path refid="portal.classpath" />
 					</path>
 
 					<var name="plugin-lib.classpath.path" unset="true" />
@@ -497,12 +497,21 @@
 
 									<ivy:settings file="${ivy.custom.settings.file}" />
 
+									<if>
+										<antelope:endswith string="@{module.dir}" with="solr4-shared" />
+										<then>
+											<var name="ivy.checksums" value="" />
+										</then>
+									</if>
+
 									<ivy:resolve
 										conf="default"
 										file="@{ivy.xml.dir}/ivy.xml"
 										log="download-only"
 										transitive="${plugin.ivy.resolve.transitive.dependencies}"
 									/>
+
+									<var name="ivy.checksums" unset="true" />
 
 									<if>
 										<not>
