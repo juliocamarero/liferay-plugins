@@ -37,9 +37,9 @@ String[] sections = AdminUtil.unescapeSections(BeanPropertiesUtil.getString(kbAr
 
 <liferay-portlet:actionURL name="updateKBArticle" var="updateKBArticleURL" />
 
-<aui:form action="<%= updateKBArticleURL %>" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "updateKBArticle();" %>'>
+<aui:form action="<%= updateKBArticleURL %>" method="post" name="fm">
 	<aui:input name="mvcPath" type="hidden" value='<%= templatePath + "edit_article.jsp" %>' />
-	<aui:input name="<%= Constants.CMD %>" type="hidden" />
+	<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= (kbArticle == null) ? Constants.ADD : Constants.UPDATE %>" />
 	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
 	<aui:input name="resourcePrimKey" type="hidden" value="<%= String.valueOf(resourcePrimKey) %>" />
 	<aui:input name="parentResourceClassNameId" type="hidden" value="<%= parentResourceClassNameId %>" />
@@ -47,6 +47,7 @@ String[] sections = AdminUtil.unescapeSections(BeanPropertiesUtil.getString(kbAr
 	<aui:input name="workflowAction" type="hidden" value="<%= WorkflowConstants.ACTION_SAVE_DRAFT %>" />
 
 	<liferay-ui:error exception="<%= DuplicateFileException.class %>" message="please-enter-a-unique-document-name" />
+	<liferay-ui:error exception="<%= DuplicateKBArticleUrlTitleException.class %>" message="please-enter-a-unique-friendly-url" />
 	<liferay-ui:error exception="<%= FileNameException.class %>" message="please-enter-a-file-with-a-valid-file-name" />
 
 	<liferay-ui:error exception="<%= FileSizeException.class %>">
@@ -64,6 +65,7 @@ String[] sections = AdminUtil.unescapeSections(BeanPropertiesUtil.getString(kbAr
 		<liferay-ui:message arguments="<%= fileMaxSize %>" key="please-enter-a-file-with-a-valid-file-size-no-larger-than-x" translateArguments="<%= false %>" />
 	</liferay-ui:error>
 
+	<liferay-ui:error exception="<%= InvalidKBArticleUrlTitleException.class %>" message="please-enter-a-friendly-url-that-starts-with-a-slash-and-contains-alphanumeric-characters-dashes-and-underscores" />
 	<liferay-ui:error exception="<%= KBArticleContentException.class %>" message="please-enter-valid-content" />
 	<liferay-ui:error exception="<%= KBArticleSourceURLException.class %>" message="please-enter-a-valid-source-url" />
 	<liferay-ui:error exception="<%= KBArticleTitleException.class %>" message="please-enter-a-valid-title" />
@@ -93,11 +95,35 @@ String[] sections = AdminUtil.unescapeSections(BeanPropertiesUtil.getString(kbAr
 	</c:if>
 
 	<aui:fieldset>
-		<aui:input name="title" />
+		<aui:input name="title" required="<%= true %>" />
 
-		<aui:input disabled="<%= kbArticle != null %>" label="friendly-url" name="urlTitle" />
+		<aui:field-wrapper cssClass="input-append input-flex-add-on input-prepend" helpMessage='<%= LanguageUtil.format(pageContext, "for-example-x", "<em>/introduction-to-service-builder</em>") %>' label="friendly-url">
 
-		<aui:field-wrapper label="content">
+			<%
+			StringBundler sb = new StringBundler();
+
+			sb.append("/-/");
+
+			Portlet portlet = PortletLocalServiceUtil.getPortletById(portletDisplay.getId());
+
+			sb.append(portlet.getFriendlyURLMapping());
+
+			long kbFolderId = KnowledgeBaseUtil.getKBFolderId(parentResourceClassNameId, parentResourcePrimKey);
+
+			if (kbFolderId != KBFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
+				KBFolder kbFolder = KBFolderLocalServiceUtil.getKBFolder(kbFolderId);
+
+				sb.append(StringPool.SLASH);
+				sb.append(kbFolder.getUrlTitle());
+			}
+			%>
+
+			<span class="add-on" id="<portlet:namespace />urlBase"><liferay-ui:message key="<%= StringUtil.shorten(sb.toString(), 40) %>" /></span>
+
+			<aui:input cssClass="input-medium" disabled="<%= kbArticle != null %>" label="" name="urlTitle" placeholder="/sample-article-url-title" value="<%= (kbArticle == null ? StringPool.BLANK : (StringPool.SLASH + kbArticle.getUrlTitle())) %>" />
+		</aui:field-wrapper>
+
+		<aui:field-wrapper label="content" required="<%= true %>">
 			<liferay-ui:input-editor width="100%" />
 
 			<aui:input name="content" type="hidden" />
@@ -170,7 +196,7 @@ String[] sections = AdminUtil.unescapeSections(BeanPropertiesUtil.getString(kbAr
 
 		<aui:button-row cssClass="kb-submit-buttons">
 			<c:if test="<%= (kbArticle == null) || !kbArticle.isPending() %>">
-				<aui:button onClick='<%= renderResponse.getNamespace() + "publishKBArticle();" %>' type="submit" value='<%= WorkflowDefinitionLinkLocalServiceUtil.hasWorkflowDefinitionLink(themeDisplay.getCompanyId(), scopeGroupId, KBArticle.class.getName()) ? "submit-for-publication" : "publish" %>' />
+				<aui:button name="publish" type="submit" value='<%= WorkflowDefinitionLinkLocalServiceUtil.hasWorkflowDefinitionLink(themeDisplay.getCompanyId(), scopeGroupId, KBArticle.class.getName()) ? "submit-for-publication" : "publish" %>' />
 			</c:if>
 
 			<aui:button primary="<%= false %>" type="submit" value='<%= (kbArticle == null) || kbArticle.isApproved() || kbArticle.isDraft() ? "save-as-draft" : "save" %>' />
@@ -181,50 +207,90 @@ String[] sections = AdminUtil.unescapeSections(BeanPropertiesUtil.getString(kbAr
 </aui:form>
 
 <aui:script>
-	Liferay.provide(
-		window,
-		'<portlet:namespace />updateMultipleKBArticleAttachments',
-		function() {
-			var A = AUI();
-			var Lang = A.Lang;
-
-			var selectedFileNameContainer = A.one('#<portlet:namespace />selectedFileNameContainer');
-
-			var inputTpl = '<input id="<portlet:namespace />selectedFileName{0}" name="<portlet:namespace />selectedFileName" type="hidden" value="{1}" />';
-
-			var values = A.all('input[name=<portlet:namespace />selectUploadedFileCheckbox]:checked').val();
-
-			var buffer = [];
-			var dataBuffer = [];
-			var length = values.length;
-
-			for (var i = 0; i < length; i++) {
-				dataBuffer[0] = i;
-				dataBuffer[1] = values[i];
-
-				buffer[i] = Lang.sub(inputTpl, dataBuffer);
-			}
-
-			selectedFileNameContainer.html(buffer.join(''));
-		},
-		['aui-base']
-	);
-
 	function <portlet:namespace />initEditor() {
 		return '<%= UnicodeFormatter.toString(content) %>';
 	}
+</aui:script>
 
-	function <portlet:namespace />publishKBArticle() {
-		document.<portlet:namespace />fm.<portlet:namespace />workflowAction.value = '<%= WorkflowConstants.ACTION_PUBLISH %>';
-		<portlet:namespace />updateKBArticle();
-	}
+<aui:script use="aui-base,event-input">
+	var A = AUI();
 
-	function <portlet:namespace />updateKBArticle() {
-		document.<portlet:namespace />fm.<portlet:namespace /><%= Constants.CMD %>.value = '<%= (kbArticle == null) ? Constants.ADD : Constants.UPDATE %>';
-		document.<portlet:namespace />fm.<portlet:namespace />content.value = window.<portlet:namespace />editor.getHTML();
+	var titleInput = A.one('#<portlet:namespace />title');
+	var urlTitleInput = A.one('#<portlet:namespace />urlTitle');
 
-		<portlet:namespace />updateMultipleKBArticleAttachments();
+	var urlTitleCustomized = false;
 
-		submitForm(document.<portlet:namespace />fm);
-	}
+	titleInput.on(
+		'input',
+		function(event) {
+			if (urlTitleCustomized) {
+				return;
+			}
+
+			var urlTitle = titleInput.val();
+
+			urlTitle = urlTitle.replace(/[^a-zA-Z0-9_-]/g, '-');
+
+			if (urlTitle[0] === '-') {
+				urlTitle = urlTitle.replace(/^-+/, '');
+			}
+
+			urlTitle = urlTitle.replace(/--+/g, '-');
+
+			urlTitleInput.val('/' + urlTitle.toLowerCase());
+		}
+	);
+
+	urlTitleInput.on(
+		'input',
+		function() {
+			urlTitleCustomized = true;
+		}
+	);
+
+	var form = A.one('#<portlet:namespace />fm');
+	var publishButton = form.one('#<portlet:namespace />publish');
+
+	publishButton.on(
+		'click',
+		function() {
+			var workflowActionInput = form.one('#<portlet:namespace />workflowAction');
+
+			workflowActionInput.val('<%= WorkflowConstants.ACTION_PUBLISH %>');
+		}
+	);
+
+	form.on(
+		'submit',
+		function() {
+			var contentInput = form.one('#<portlet:namespace />content');
+
+			contentInput.val(<portlet:namespace />editor.getHTML());
+
+			updateMultipleKBArticleAttachments();
+		}
+	);
+
+	var updateMultipleKBArticleAttachments = function() {
+		var Lang = A.Lang;
+
+		var selectedFileNameContainer = A.one('#<portlet:namespace />selectedFileNameContainer');
+
+		var inputTpl = '<input id="<portlet:namespace />selectedFileName{0}" name="<portlet:namespace />selectedFileName" type="hidden" value="{1}" />';
+
+		var values = A.all('input[name=<portlet:namespace />selectUploadedFileCheckbox]:checked').val();
+
+		var buffer = [];
+		var dataBuffer = [];
+		var length = values.length;
+
+		for (var i = 0; i < length; i++) {
+			dataBuffer[0] = i;
+			dataBuffer[1] = values[i];
+
+			buffer[i] = Lang.sub(inputTpl, dataBuffer);
+		}
+
+		selectedFileNameContainer.html(buffer.join(''));
+	};
 </aui:script>

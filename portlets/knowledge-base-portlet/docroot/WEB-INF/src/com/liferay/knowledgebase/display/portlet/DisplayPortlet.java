@@ -17,25 +17,36 @@ package com.liferay.knowledgebase.display.portlet;
 import com.liferay.knowledgebase.NoSuchArticleException;
 import com.liferay.knowledgebase.NoSuchCommentException;
 import com.liferay.knowledgebase.model.KBArticle;
+import com.liferay.knowledgebase.model.KBArticleConstants;
+import com.liferay.knowledgebase.model.KBFolder;
 import com.liferay.knowledgebase.model.KBFolderConstants;
 import com.liferay.knowledgebase.portlet.BaseKBPortlet;
 import com.liferay.knowledgebase.service.KBArticleLocalServiceUtil;
 import com.liferay.knowledgebase.service.KBArticleServiceUtil;
+import com.liferay.knowledgebase.service.KBFolderLocalServiceUtil;
+import com.liferay.knowledgebase.service.KBFolderServiceUtil;
 import com.liferay.knowledgebase.service.permission.KBArticlePermission;
+import com.liferay.knowledgebase.service.permission.KBFolderPermission;
 import com.liferay.knowledgebase.util.ActionKeys;
+import com.liferay.knowledgebase.util.KnowledgeBaseUtil;
+import com.liferay.knowledgebase.util.PortletKeys;
 import com.liferay.knowledgebase.util.WebKeys;
 import com.liferay.knowledgebase.util.comparator.KBArticlePriorityComparator;
 import com.liferay.portal.NoSuchSubscriptionException;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Tuple;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.security.auth.PrincipalException;
-import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.PortalPreferences;
+import com.liferay.portlet.PortletPreferencesFactoryUtil;
 
 import java.io.IOException;
 
@@ -70,25 +81,51 @@ public class DisplayPortlet extends BaseKBPortlet {
 
 			KBArticle kbArticle = null;
 
-			long resourcePrimKey = getResourcePrimKey(renderRequest);
-			long parentResourcePrimKey = ParamUtil.getLong(
-				renderRequest, "parentResourcePrimKey",
-				KBFolderConstants.DEFAULT_PARENT_FOLDER_ID);
+			Tuple resourceTuple = getResourceTuple(renderRequest);
 
-			if (resourcePrimKey > 0) {
-				kbArticle = KBArticleServiceUtil.getLatestKBArticle(
-					resourcePrimKey, status);
+			long resourcePrimKey = (Long)resourceTuple.getObject(1);
+
+			if (resourcePrimKey != KBFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
+				long resourceClassNameId = (Long)resourceTuple.getObject(0);
+
+				long kbFolderClassNameId = PortalUtil.getClassNameId(
+					KBFolderConstants.getClassName());
+
+				if (resourceClassNameId == kbFolderClassNameId) {
+					PortalPreferences portalPreferences =
+						PortletPreferencesFactoryUtil.getPortalPreferences(
+							renderRequest);
+
+					String preferredKBFolderUrlTitle =
+						portalPreferences.getValue(
+							PortletKeys.KNOWLEDGE_BASE_DISPLAY,
+							"preferredKBFolderUrlTitle");
+
+					kbArticle = getKBFolderKBArticle(
+						themeDisplay.getScopeGroupId(), resourcePrimKey,
+						preferredKBFolderUrlTitle);
+				}
+				else {
+					kbArticle = KBArticleServiceUtil.fetchLatestKBArticle(
+						resourcePrimKey, status);
+				}
 			}
-			else if (parentResourcePrimKey ==
+			else {
+				long parentResourcePrimKey = ParamUtil.getLong(
+					renderRequest, "parentResourcePrimKey",
+					KBFolderConstants.DEFAULT_PARENT_FOLDER_ID);
+
+				if (parentResourcePrimKey ==
 						KBFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
 
-				List<KBArticle> kbArticles =
-					KBArticleLocalServiceUtil.getGroupKBArticles(
-						themeDisplay.getScopeGroupId(), status, 0, 1,
-						new KBArticlePriorityComparator(true));
+					List<KBArticle> kbArticles =
+						KBArticleLocalServiceUtil.getGroupKBArticles(
+							themeDisplay.getScopeGroupId(), status, 0, 1,
+							new KBArticlePriorityComparator(true));
 
-				if (!kbArticles.isEmpty()) {
-					kbArticle = kbArticles.get(0);
+					if (!kbArticles.isEmpty()) {
+						kbArticle = kbArticles.get(0);
+					}
 				}
 			}
 
@@ -114,6 +151,55 @@ public class DisplayPortlet extends BaseKBPortlet {
 		super.render(renderRequest, renderResponse);
 	}
 
+	public void updateRootKBFolderId(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws PortalException, SystemException {
+
+		long kbFolderId = ParamUtil.getLong(actionRequest, "rootKBFolderId");
+
+		if (kbFolderId == KBFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
+			return;
+		}
+
+		KBFolder kbFolder = KBFolderServiceUtil.getKBFolder(kbFolderId);
+
+		PortalPreferences portalPreferences =
+			PortletPreferencesFactoryUtil.getPortalPreferences(
+				PortalUtil.getLiferayPortletRequest(actionRequest));
+
+		portalPreferences.setValue(
+			PortletKeys.KNOWLEDGE_BASE_DISPLAY, "preferredKBFolderUrlTitle",
+			kbFolder.getUrlTitle());
+
+		String urlTitle = ParamUtil.getString(actionRequest, "urlTitle");
+
+		if (Validator.isNull(urlTitle)) {
+			return;
+		}
+
+		KBArticle kbArticle =
+			KBArticleLocalServiceUtil.fetchKBArticleByUrlTitle(
+				kbFolder.getGroupId(), kbFolder.getUrlTitle(), urlTitle);
+
+		if (kbArticle == null) {
+			return;
+		}
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		if (!KBArticlePermission.contains(
+				themeDisplay.getPermissionChecker(), kbArticle,
+				ActionKeys.VIEW)) {
+
+			return;
+		}
+
+		actionResponse.setRenderParameter(
+			"kbFolderUrlTitle", kbFolder.getUrlTitle());
+		actionResponse.setRenderParameter("urlTitle", urlTitle);
+	}
+
 	@Override
 	protected void addSuccessMessage(
 		ActionRequest actionRequest, ActionResponse actionResponse) {
@@ -122,7 +208,8 @@ public class DisplayPortlet extends BaseKBPortlet {
 			actionRequest, ActionRequest.ACTION_NAME);
 
 		if (actionName.equals("deleteKBArticle") ||
-			actionName.equals("updateKBComment")) {
+			actionName.equals("updateKBComment") ||
+			actionName.equals("updateRootKBFolderId")) {
 
 			return;
 		}
@@ -151,7 +238,43 @@ public class DisplayPortlet extends BaseKBPortlet {
 		}
 	}
 
-	protected long getResourcePrimKey(RenderRequest renderRequest)
+	protected KBArticle getKBFolderKBArticle(
+			long groupId, long kbFolderId, String kbFolderUrlTitle)
+		throws PortalException, SystemException {
+
+		if (Validator.isNotNull(kbFolderUrlTitle)) {
+			KBFolder kbFolder = KBFolderServiceUtil.fetchKBFolderByUrlTitle(
+				groupId, kbFolderId, kbFolderUrlTitle);
+
+			if (kbFolder != null) {
+				kbFolderId = kbFolder.getKbFolderId();
+			}
+		}
+
+		List<KBArticle> kbArticles = KBArticleServiceUtil.getKBArticles(
+			groupId, kbFolderId, WorkflowConstants.STATUS_APPROVED, 0, 1,
+			new KBArticlePriorityComparator(true));
+
+		if (!kbArticles.isEmpty()) {
+			return kbArticles.get(0);
+		}
+
+		List<KBFolder> kbFolders = KnowledgeBaseUtil.getAlternateRootKBFolders(
+			groupId, kbFolderId);
+
+		for (KBFolder kbFolder : kbFolders) {
+			KBArticle kbArticle = getKBFolderKBArticle(
+				groupId, kbFolder.getKbFolderId(), kbFolder.getUrlTitle());
+
+			if (kbArticle != null) {
+				return kbArticle;
+			}
+		}
+
+		return null;
+	}
+
+	protected Tuple getResourceTuple(RenderRequest renderRequest)
 		throws Exception {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)renderRequest.getAttribute(
@@ -175,41 +298,81 @@ public class DisplayPortlet extends BaseKBPortlet {
 					KBFolderConstants.DEFAULT_PARENT_FOLDER_ID, urlTitle);
 			}
 
-			if (kbArticle != null) {
-				return kbArticle.getResourcePrimKey();
+			if ((kbArticle != null) &&
+				KBArticlePermission.contains(
+					themeDisplay.getPermissionChecker(), kbArticle,
+					ActionKeys.VIEW)) {
+
+				return new Tuple(
+					kbArticle.getClassNameId(), kbArticle.getResourcePrimKey());
 			}
 		}
 
-		PortletPreferences preferences = renderRequest.getPreferences();
+		PortletPreferences portletPreferences = renderRequest.getPreferences();
 
-		long defaultValue = GetterUtil.getLong(
-			preferences.getValue("resourcePrimKey", null));
+		long defaultResourcePrimKey = GetterUtil.getLong(
+			portletPreferences.getValue("resourcePrimKey", null));
 
 		String mvcPath = ParamUtil.getString(renderRequest, "mvcPath");
 
-		if (((defaultValue == 0) && mvcPath.equals(viewTemplate)) ||
+		if (((defaultResourcePrimKey == 0) && mvcPath.equals(viewTemplate)) ||
 			mvcPath.equals("/display/select_configuration_article.jsp")) {
 
-			return 0;
+			return new Tuple(
+				PortalUtil.getClassNameId(KBFolderConstants.getClassName()),
+				KBFolderConstants.DEFAULT_PARENT_FOLDER_ID);
 		}
+
+		long defaultResourceClassNameId = GetterUtil.getLong(
+			portletPreferences.getValue("resourceClassNameId", null));
+
+		long resourceClassNameId = ParamUtil.getLong(
+			renderRequest, "resourceClassNameId", defaultResourceClassNameId);
 
 		long resourcePrimKey = ParamUtil.getLong(
-			renderRequest, "resourcePrimKey", defaultValue);
+			renderRequest, "resourcePrimKey", defaultResourcePrimKey);
 
-		if ((resourcePrimKey == 0) || (resourcePrimKey != defaultValue)) {
-			return resourcePrimKey;
+		if ((resourcePrimKey == 0) ||
+			(resourcePrimKey != defaultResourcePrimKey)) {
+
+			return new Tuple(resourceClassNameId, resourcePrimKey);
 		}
 
-		PermissionChecker permissionChecker =
-			themeDisplay.getPermissionChecker();
+		long kbFolderClassNameId = PortalUtil.getClassNameId(
+			KBFolderConstants.getClassName());
 
-		if (!KBArticlePermission.contains(
-				permissionChecker, defaultValue, ActionKeys.VIEW)) {
+		if (resourceClassNameId == kbFolderClassNameId) {
+			KBFolder kbFolder = KBFolderLocalServiceUtil.fetchKBFolder(
+				resourcePrimKey);
 
-			return 0;
+			if ((kbFolder != null) &&
+				!KBFolderPermission.contains(
+					themeDisplay.getPermissionChecker(),
+					themeDisplay.getScopeGroupId(), defaultResourcePrimKey,
+					ActionKeys.VIEW)) {
+
+				return new Tuple(
+					PortalUtil.getClassNameId(KBFolderConstants.getClassName()),
+					KBFolderConstants.DEFAULT_PARENT_FOLDER_ID);
+			}
+		}
+		else {
+			KBArticle kbArticle =
+				KBArticleLocalServiceUtil.fetchLatestKBArticle(
+					defaultResourcePrimKey, WorkflowConstants.STATUS_ANY);
+
+			if ((kbArticle != null) &&
+				!KBArticlePermission.contains(
+					themeDisplay.getPermissionChecker(), defaultResourcePrimKey,
+					ActionKeys.VIEW)) {
+
+				return new Tuple(
+					PortalUtil.getClassNameId(KBFolderConstants.getClassName()),
+					KBFolderConstants.DEFAULT_PARENT_FOLDER_ID);
+			}
 		}
 
-		return defaultValue;
+		return new Tuple(defaultResourceClassNameId, defaultResourcePrimKey);
 	}
 
 	protected int getStatus(RenderRequest renderRequest) throws Exception {
@@ -220,27 +383,44 @@ public class DisplayPortlet extends BaseKBPortlet {
 			return WorkflowConstants.STATUS_APPROVED;
 		}
 
-		String value = renderRequest.getParameter("status");
-		int status = GetterUtil.getInteger(value);
+		String statusString = renderRequest.getParameter("status");
 
-		if ((value != null) && (status == WorkflowConstants.STATUS_APPROVED)) {
+		int status = GetterUtil.getInteger(statusString);
+
+		if ((statusString != null) &&
+			(status == WorkflowConstants.STATUS_APPROVED)) {
+
 			return WorkflowConstants.STATUS_APPROVED;
 		}
 
-		long resourcePrimKey = getResourcePrimKey(renderRequest);
+		Tuple resourceTuple = getResourceTuple(renderRequest);
 
-		if (resourcePrimKey == 0) {
+		long resourcePrimKey = (Long)resourceTuple.getObject(1);
+
+		if (resourcePrimKey == KBFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
 			return WorkflowConstants.STATUS_APPROVED;
 		}
 
-		PermissionChecker permissionChecker =
-			themeDisplay.getPermissionChecker();
+		long resourceClassNameId = (Long)resourceTuple.getObject(0);
 
-		if (KBArticlePermission.contains(
-				permissionChecker, resourcePrimKey, ActionKeys.UPDATE)) {
+		long kbArticleClassNameId = PortalUtil.getClassNameId(
+			KBArticleConstants.getClassName());
 
-			return ParamUtil.getInteger(
-				renderRequest, "status", WorkflowConstants.STATUS_ANY);
+		if (resourceClassNameId == kbArticleClassNameId) {
+			KBArticle kbArticle = KBArticleServiceUtil.fetchLatestKBArticle(
+				resourcePrimKey, WorkflowConstants.STATUS_ANY);
+
+			if (kbArticle == null) {
+				return WorkflowConstants.STATUS_APPROVED;
+			}
+
+			if (KBArticlePermission.contains(
+					themeDisplay.getPermissionChecker(), resourcePrimKey,
+					ActionKeys.UPDATE)) {
+
+				return ParamUtil.getInteger(
+					renderRequest, "status", WorkflowConstants.STATUS_ANY);
+			}
 		}
 
 		return WorkflowConstants.STATUS_APPROVED;

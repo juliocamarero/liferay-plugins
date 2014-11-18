@@ -14,6 +14,9 @@
 
 package com.liferay.knowledgebase.service.impl;
 
+import com.liferay.compat.portal.kernel.util.StringUtil;
+import com.liferay.knowledgebase.DuplicateKBArticleUrlTitleException;
+import com.liferay.knowledgebase.InvalidKBArticleUrlTitleException;
 import com.liferay.knowledgebase.KBArticleContentException;
 import com.liferay.knowledgebase.KBArticleParentException;
 import com.liferay.knowledgebase.KBArticlePriorityException;
@@ -21,7 +24,6 @@ import com.liferay.knowledgebase.KBArticleSourceURLException;
 import com.liferay.knowledgebase.KBArticleTitleException;
 import com.liferay.knowledgebase.NoSuchArticleException;
 import com.liferay.knowledgebase.admin.importer.KBArticleImporter;
-import com.liferay.knowledgebase.admin.portlet.AdminPortlet;
 import com.liferay.knowledgebase.admin.social.AdminActivityKeys;
 import com.liferay.knowledgebase.admin.util.AdminSubscriptionSender;
 import com.liferay.knowledgebase.admin.util.AdminUtil;
@@ -31,6 +33,7 @@ import com.liferay.knowledgebase.model.KBFolder;
 import com.liferay.knowledgebase.model.KBFolderConstants;
 import com.liferay.knowledgebase.service.KBArticleLocalServiceUtil;
 import com.liferay.knowledgebase.service.base.KBArticleLocalServiceBaseImpl;
+import com.liferay.knowledgebase.util.KnowledgeBaseConstants;
 import com.liferay.knowledgebase.util.KnowledgeBaseUtil;
 import com.liferay.knowledgebase.util.PortletKeys;
 import com.liferay.knowledgebase.util.PortletPropsValues;
@@ -63,7 +66,6 @@ import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TempFileUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
@@ -83,6 +85,7 @@ import com.liferay.portlet.asset.model.AssetLinkConstants;
 import java.io.InputStream;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -117,6 +120,11 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		validate(title, content, sourceURL);
 		validateParent(parentResourceClassNameId, parentResourcePrimKey);
 
+		long kbFolderId = KnowledgeBaseUtil.getKBFolderId(
+			parentResourceClassNameId, parentResourcePrimKey);
+
+		validateUrlTitle(groupId, kbFolderId, urlTitle);
+
 		long kbArticleId = counterLocalService.increment();
 
 		long resourcePrimKey = counterLocalService.increment();
@@ -137,12 +145,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		kbArticle.setRootResourcePrimKey(rootResourcePrimKey);
 		kbArticle.setParentResourceClassNameId(parentResourceClassNameId);
 		kbArticle.setParentResourcePrimKey(parentResourcePrimKey);
-
-		long kbFolderId = KnowledgeBaseUtil.getKBFolderId(
-			parentResourceClassNameId, parentResourcePrimKey);
-
 		kbArticle.setKbFolderId(kbFolderId);
-
 		kbArticle.setVersion(KBArticleConstants.DEFAULT_VERSION);
 		kbArticle.setTitle(title);
 		kbArticle.setUrlTitle(
@@ -400,6 +403,9 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			long groupId, long kbFolderId, String urlTitle)
 		throws SystemException {
 
+		urlTitle = StringUtil.replaceFirst(
+			urlTitle, StringPool.SLASH, StringPool.BLANK);
+
 		KBArticle kbArticle = fetchLatestKBArticleByUrlTitle(
 			groupId, kbFolderId, urlTitle, WorkflowConstants.STATUS_APPROVED);
 
@@ -416,6 +422,9 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 	public KBArticle fetchKBArticleByUrlTitle(
 			long groupId, String kbFolderUrlTitle, String urlTitle)
 		throws PortalException {
+
+		urlTitle = StringUtil.replaceFirst(
+			urlTitle, StringPool.SLASH, StringPool.BLANK);
 
 		List<KBArticle> kbArticles = kbArticleFinder.findByUrlTitle(
 			groupId, kbFolderUrlTitle, urlTitle, _STATUSES, 0, 1);
@@ -444,6 +453,9 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 	public KBArticle fetchLatestKBArticleByUrlTitle(
 			long groupId, long kbFolderId, String urlTitle, int status)
 		throws SystemException {
+
+		urlTitle = StringUtil.replaceFirst(
+			urlTitle, StringPool.SLASH, StringPool.BLANK);
 
 		List<KBArticle> kbArticles = null;
 
@@ -578,6 +590,9 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			long groupId, long kbFolderId, String urlTitle)
 		throws PortalException, SystemException {
 
+		urlTitle = StringUtil.replaceFirst(
+			urlTitle, StringPool.SLASH, StringPool.BLANK);
+
 		// Get the latest KB article that is approved, if none are approved, get
 		// the latest unapproved KB article
 
@@ -598,6 +613,9 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 	public KBArticle getKBArticleByUrlTitle(
 			long groupId, String kbFolderUrlTitle, String urlTitle)
 		throws PortalException {
+
+		urlTitle = StringUtil.replaceFirst(
+			urlTitle, StringPool.SLASH, StringPool.BLANK);
 
 		KBArticle kbArticle = fetchKBArticleByUrlTitle(
 			groupId, kbFolderUrlTitle, urlTitle);
@@ -734,6 +752,9 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 	public KBArticle getLatestKBArticleByUrlTitle(
 			long groupId, long kbFolderId, String urlTitle, int status)
 		throws PortalException, SystemException {
+
+		urlTitle = StringUtil.replaceFirst(
+			urlTitle, StringPool.SLASH, StringPool.BLANK);
 
 		KBArticle latestKBArticle = fetchLatestKBArticleByUrlTitle(
 			groupId, kbFolderId, urlTitle, status);
@@ -879,7 +900,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		long kbFolderId = KBFolderConstants.DEFAULT_PARENT_FOLDER_ID;
 
 		if (parentResourceClassNameId == kbFolderClassNameId) {
-			kbFolderId = parentResourceClassNameId;
+			kbFolderId = parentResourcePrimKey;
 		}
 		else {
 			KBArticle latestKBArticle = getLatestKBArticle(
@@ -893,7 +914,8 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			QueryUtil.ALL_POS, new KBArticleVersionComparator());
 
 		for (KBArticle curKBArticle : kbArticles) {
-			curKBArticle.setParentResourceClassNameId(parentResourceClassNameId);
+			curKBArticle.setParentResourceClassNameId(
+				parentResourceClassNameId);
 			curKBArticle.setParentResourcePrimKey(parentResourcePrimKey);
 
 			if (parentResourceClassNameId == kbFolderClassNameId) {
@@ -905,8 +927,8 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			kbArticlePersistence.update(curKBArticle);
 		}
 
-		KBArticle kbArticle = kbArticlePersistence.findByPrimaryKey(
-			resourcePrimKey);
+		KBArticle kbArticle = getLatestKBArticle(
+			resourcePrimKey, WorkflowConstants.STATUS_ANY);
 
 		if (kbArticle.getKbFolderId() != kbFolderId) {
 			List<KBArticle> descendantKBArticles = getAllDescendantKBArticles(
@@ -1315,7 +1337,8 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		throws PortalException, SystemException {
 
 		FileEntry tempFileEntry = TempFileUtil.getTempFile(
-			groupId, userId, selectedFileName, _TEMP_FOLDER_NAME);
+			groupId, userId, selectedFileName,
+			KnowledgeBaseConstants.TEMP_FOLDER_NAME);
 
 		InputStream inputStream = tempFileEntry.getContentStream();
 		String mimeType = tempFileEntry.getMimeType();
@@ -1691,7 +1714,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			return getUniqueUrlTitle(groupId, kbFolderId, kbArticleId, title);
 		}
 
-		return getUniqueUrlTitle(groupId, kbFolderId, kbArticleId, urlTitle);
+		return urlTitle.substring(1);
 	}
 
 	protected boolean isValidFileName(String name) {
@@ -1923,12 +1946,32 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		}
 	}
 
+	protected void validateUrlTitle(
+			long groupId, long kbFolderId, String urlTitle)
+		throws PortalException, SystemException {
+
+		if (Validator.isNull(urlTitle)) {
+			return;
+		}
+
+		if (!KnowledgeBaseUtil.isValidUrlTitle(urlTitle)) {
+			throw new InvalidKBArticleUrlTitleException(
+				"URL title must start with a '/' and contain only " +
+					"alphanumeric characters, dashes, and underscores");
+		}
+
+		Collection<KBArticle> kbArticles = kbArticlePersistence.findByG_KBFI_UT(
+			groupId, kbFolderId, urlTitle.substring(1));
+
+		if (!kbArticles.isEmpty()) {
+			throw new DuplicateKBArticleUrlTitleException(
+				"Duplicate URL title " + urlTitle);
+		}
+	}
+
 	private static final int[] _STATUSES = {
 		WorkflowConstants.STATUS_APPROVED, WorkflowConstants.STATUS_PENDING
 	};
-
-	private static final String _TEMP_FOLDER_NAME =
-		AdminPortlet.class.getName();
 
 	private static final long _TICKET_EXPIRATION = Time.HOUR;
 

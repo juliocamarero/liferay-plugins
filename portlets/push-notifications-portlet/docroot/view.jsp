@@ -17,12 +17,24 @@
 <%@ include file="/init.jsp" %>
 
 <aui:form name="fm">
-	<aui:input label="message" name="message" required="<%= true %>" type="textarea" />
+	<aui:input label="message" name="message" rows="6" type="textarea" />
 
 	<aui:input label="url" name="url" />
 
-	<aui:button disabled="<%= !PushNotificationsPermission.contains(permissionChecker, ActionKeys.SEND_NOTIFICATION) %>" type="submit" value="send" />
+	<aui:button disabled="<%= !PushNotificationsPermission.contains(permissionChecker, ActionKeys.ADD_ENTRY) %>" type="submit" value="send" />
+
+	<aui:button type="reset" value="reset" />
 </aui:form>
+
+<br />
+
+<div class="alert alert-success hide" id="<portlet:namespace />success">
+	<p><liferay-ui:message key="the-alert-was-sent-successfully" /></p>
+</div>
+
+<div class="alert alert-danger hide" id="<portlet:namespace />error">
+	<p></p>
+</div>
 
 <aui:script use="aui-base">
 	var form = A.one('#<portlet:namespace />fm');
@@ -46,7 +58,7 @@
 			}
 
 			Liferay.Service(
-				'/push-notifications-portlet.pushnotificationsdevice/send-push-notification',
+				'/push-notifications-portlet.pushnotificationsentry/add-push-notifications-entry',
 				{
 					payload: A.JSON.stringify(
 						{
@@ -55,7 +67,8 @@
 							url: url
 						}
 					)
-				}
+				},
+				<portlet:namespace />onSendPushNotification
 			);
 		}
 	);
@@ -68,6 +81,25 @@
 		}
 		else {
 			return false;
+		}
+	}
+
+	function <portlet:namespace />onSendPushNotification(result) {
+		var success = A.one('#<portlet:namespace />success');
+
+		success.hide();
+
+		var error = A.one('#<portlet:namespace />error');
+
+		error.hide();
+
+		if (A.Object.isEmpty(result)) {
+			success.show();
+		}
+		else {
+			error.one('p').text(result);
+
+			error.show();
 		}
 	}
 </aui:script>

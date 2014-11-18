@@ -43,7 +43,7 @@ boolean googleDocs = false;
 if (fileEntryTypeId > 0) {
 	DLFileEntryType dlfileEntryType = DLFileEntryTypeLocalServiceUtil.getFileEntryType(fileEntryTypeId);
 
-	if (dlfileEntryType.getFileEntryTypeKey().equals("GOOGLE-DOCUMENT")) {
+	if (dlfileEntryType.getFileEntryTypeKey().equals("GOOGLE-DOCS")) {
 		googleDocs = true;
 	}
 }
@@ -52,8 +52,14 @@ if (fileEntryTypeId > 0) {
 <c:choose>
 	<c:when test="<%= googleDocs %>">
 		<style>
+			.portlet-boundary_101_ .download-document,
+			.portlet-boundary_182_ .download-document,
 			.portlet-document-library .download-document,
+			.portlet-boundary_101_ .webdav-url,
+			.portlet-boundary_182_ .webdav-url,
 			.portlet-document-library .webdav-url,
+			.portlet-boundary_101_ .lfr-asset-panels,
+			.portlet-boundary_182_ .lfr-asset-panels,
 			.portlet-document-library .lfr-asset-panels {
 				display: none;
 			}

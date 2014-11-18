@@ -98,7 +98,7 @@ boolean hasUpdatePermission = KBArticlePermission.contains(permissionChecker, kb
 				<portlet:param name="expanded" value="true" />
 
 				<c:choose>
-					<c:when test="<%= Validator.isNull(kbArticle.getUrlTitle()) %>">
+					<c:when test="<%= Validator.isNotNull(kbArticle.getUrlTitle()) %>">
 						<portlet:param name="urlTitle" value="<%= kbArticle.getUrlTitle() %>" />
 
 						<c:if test="<%= kbArticle.getKbFolderId() != KBFolderConstants.DEFAULT_PARENT_FOLDER_ID %>">
@@ -111,6 +111,7 @@ boolean hasUpdatePermission = KBArticlePermission.contains(permissionChecker, kb
 						</c:if>
 					</c:when>
 					<c:otherwise>
+						<portlet:param name="resourceClassNameId" value="<%= String.valueOf(kbArticle.getClassNameId()) %>" />
 						<portlet:param name="resourcePrimKey" value="<%= String.valueOf(kbArticle.getResourcePrimKey()) %>" />
 					</c:otherwise>
 				</c:choose>
@@ -148,18 +149,18 @@ boolean hasUpdatePermission = KBArticlePermission.contains(permissionChecker, kb
 		</div>
 
 		<liferay-ui:success
-			key="feedbackDeleted"
-			message="feedback-deleted-successfully"
+			key="suggestionDeleted"
+			message="suggestion-deleted-successfully"
 		/>
 
 		<liferay-ui:success
-			key="feedbackStatusUpdated"
-			message="feedback-status-updated-successfully"
+			key="suggestionStatusUpdated"
+			message="suggestion-status-updated-successfully"
 		/>
 
 		<liferay-ui:success
-			key="feedbackSaved"
-			message="feedback-saved-successfully"
+			key="suggestionSaved"
+			message="suggestion-saved-successfully"
 		/>
 
 		<%
@@ -270,7 +271,7 @@ boolean hasUpdatePermission = KBArticlePermission.contains(permissionChecker, kb
 
 					showNode.toggleView();
 
-					var content = showNode.one('#content');
+					var content = showNode.one('#<portlet:namespace />content');
 
 					if (content) {
 						content.focus();
@@ -282,19 +283,15 @@ boolean hasUpdatePermission = KBArticlePermission.contains(permissionChecker, kb
 			A.one('#<portlet:namespace />cancelFeedback').on(
 				'click',
 				function(event) {
-					this.each(
-						function(node) {
-							var container = node.ancestor('#<portlet:namespace />feedbackContainer');
+					var container = this.ancestor('#<portlet:namespace />feedbackContainer');
 
-							container.hide();
+					container.hide();
 
-							var content = container.one('#content');
+					var content = container.one('#<portlet:namespace />content');
 
-							if (content) {
-								content.val('');
-							}
-						}
-					);
+					if (content) {
+						content.val('');
+					}
 				}
 			);
 		</aui:script>

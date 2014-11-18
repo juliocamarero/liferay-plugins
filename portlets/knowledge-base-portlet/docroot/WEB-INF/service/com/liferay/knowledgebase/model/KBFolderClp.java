@@ -473,6 +473,25 @@ public class KBFolderClp extends BaseModelImpl<KBFolder> implements KBFolder {
 	}
 
 	@Override
+	public boolean isEmpty() {
+		try {
+			String methodName = "isEmpty";
+
+			Class<?>[] parameterTypes = new Class<?>[] {  };
+
+			Object[] parameterValues = new Object[] {  };
+
+			Boolean returnObj = (Boolean)invokeOnRemoteModel(methodName,
+					parameterTypes, parameterValues);
+
+			return returnObj;
+		}
+		catch (Exception e) {
+			throw new UnsupportedOperationException(e);
+		}
+	}
+
+	@Override
 	public java.lang.String getParentTitle(java.util.Locale locale) {
 		try {
 			String methodName = "getParentTitle";
@@ -619,6 +638,10 @@ public class KBFolderClp extends BaseModelImpl<KBFolder> implements KBFolder {
 		}
 	}
 
+	public Class<?> getClpSerializerClass() {
+		return _clpSerializerClass;
+	}
+
 	@Override
 	public int hashCode() {
 		return (int)getPrimaryKey();
@@ -733,4 +756,5 @@ public class KBFolderClp extends BaseModelImpl<KBFolder> implements KBFolder {
 	private String _urlTitle;
 	private String _description;
 	private BaseModel<?> _kbFolderRemoteModel;
+	private Class<?> _clpSerializerClass = com.liferay.knowledgebase.service.ClpSerializer.class;
 }
