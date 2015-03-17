@@ -35,7 +35,7 @@ List<KBFolder> kbFolders = KnowledgeBaseUtil.getAlternateRootKBFolders(scopeGrou
 
 	<div class="kb-field-wrapper kbarticle-root-selector">
 		<aui:form action="<%= updateRootKBFolderIdURL %>" name="updateRootKBFolderIdFm">
-			<aui:select label="" name="rootKBFolderId">
+			<aui:select label="" name="rootKBFolderId" title="root-folder">
 
 				<%
 				for (KBFolder kbFolder : kbFolders) {
@@ -57,13 +57,12 @@ List<KBFolder> kbFolders = KnowledgeBaseUtil.getAlternateRootKBFolders(scopeGrou
 	</div>
 
 	<aui:script use="aui-base">
+		var updateRootKBFolderIdFm = A.one('#<portlet:namespace />updateRootKBFolderIdFm');
 		var rootKBFolderIdSelect = A.one('#<portlet:namespace />rootKBFolderId');
 
 		rootKBFolderIdSelect.on(
 			'change',
 			function() {
-				var updateRootKBFolderIdFm = A.one('#<portlet:namespace />updateRootKBFolderIdFm');
-
 				updateRootKBFolderIdFm.submit();
 			}
 		);

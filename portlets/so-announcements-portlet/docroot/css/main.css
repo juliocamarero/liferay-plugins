@@ -6,7 +6,7 @@
 		font-weight: bold;
 	}
 
-	.alert-error {
+	.alert-danger {
 		display: inline-block;
 	}
 
@@ -266,14 +266,6 @@
 
 	.taglib-move-boxes .control-group {
 		min-width: 200px;
-	}
-}
-
-/* ---------- Internet explorer ---------- */
-
-.ie6, .ie7 {
-	.so-announcements-portlet .entry-content-container {
-		height: 75px;
 	}
 }
 
