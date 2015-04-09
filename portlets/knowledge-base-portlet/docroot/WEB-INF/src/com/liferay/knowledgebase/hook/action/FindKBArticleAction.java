@@ -100,11 +100,7 @@ public class FindKBArticleAction extends BaseStrutsAction {
 		}
 
 		if (portletURL == null) {
-			portletURL = getKBArticleURL(plid, false, kbArticle, request);
-		}
-
-		if (portletURL == null) {
-			portletURL = getKBArticleURL(plid, true, kbArticle, request);
+			portletURL = getKBArticleURL(plid, kbArticle, request);
 		}
 
 		if (portletURL == null) {
@@ -121,8 +117,7 @@ public class FindKBArticleAction extends BaseStrutsAction {
 		return null;
 	}
 
-	protected List<Layout> getCandidateLayouts(
-			long plid, boolean privateLayout, KBArticle kbArticle)
+	protected List<Layout> getCandidateLayouts(long plid, KBArticle kbArticle)
 		throws Exception {
 
 		List<Layout> candidateLayouts = new ArrayList<>();
@@ -139,7 +134,7 @@ public class FindKBArticleAction extends BaseStrutsAction {
 		}
 
 		List<Layout> layouts = LayoutLocalServiceUtil.getLayouts(
-			group.getGroupId(), privateLayout, LayoutConstants.TYPE_PORTLET);
+			group.getGroupId(), LayoutConstants.TYPE_PORTLET);
 
 		candidateLayouts.addAll(layouts);
 
@@ -208,14 +203,13 @@ public class FindKBArticleAction extends BaseStrutsAction {
 	}
 
 	protected PortletURL getKBArticleURL(
-			long plid, boolean privateLayout, KBArticle kbArticle,
-			HttpServletRequest request)
+			long plid, KBArticle kbArticle, HttpServletRequest request)
 		throws Exception {
 
 		PortletURL firstMatchPortletURL = null;
 
 		List<Layout> layouts = getCandidateLayouts(
-			plid, privateLayout, kbArticle);
+			plid, kbArticle);
 
 		for (Layout layout : layouts) {
 			LayoutTypePortlet layoutTypePortlet =

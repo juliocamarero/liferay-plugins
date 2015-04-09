@@ -172,12 +172,8 @@ public class SODeployListenerMessageListener
 					return;
 				}
 
-				if (group.hasPrivateLayouts()) {
-					updateLayoutSetPrototype(group.getGroupId(), true);
-				}
-
-				if (group.hasPublicLayouts()) {
-					updateLayoutSetPrototype(group.getGroupId(), false);
+				if (group.hasLayouts()) {
+					updateLayoutSetPrototype(group.getGroupId());
 				}
 
 				UnicodeProperties typeSettingsProperties =
@@ -196,13 +192,12 @@ public class SODeployListenerMessageListener
 		actionableDynamicQuery.performActions();
 	}
 
-	protected void updateLayoutSetPrototype(long groupId, boolean privateLayout)
+	protected void updateLayoutSetPrototype(long groupId)
 		throws PortalException {
 
 		// Layout
 
-		LayoutSet layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
-			groupId, privateLayout);
+		LayoutSet layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(groupId);
 
 		LayoutSetPrototype layoutSetPrototype =
 			LayoutSetPrototypeLocalServiceUtil.getLayoutSetPrototype(
@@ -224,7 +219,7 @@ public class SODeployListenerMessageListener
 		}
 
 		List<Layout> layouts = LayoutLocalServiceUtil.getLayouts(
-			groupId, privateLayout);
+			groupId);
 
 		for (Layout layout : layouts) {
 			if (ArrayUtil.contains(

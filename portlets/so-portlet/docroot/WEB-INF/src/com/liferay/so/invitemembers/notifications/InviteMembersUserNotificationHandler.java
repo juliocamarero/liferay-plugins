@@ -156,12 +156,9 @@ public class InviteMembersUserNotificationHandler
 
 		sb.append("<a");
 
-		if (group.hasPublicLayouts()) {
+		if (group.hasLayouts()) {
 			sb.append(" href=\"");
-
-			sb.append(
-				group.getDisplayURL(serviceContext.getThemeDisplay(), false));
-
+			sb.append(group.getDisplayURL(serviceContext.getThemeDisplay()));
 			sb.append("\">");
 		}
 		else {

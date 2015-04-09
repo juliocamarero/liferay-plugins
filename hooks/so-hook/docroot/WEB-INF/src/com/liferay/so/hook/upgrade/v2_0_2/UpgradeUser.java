@@ -106,27 +106,17 @@ public class UpgradeUser extends UpgradeProcess {
 			group.getGroupId(), false, new ServiceContext());
 
 		LayoutSetPrototypeUtil.updateLayoutSetPrototype(
-			group, false,
+			group,
 			SocialOfficeConstants.LAYOUT_SET_PROTOTYPE_KEY_USER_PUBLIC);
 
 		LayoutSet publicLayoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
-			group.getGroupId(), false);
+			group.getGroupId());
 
 		PortalClassInvoker.invoke(
-			_mergeLayoutSetPrototypeLayoutsMethodKey, group, publicLayoutSet);
+			_mergeLayoutSetPrototypeLayoutsMethodKey, group);
 
 		LayoutLocalServiceUtil.deleteLayouts(
-			group.getGroupId(), true, new ServiceContext());
-
-		LayoutSetPrototypeUtil.updateLayoutSetPrototype(
-			group, true,
-			SocialOfficeConstants.LAYOUT_SET_PROTOTYPE_KEY_USER_PRIVATE);
-
-		LayoutSet privateLayoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
-			group.getGroupId(), true);
-
-		PortalClassInvoker.invoke(
-			_mergeLayoutSetPrototypeLayoutsMethodKey, group, privateLayoutSet);
+			group.getGroupId(), new ServiceContext());
 
 		SocialOfficeUtil.enableSocialOffice(group);
 	}

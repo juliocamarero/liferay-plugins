@@ -53,13 +53,6 @@ List<CalendarBooking> calendarBookings = (List<CalendarBooking>)request.getAttri
 			groupURL.setParameter("struts_action", "/my_sites/view");
 			groupURL.setParameter("groupId", String.valueOf(group.getGroupId()));
 
-			if (group.hasPublicLayouts()) {
-				groupURL.setParameter("privateLayout", "0");
-			}
-			else {
-				groupURL.setParameter("privateLayout", "1");
-			}
-
 			String eventHREF = groupURL.toString();
 
 			long selPlid = PortalUtil.getPlidFromPortletId(calendarBooking.getGroupId(), "1_WAR_calendarportlet");

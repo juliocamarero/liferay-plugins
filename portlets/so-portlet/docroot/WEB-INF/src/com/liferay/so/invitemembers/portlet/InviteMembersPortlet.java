@@ -206,15 +206,6 @@ public class InviteMembersPortlet extends MVCPortlet {
 
 		long plid = themeDisplay.getPlid();
 
-		Layout layout = LayoutLocalServiceUtil.getLayout(plid);
-
-		if (layout.isPrivateLayout()) {
-			Group guestGroup = GroupLocalServiceUtil.getGroup(
-				themeDisplay.getCompanyId(), GroupConstants.GUEST);
-
-			plid = guestGroup.getDefaultPublicPlid();
-		}
-
 		PortletURL portletURL = PortletURLFactoryUtil.create(
 			actionRequest, PortletKeys.NOTIFICATIONS, plid,
 			PortletRequest.RENDER_PHASE);
@@ -250,11 +241,7 @@ public class InviteMembersPortlet extends MVCPortlet {
 
 		if (LayoutPermissionUtil.contains(
 				permissionChecker, themeDisplay.getLayout(),
-				themeDisplay.getControlPanelCategory(), true,
-				ActionKeys.VIEW) &&
-			LayoutPermissionUtil.contains(
-				permissionChecker, themeDisplay.getLayout(), false,
-				ActionKeys.VIEW)) {
+				themeDisplay.getControlPanelCategory(), ActionKeys.VIEW)) {
 
 			return PortalUtil.getCreateAccountURL(request, themeDisplay);
 		}
@@ -264,7 +251,7 @@ public class InviteMembersPortlet extends MVCPortlet {
 
 		PortletURL createAccountURL = PortletURLFactoryUtil.create(
 			request, com.liferay.portal.util.PortletKeys.LOGIN,
-			group.getDefaultPublicPlid(), PortletRequest.RENDER_PHASE);
+			group.getDefaultPlid(), PortletRequest.RENDER_PHASE);
 
 		createAccountURL.setParameter("struts_action", "/login/create_account");
 		createAccountURL.setParameter("saveLastPath", Boolean.FALSE.toString());

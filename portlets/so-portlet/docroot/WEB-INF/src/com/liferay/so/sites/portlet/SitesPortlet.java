@@ -167,7 +167,7 @@ public class SitesPortlet extends MVCPortlet {
 			Group layoutSetPrototypeGroup = layoutSetPrototype.getGroup();
 
 			List<Layout> layouts = LayoutLocalServiceUtil.getLayouts(
-				layoutSetPrototypeGroup.getGroupId(), true, 0);
+				layoutSetPrototypeGroup.getGroupId(), 0);
 
 			for (Layout layout : layouts) {
 				JSONObject layoutJSONObject =
@@ -261,16 +261,9 @@ public class SitesPortlet extends MVCPortlet {
 			boolean member = GroupLocalServiceUtil.hasUserGroup(
 				themeDisplay.getUserId(), group.getGroupId());
 
-			if (group.hasPrivateLayouts() && member) {
+			if (group.hasLayouts()) {
 				groupJSONObject.put(
-					"privateLayoutsURL",
-					group.getDisplayURL(themeDisplay, true));
-			}
-
-			if (group.hasPublicLayouts()) {
-				groupJSONObject.put(
-					"publicLayoutsURL",
-					group.getDisplayURL(themeDisplay, false));
+					"layoutsURL", group.getDisplayURL(themeDisplay));
 			}
 
 			boolean socialOfficeGroup =
@@ -396,7 +389,7 @@ public class SitesPortlet extends MVCPortlet {
 			favoritePortletURL.setParameter(
 				"groupId", String.valueOf(group.getGroupId()));
 
-			if (!member && !group.hasPublicLayouts()) {
+			if (!member && !group.hasLayouts()) {
 				groupJSONObject.put("favoriteURL", StringPool.BLANK);
 			}
 			else {
@@ -539,18 +532,11 @@ public class SitesPortlet extends MVCPortlet {
 
 		int type = ParamUtil.getInteger(actionRequest, "type");
 
-		boolean privateLayout = false;
-
 		if (type == GroupConstants.TYPE_SITE_PRIVATE_RESTRICTED) {
 			type = GroupConstants.TYPE_SITE_RESTRICTED;
-
-			privateLayout = true;
 		}
 		else if (type == GroupConstants.TYPE_SITE_PUBLIC_RESTRICTED) {
 			type = GroupConstants.TYPE_SITE_RESTRICTED;
-		}
-		else if (type == GroupConstants.TYPE_SITE_PRIVATE) {
-			privateLayout = true;
 		}
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
@@ -560,23 +546,11 @@ public class SitesPortlet extends MVCPortlet {
 			name, description, type, StringPool.BLANK, true, true,
 			serviceContext);
 
-		long publicLayoutSetPrototypeId = 0;
-		long privateLayoutSetPrototypeId = 0;
-
-		if (privateLayout) {
-			privateLayoutSetPrototypeId = layoutSetPrototypeId;
-		}
-		else {
-			publicLayoutSetPrototypeId = layoutSetPrototypeId;
-		}
-
 		PortalClassInvoker.invoke(
-			_updateLayoutSetPrototypesMethodKey, group,
-			publicLayoutSetPrototypeId, privateLayoutSetPrototypeId,
-			!privateLayout, privateLayout);
+			_updateLayoutSetPrototypesMethodKey, group, layoutSetPrototypeId);
 
 		LayoutSet layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
-			group.getGroupId(), privateLayout);
+			group.getGroupId());
 
 		PortalClassInvoker.invoke(
 			_mergeLayoutSetPrototypeLayoutsMethodKey, group, layoutSet);
@@ -587,7 +561,7 @@ public class SitesPortlet extends MVCPortlet {
 
 		for (long deleteLayoutId : deleteLayoutIds) {
 			Layout layout = LayoutLocalServiceUtil.getLayout(
-				group.getGroupId(), privateLayout, deleteLayoutId);
+				group.getGroupId(), deleteLayoutId);
 
 			layouts.add(layout);
 		}

@@ -32,7 +32,6 @@
 
 		portletURL.setParameter("struts_action", "/my_sites/view");
 		portletURL.setParameter("groupId", String.valueOf(mySite.getGroupId()));
-		portletURL.setParameter("privateLayout", Boolean.TRUE.toString());
 		%>
 
 		<div class="portlet-login signed-in-as">

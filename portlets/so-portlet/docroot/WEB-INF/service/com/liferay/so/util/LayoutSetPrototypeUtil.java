@@ -71,11 +71,11 @@ public class LayoutSetPrototypeUtil {
 	}
 
 	public static void removeLayoutSetPrototype(
-			Group group, boolean privateLayout, String layoutSetPrototypeKey)
+			Group group, String layoutSetPrototypeKey)
 		throws PortalException {
 
 		LayoutSet layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
-			group.getGroupId(), privateLayout);
+			group.getGroupId());
 
 		UnicodeProperties settingsProperties =
 			layoutSet.getSettingsProperties();
@@ -109,7 +109,7 @@ public class LayoutSetPrototypeUtil {
 		}
 
 		layouts = LayoutLocalServiceUtil.getLayouts(
-			group.getGroupId(), privateLayout);
+			group.getGroupId());
 
 		layouts = ListUtil.sort(layouts, new LayoutPriorityComparator(false));
 
@@ -118,14 +118,14 @@ public class LayoutSetPrototypeUtil {
 					layoutUuids, layout.getSourcePrototypeLayoutUuid())) {
 
 				LayoutLocalServiceUtil.deleteLayout(
-					layout.getGroupId(), privateLayout, layout.getLayoutId(),
+					layout.getGroupId(), layout.getLayoutId(),
 					new ServiceContext());
 			}
 		}
 	}
 
 	public static void updateLayoutSetPrototype(
-			Group group, boolean privateLayout, String layoutSetPrototypeKey)
+			Group group, String layoutSetPrototypeKey)
 		throws Exception {
 
 		LayoutSetPrototype layoutSetPrototype = fetchLayoutSetPrototype(
@@ -133,21 +133,15 @@ public class LayoutSetPrototypeUtil {
 
 		if (layoutSetPrototype != null) {
 			LayoutSetLocalServiceUtil.updateLayoutSetPrototypeLinkEnabled(
-				group.getGroupId(), privateLayout, true,
-				layoutSetPrototype.getUuid());
+				group.getGroupId(), true, layoutSetPrototype.getUuid());
 
-			LayoutSet layoutSet = group.getPublicLayoutSet();
-
-			if (privateLayout) {
-				layoutSet = group.getPrivateLayoutSet();
-			}
+			LayoutSet layoutSet = group.getLayoutSet();
 
 			PortalClassInvoker.invoke(
 				true, _mergeLayoutSetPrototypeLayoutsMethodKey, group,
 				layoutSet);
 
-			LayoutLocalServiceUtil.updatePriorities(
-				group.getGroupId(), privateLayout);
+			LayoutLocalServiceUtil.updatePriorities(group.getGroupId());
 		}
 	}
 

@@ -49,7 +49,7 @@ catch (NoSuchRoleException nsre) {
 			Group group = user.getGroup();
 			%>
 
-			<a class="so-logo" href="<%= group.getDisplayURL(themeDisplay, true) %>">
+			<a class="so-logo" href="<%= group.getDisplayURL(themeDisplay) %>">
 				<img alt="<liferay-ui:message escapeAttribute="<%= true %>" key="social-office" /> <liferay-ui:message escapeAttribute="<%= true %>" key="logo" />" height="32" src='<%= PortalUtil.getPathContext(request) + "/user_bar/images/so_logo.png" %>' width="32" />
 			</a>
 
@@ -57,7 +57,7 @@ catch (NoSuchRoleException nsre) {
 				<ul class="dashboard-nav" id="<portlet:namespace />dashboardNav">
 
 					<%
-					List<Layout> mylayouts = LayoutLocalServiceUtil.getLayouts(group.getGroupId(), true);
+					List<Layout> mylayouts = LayoutLocalServiceUtil.getLayouts(group.getGroupId());
 
 					for (Layout myLayout : mylayouts) {
 						if (myLayout.isRootLayout() && !myLayout.isHidden()) {
