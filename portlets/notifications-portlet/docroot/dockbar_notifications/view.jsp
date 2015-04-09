@@ -29,12 +29,12 @@
 	long notificationsPlid = themeDisplay.getPlid();
 
 	if (layout.isTypeControlPanel()) {
-		notificationsPlid = LayoutLocalServiceUtil.getDefaultPlid(user.getGroupId(), true);
+		notificationsPlid = LayoutLocalServiceUtil.getDefaultPlid(user.getGroupId());
 
 		if (notificationsPlid == LayoutConstants.DEFAULT_PLID) {
 			Group guestGroup = GroupLocalServiceUtil.getGroup(user.getCompanyId(), GroupConstants.GUEST);
 
-			notificationsPlid = LayoutLocalServiceUtil.getDefaultPlid(guestGroup.getGroupId(), false);
+			notificationsPlid = LayoutLocalServiceUtil.getDefaultPlid(user.getGroupId());
 		}
 	}
 	%>
