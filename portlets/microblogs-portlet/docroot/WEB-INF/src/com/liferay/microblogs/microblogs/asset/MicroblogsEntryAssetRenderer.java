@@ -97,7 +97,7 @@ public class MicroblogsEntryAssetRenderer extends BaseAssetRenderer {
 			User user = themeDisplay.getUser();
 
 			long portletPlid = PortalUtil.getPlidFromPortletId(
-				user.getGroupId(), true, "1_WAR_microblogsportlet");
+				user.getGroupId(), "1_WAR_microblogsportlet");
 
 			PortletURL portletURL = PortletURLFactoryUtil.create(
 				liferayPortletRequest, "1_WAR_microblogsportlet", portletPlid,

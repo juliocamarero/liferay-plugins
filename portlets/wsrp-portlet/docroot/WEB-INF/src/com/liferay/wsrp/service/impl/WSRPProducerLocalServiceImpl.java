@@ -201,7 +201,7 @@ public class WSRPProducerLocalServiceImpl
 			null);
 
 		layoutLocalService.addLayout(
-			user.getUserId(), group.getGroupId(), false,
+			user.getUserId(), group.getGroupId(),
 			LayoutConstants.DEFAULT_PARENT_LAYOUT_ID, "Portlets", null, null,
 			LayoutConstants.TYPE_PORTLET, false, "/portlets",
 			new ServiceContext());

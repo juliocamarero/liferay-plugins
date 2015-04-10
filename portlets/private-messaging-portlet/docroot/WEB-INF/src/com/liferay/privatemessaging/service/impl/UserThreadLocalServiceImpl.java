@@ -339,7 +339,7 @@ public class UserThreadLocalServiceImpl extends UserThreadLocalServiceBaseImpl {
 		Group group = user.getGroup();
 
 		long plid = PortalUtil.getPlidFromPortletId(
-			group.getGroupId(), true, PortletKeys.PRIVATE_MESSAGING);
+			group.getGroupId(), PortletKeys.PRIVATE_MESSAGING);
 
 		Layout layout = LayoutLocalServiceUtil.getLayout(plid);
 
