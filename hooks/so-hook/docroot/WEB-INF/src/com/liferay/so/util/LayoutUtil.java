@@ -18,7 +18,6 @@
 package com.liferay.so.util;
 
 import com.liferay.asset.publisher.web.constants.AssetPublisherPortletKeys;
-import com.liferay.breadcrumb.web.constants.BreadcrumbPortletKeys;
 import com.liferay.portal.kernel.configuration.Filter;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -43,6 +42,7 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.permission.PortletPermissionUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
+import com.liferay.site.navigation.breadcrumb.web.constants.BreadcrumbPortletKeys;
 import com.liferay.util.portlet.PortletProps;
 import com.liferay.wiki.constants.WikiPortletKeys;
 
@@ -58,7 +58,7 @@ import javax.portlet.PortletPreferences;
 public class LayoutUtil {
 
 	public static Layout addLayout(
-			Group group, boolean privateLayout, long parentLayoutId,
+			Group group, long parentLayoutId,
 			Map<Locale, String> nameMap, String friendlyURL,
 			String layoutTemplateId)
 		throws Exception {
@@ -66,7 +66,7 @@ public class LayoutUtil {
 		ServiceContext serviceContext = new ServiceContext();
 
 		Layout layout = LayoutLocalServiceUtil.addLayout(
-			group.getCreatorUserId(), group.getGroupId(), privateLayout,
+			group.getCreatorUserId(), group.getGroupId(),
 			parentLayoutId, nameMap, null, null, null, null,
 			LayoutConstants.TYPE_PORTLET, false, friendlyURL, serviceContext);
 
@@ -76,19 +76,19 @@ public class LayoutUtil {
 		layoutTypePortlet.setLayoutTemplateId(0, layoutTemplateId, false);
 
 		return LayoutLocalServiceUtil.updateLayout(
-			layout.getGroupId(), layout.isPrivateLayout(), layout.getLayoutId(),
+			layout.getGroupId(), layout.getLayoutId(),
 			layout.getTypeSettings());
 	}
 
 	public static Layout addLayout(
-			Group group, boolean privateLayout, long parentLayoutId,
-			String name, String friendlyURL, String layoutTemplateId)
+			Group group, long parentLayoutId, String name, String friendlyURL,
+			String layoutTemplateId)
 		throws Exception {
 
 		ServiceContext serviceContext = new ServiceContext();
 
 		Layout layout = LayoutLocalServiceUtil.addLayout(
-			group.getCreatorUserId(), group.getGroupId(), privateLayout,
+			group.getCreatorUserId(), group.getGroupId(),
 			parentLayoutId, name, StringPool.BLANK, StringPool.BLANK,
 			LayoutConstants.TYPE_PORTLET, false, friendlyURL, serviceContext);
 
@@ -98,7 +98,7 @@ public class LayoutUtil {
 		layoutTypePortlet.setLayoutTemplateId(0, layoutTemplateId, false);
 
 		return LayoutLocalServiceUtil.updateLayout(
-			layout.getGroupId(), layout.isPrivateLayout(), layout.getLayoutId(),
+			layout.getGroupId(), layout.getLayoutId(),
 			layout.getTypeSettings());
 	}
 
@@ -129,7 +129,7 @@ public class LayoutUtil {
 		}
 
 		LayoutLocalServiceUtil.updateLayout(
-			layout.getGroupId(), layout.isPrivateLayout(), layout.getLayoutId(),
+			layout.getGroupId(), layout.getLayoutId(),
 			layout.getTypeSettings());
 
 		List<String> portletIds = layoutTypePortlet.getPortletIds();

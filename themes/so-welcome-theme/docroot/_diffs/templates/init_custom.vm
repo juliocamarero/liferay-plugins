@@ -13,7 +13,6 @@
 
 	$user_dashboard_portlet_url.setParameter("struts_action", "/my_sites/view")
 	$user_dashboard_portlet_url.setParameter("groupId", "$user_group.getGroupId()")
-	$user_dashboard_portlet_url.setParameter("privateLayout", "true")
 	$user_dashboard_portlet_url.setPortletMode("view")
 	$user_dashboard_portlet_url.setWindowState("normal")
 

@@ -55,40 +55,22 @@ public class ImporterFactory {
 		Set<String> templatePaths = servletContext.getResourcePaths(
 			TEMPLATES_DIR);
 
-		URL privateLARURL = null;
-		URL publicLARURL = servletContext.getResource(
+		URL larURL = servletContext.getResource(
 			RESOURCES_DIR.concat("archive.lar"));
 
-		if (publicLARURL == null) {
-			privateLARURL = servletContext.getResource(
-				RESOURCES_DIR.concat("private.lar"));
-
-			publicLARURL = servletContext.getResource(
+		if (larURL == null) {
+			larURL = servletContext.getResource(
 				RESOURCES_DIR.concat("public.lar"));
 		}
 
 		Importer importer = null;
 
-		if ((privateLARURL != null) || (publicLARURL != null)) {
+		if (larURL != null) {
 			LARImporter larImporter = getLARImporter();
 
-			URLConnection privateLARURLConnection = null;
+			URLConnection larURLConnection = larURL.openConnection();
 
-			if (privateLARURL != null) {
-				privateLARURLConnection = privateLARURL.openConnection();
-
-				larImporter.setPrivateLARInputStream(
-					privateLARURLConnection.getInputStream());
-			}
-
-			URLConnection publicLARURLConnection = null;
-
-			if (publicLARURL != null) {
-				publicLARURLConnection = publicLARURL.openConnection();
-
-				larImporter.setPublicLARInputStream(
-					publicLARURLConnection.getInputStream());
-			}
+			larImporter.setLARInputStream(larURLConnection.getInputStream());
 
 			importer = larImporter;
 		}

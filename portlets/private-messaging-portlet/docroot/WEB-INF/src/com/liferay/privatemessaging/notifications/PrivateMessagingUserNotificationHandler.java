@@ -150,7 +150,7 @@ public class PrivateMessagingUserNotificationHandler
 		Group group = user.getGroup();
 
 		long portletPlid = PortalUtil.getPlidFromPortletId(
-			group.getGroupId(), true, PortletKeys.PRIVATE_MESSAGING);
+			group.getGroupId(), PortletKeys.PRIVATE_MESSAGING);
 
 		PortletURL portletURL = null;
 

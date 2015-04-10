@@ -25,7 +25,7 @@ LayoutSet layoutSet = themeDisplay.getLayoutSet();
 %>
 
 <c:choose>
-	<c:when test="<%= group.isUser() && layoutSet.isPrivateLayout() %>">
+	<c:when test="<%= group.isUser() %>">
 
 		<%
 		long mbThreadId = ParamUtil.getLong(request, "mbThreadId");

@@ -182,8 +182,7 @@ public class UpgradeLayout extends UpgradeProcess {
 		StringBuilder sb = new StringBuilder(6);
 
 		sb.append("inner join Group_ on ((Group_.groupId = Layout.groupId) ");
-		sb.append("and ((Layout.privateLayout = true) or ");
-		sb.append("((Layout.privateLayout = false) and (Group_.classNameId ");
+		sb.append("and (Group_.classNameId ");
 		sb.append("!= ");
 		sb.append(PortalUtil.getClassNameId(User.class));
 		sb.append(")))) ");

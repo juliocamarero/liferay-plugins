@@ -323,7 +323,7 @@ private static String _assertTrue(boolean value) {
 	}
 }
 
-private static File _exportLayoutsAsFile(Group group, boolean privateLayout) throws PortalException, SystemException {
+private static File _exportLayoutsAsFile(Group group) throws PortalException, SystemException {
 	Map<String, String[]> parameters = new HashMap<String, String[]>();
 
 	parameters.put(PortletDataHandlerKeys.IGNORE_LAST_PUBLISH_DATE, new String[] {Boolean.TRUE.toString()});
@@ -340,7 +340,7 @@ private static File _exportLayoutsAsFile(Group group, boolean privateLayout) thr
 	parameters.put(PortletDataHandlerKeys.THEME_REFERENCE, new String[] {Boolean.TRUE.toString()});
 	parameters.put(PortletDataHandlerKeys.PORTLET_SETUP_ALL, new String[] {Boolean.TRUE.toString()});
 
-	List<Layout> layouts = LayoutLocalServiceUtil.getLayouts(group.getGroupId(), privateLayout);
+	List<Layout> layouts = LayoutLocalServiceUtil.getLayouts(group.getGroupId());
 
 	long[] layoutIds = new long[layouts.size()];
 
@@ -350,6 +350,6 @@ private static File _exportLayoutsAsFile(Group group, boolean privateLayout) thr
 		layoutIds[i] = layout.getLayoutId();
 	}
 
-	return LayoutLocalServiceUtil.exportLayoutsAsFile(group.getGroupId(), privateLayout, layoutIds, parameters, null, null);
+	return LayoutLocalServiceUtil.exportLayoutsAsFile(group.getGroupId(), layoutIds, parameters, null, null);
 }
 %>

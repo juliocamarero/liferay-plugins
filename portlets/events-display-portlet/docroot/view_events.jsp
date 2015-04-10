@@ -46,19 +46,12 @@ List<CalendarBooking> calendarBookings = (List<CalendarBooking>)request.getAttri
 			<%
 			Group group = GroupLocalServiceUtil.getGroup(calendarBooking.getGroupId());
 
-			LiferayPortletURL groupURL = PortletURLFactoryUtil.create(request, PortletKeys.MY_SITES, layout.getPlid(), PortletRequest.ACTION_PHASE);
+			LiferayPortletURL groupURL = PortletURLFactoryUtil.create(request, MySitesPortletKeys.MY_SITES, layout.getPlid(), PortletRequest.ACTION_PHASE);
 
 			groupURL.setWindowState(LiferayWindowState.NORMAL);
 
 			groupURL.setParameter("struts_action", "/my_sites/view");
 			groupURL.setParameter("groupId", String.valueOf(group.getGroupId()));
-
-			if (group.hasPublicLayouts()) {
-				groupURL.setParameter("privateLayout", "0");
-			}
-			else {
-				groupURL.setParameter("privateLayout", "1");
-			}
 
 			String eventHREF = groupURL.toString();
 
