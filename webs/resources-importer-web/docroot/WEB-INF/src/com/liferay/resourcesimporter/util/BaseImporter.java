@@ -85,7 +85,7 @@ public abstract class BaseImporter implements Importer {
 					companyId, GroupConstants.GUEST);
 
 				List<Layout> layouts = LayoutLocalServiceUtil.getLayouts(
-					group.getGroupId(), false,
+					group.getGroupId(),
 					LayoutConstants.DEFAULT_PARENT_LAYOUT_ID, false, 0, 1);
 
 				if (!layouts.isEmpty()) {

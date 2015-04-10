@@ -158,7 +158,7 @@ public class NotificationTemplateContextFactory {
 			user.getCompanyId(), GroupConstants.GUEST);
 
 		Layout layout = LayoutLocalServiceUtil.fetchLayout(
-			group.getDefaultPublicPlid());
+			group.getDefaultPlid());
 
 		String portalURL = _getPortalURL(
 			group.getCompanyId(), group.getGroupId());
