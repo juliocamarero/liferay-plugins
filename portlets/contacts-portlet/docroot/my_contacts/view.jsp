@@ -32,7 +32,7 @@ Group group = themeDisplay.getScopeGroup();
 		PortletURL portletURL = null;
 
 		try {
-			long contactsPlid = PortalUtil.getPlidFromPortletId(group.getGroupId(), false, PortletKeys.CONTACTS_CENTER);
+			long contactsPlid = PortalUtil.getPlidFromPortletId(group.getGroupId(), PortletKeys.CONTACTS_CENTER);
 
 			portletURL = PortletURLFactoryUtil.create(request, PortletKeys.CONTACTS_CENTER, contactsPlid, PortletRequest.RENDER_PHASE);
 		}

@@ -48,7 +48,7 @@ public class FindUserAction extends BaseStrutsAction {
 		User user = UserLocalServiceUtil.fetchUser(userId);
 
 		if ((user != null) && user.hasPublicLayouts()) {
-			response.sendRedirect(user.getDisplayURL(themeDisplay, false));
+			response.sendRedirect(user.getDisplayURL(themeDisplay));
 
 			return null;
 		}

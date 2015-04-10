@@ -121,7 +121,7 @@ int roleUsersCount = UserLocalServiceUtil.getRoleUsersCount(role.getRoleId());
 				<%
 				Group userGroup = user.getGroup();
 
-				String dashboardURL = userGroup.getDisplayURL(themeDisplay, true);
+				String dashboardURL = userGroup.getDisplayURL(themeDisplay);
 				%>
 
 				if (finished) {

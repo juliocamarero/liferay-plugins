@@ -54,7 +54,7 @@ User selUser = (User)request.getAttribute("user.selUser");
 					<%
 					Group controlPanelGroup = GroupLocalServiceUtil.getGroup(themeDisplay.getCompanyId(), GroupConstants.CONTROL_PANEL);
 
-					long controlPanelPlid = LayoutLocalServiceUtil.getDefaultPlid(controlPanelGroup.getGroupId(), true);
+					long controlPanelPlid = LayoutLocalServiceUtil.getDefaultPlid(controlPanelGroup.getGroupId());
 					%>
 
 					<liferay-portlet:renderURL plid="<%= controlPanelPlid %>" portletName="<%= PortletKeys.MY_ACCOUNT %>" refererPlid="<%= plid %>" var="editUserPortraitURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
