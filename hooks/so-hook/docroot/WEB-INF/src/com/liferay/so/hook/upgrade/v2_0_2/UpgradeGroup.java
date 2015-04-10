@@ -73,10 +73,8 @@ public class UpgradeGroup extends UpgradeProcess {
 					return;
 				}
 
-				boolean privateLayout = group.hasPrivateLayouts();
-
 				LayoutSet layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
-					group.getGroupId(), privateLayout);
+					group.getGroupId());
 
 				String themeId = layoutSet.getThemeId();
 
@@ -86,26 +84,24 @@ public class UpgradeGroup extends UpgradeProcess {
 
 				try {
 					PortletPreferences portletPreferences =
-						getPortletPreferences(
-							group.getGroupId(), privateLayout);
+						getPortletPreferences(group.getGroupId());
 
 					LayoutLocalServiceUtil.deleteLayouts(
-						group.getGroupId(), privateLayout,
-						new ServiceContext());
+						group.getGroupId(), new ServiceContext());
 
 					LayoutSetPrototypeUtil.updateLayoutSetPrototype(
-						group, privateLayout,
+						group,
 						SocialOfficeConstants.LAYOUT_SET_PROTOTYPE_KEY_SITE);
 
 					layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
-						group.getGroupId(), privateLayout);
+						group.getGroupId());
 
 					PortalClassInvoker.invoke(
 						_mergeLayoutSetPrototypeLayoutsMethodKey, group,
 						layoutSet);
 
 					updatePortletPreferences(
-						group.getGroupId(), privateLayout, portletPreferences);
+						group.getGroupId(), portletPreferences);
 
 					SocialOfficeUtil.enableSocialOffice(group);
 				}
@@ -117,12 +113,11 @@ public class UpgradeGroup extends UpgradeProcess {
 		actionableDynamicQuery.performActions();
 	}
 
-	protected PortletPreferences getPortletPreferences(
-			long groupId, boolean privateLayout)
+	protected PortletPreferences getPortletPreferences(long groupId)
 		throws Exception {
 
 		Layout layout = LayoutLocalServiceUtil.fetchFirstLayout(
-			groupId, privateLayout, LayoutConstants.DEFAULT_PARENT_LAYOUT_ID);
+			groupId, LayoutConstants.DEFAULT_PARENT_LAYOUT_ID);
 
 		if (layout.getLayoutType() instanceof LayoutTypePortlet) {
 			try {
@@ -137,8 +132,7 @@ public class UpgradeGroup extends UpgradeProcess {
 	}
 
 	protected void updatePortletPreferences(
-			long groupId, boolean privateLayout,
-			PortletPreferences portletPreferences)
+			long groupId, PortletPreferences portletPreferences)
 		throws Exception {
 
 		if (portletPreferences == null) {
@@ -146,7 +140,7 @@ public class UpgradeGroup extends UpgradeProcess {
 		}
 
 		Layout layout = LayoutLocalServiceUtil.fetchFirstLayout(
-			groupId, privateLayout, LayoutConstants.DEFAULT_PARENT_LAYOUT_ID);
+			groupId, LayoutConstants.DEFAULT_PARENT_LAYOUT_ID);
 
 		PortletPreferences newPortletPreferences =
 			PortletPreferencesFactoryUtil.getLayoutPortletSetup(

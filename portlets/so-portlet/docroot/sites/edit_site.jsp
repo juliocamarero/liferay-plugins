@@ -128,7 +128,7 @@ portletURL.setParameter("mvcPath", "/sites/edit_site.jsp");
 								<%
 								Group layoutSetPrototypeGroup = defaultLayoutSetPrototype.getGroup();
 
-								List<Layout> prototypeLayouts = LayoutLocalServiceUtil.getLayouts(layoutSetPrototypeGroup.getGroupId(), true, 0);
+								List<Layout> prototypeLayouts = LayoutLocalServiceUtil.getLayouts(layoutSetPrototypeGroup.getGroupId(), 0);
 
 								for (Layout prototypeLayout : prototypeLayouts) {
 								%>

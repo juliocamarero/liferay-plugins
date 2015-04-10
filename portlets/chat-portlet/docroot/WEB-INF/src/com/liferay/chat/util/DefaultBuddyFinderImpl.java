@@ -74,7 +74,7 @@ public class DefaultBuddyFinderImpl implements BuddyFinder {
 					PortletPropsValues.BUDDY_LIST_ALLOWED_SOCIAL_RELATION_TYPES,
 					modifiedDate, 0, PortletPropsValues.BUDDY_LIST_MAX_BUDDIES);
 
-			buddies = new ArrayList<Object[]>(
+			buddies = new ArrayList<>(
 				groupBuddies.size() + socialBuddies.size());
 
 			buddies.addAll(groupBuddies);
