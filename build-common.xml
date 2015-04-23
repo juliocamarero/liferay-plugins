@@ -185,6 +185,45 @@ Error-Prone was automatically installed. Please rerun your task.
 		</sequential>
 	</macrodef>
 
+	<macrodef name="build-soy">
+		<attribute name="module.dir" />
+
+		<sequential>
+			<fileset
+				dir="@{module.dir}"
+				id="soy.fileset"
+				includes="docroot/**/*.soy,src/META-INF/resources/**/*.soy"
+			/>
+
+			<if>
+				<resourcecount count="0" when="gt" >
+					<fileset refid="soy.fileset" />
+				</resourcecount>
+				<then>
+					<for param="soy.file">
+						<path>
+							<fileset refid="soy.fileset" />
+						</path>
+						<sequential>
+							<java
+								classname="com.google.template.soy.SoyToJsSrcCompiler"
+								classpathref="plugin.classpath"
+								fork="true"
+								maxmemory="1024m"
+								newenvironment="true"
+							>
+								<arg value="--outputPathFormat" />
+								<arg value="@{soy.file}.js" />
+								<arg value="--srcs" />
+								<arg value="@{soy.file}" />
+							</java>
+						</sequential>
+					</for>
+				</then>
+			</if>
+		</sequential>
+	</macrodef>
+
 	<macrodef name="build-wsdl">
 		<attribute name="module.dir" />
 
@@ -316,6 +355,7 @@ Error-Prone was automatically installed. Please rerun your task.
 
 	<macrodef name="gradle-execute">
 		<attribute name="task" />
+		<element implicit="true" name="args" optional="true" />
 
 		<sequential>
 			<if>
@@ -333,6 +373,7 @@ Error-Prone was automatically installed. Please rerun your task.
 			<exec executable="${sdk.dir}/tools/gradle/gradlew${gradlew.suffix}" failonerror="true">
 				<arg value="-PpluginsExcludes=${plugins.excludes}" />
 				<arg value="-PpluginsIncludes=${plugins.includes}" />
+				<args />
 				<arg value="@{task}" />
 			</exec>
 		</sequential>
@@ -1457,54 +1498,36 @@ Please find a solution that does not require portal-impl.jar.
 			<if>
 				<antelope:endswith string="${plugin.name}" with="-ext" />
 				<then>
-					<direct-deploy-ext-cmd
-						direct.deploy.dir="${app.server.deploy.dir}"
-						module.dir="@{module.dir}"
-					/>
+					<direct-deploy-ext-cmd />
 				</then>
 				<elseif>
 					<antelope:endswith string="${plugin.name}" with="-hook" />
 					<then>
-						<direct-deploy-hook-cmd
-							direct.deploy.dir="${app.server.deploy.dir}"
-							module.dir="@{module.dir}"
-						/>
+						<direct-deploy-hook-cmd />
 					</then>
 				</elseif>
 				<elseif>
 					<antelope:endswith string="${plugin.name}" with="-layouttpl" />
 					<then>
-						<direct-deploy-layouttpl-cmd
-							direct.deploy.dir="${app.server.deploy.dir}"
-							module.dir="@{module.dir}"
-						/>
+						<direct-deploy-layouttpl-cmd />
 					</then>
 				</elseif>
 				<elseif>
 					<antelope:endswith string="${plugin.name}" with="-portlet" />
 					<then>
-						<direct-deploy-portlet-cmd
-							direct.deploy.dir="${app.server.deploy.dir}"
-							module.dir="@{module.dir}"
-						/>
+						<direct-deploy-portlet-cmd />
 					</then>
 				</elseif>
 				<elseif>
 					<antelope:endswith string="${plugin.name}" with="-theme" />
 					<then>
-						<direct-deploy-theme-cmd
-							direct.deploy.dir="${app.server.deploy.dir}"
-							module.dir="@{module.dir}"
-						/>
+						<direct-deploy-theme-cmd />
 					</then>
 				</elseif>
 				<elseif>
 					<antelope:endswith string="${plugin.name}" with="-web" />
 					<then>
-						<direct-deploy-web-cmd
-							direct.deploy.dir="${app.server.deploy.dir}"
-							module.dir="@{module.dir}"
-						/>
+						<direct-deploy-web-cmd />
 					</then>
 				</elseif>
 			</if>
@@ -1512,14 +1535,9 @@ Please find a solution that does not require portal-impl.jar.
 	</macrodef>
 
 	<macrodef name="direct-deploy-ext-cmd">
-		<attribute name="direct.deploy.dir" />
-		<attribute name="module.dir" />
+		<attribute name="direct.deploy.dir" default="${app.server.deploy.dir}" />
 
 		<sequential>
-			<set-module-properties
-				module.dir="@{module.dir}"
-			/>
-
 			<java
 				classname="com.liferay.portal.tools.deploy.ExtDeployer"
 				classpathref="portal.classpath"
@@ -1551,14 +1569,9 @@ Please find a solution that does not require portal-impl.jar.
 	</macrodef>
 
 	<macrodef name="direct-deploy-hook-cmd">
-		<attribute name="direct.deploy.dir" />
-		<attribute name="module.dir" />
+		<attribute name="direct.deploy.dir" default="${app.server.deploy.dir}" />
 
 		<sequential>
-			<set-module-properties
-				module.dir="@{module.dir}"
-			/>
-
 			<java
 				classname="com.liferay.portal.tools.deploy.HookDeployer"
 				classpathref="portal.classpath"
@@ -1590,14 +1603,9 @@ Please find a solution that does not require portal-impl.jar.
 	</macrodef>
 
 	<macrodef name="direct-deploy-layouttpl-cmd">
-		<attribute name="direct.deploy.dir" />
-		<attribute name="module.dir" />
+		<attribute name="direct.deploy.dir" default="${app.server.deploy.dir}" />
 
 		<sequential>
-			<set-module-properties
-				module.dir="@{module.dir}"
-			/>
-
 			<java
 				classname="com.liferay.portal.tools.deploy.LayoutTemplateDeployer"
 				classpathref="portal.classpath"
@@ -1625,14 +1633,9 @@ Please find a solution that does not require portal-impl.jar.
 	</macrodef>
 
 	<macrodef name="direct-deploy-portlet-cmd">
-		<attribute name="direct.deploy.dir" />
-		<attribute name="module.dir" />
+		<attribute name="direct.deploy.dir" default="${app.server.deploy.dir}" />
 
 		<sequential>
-			<set-module-properties
-				module.dir="@{module.dir}"
-			/>
-
 			<java
 				classname="com.liferay.portal.tools.deploy.PortletDeployer"
 				classpathref="portal.classpath"
@@ -1673,14 +1676,9 @@ Please find a solution that does not require portal-impl.jar.
 	</macrodef>
 
 	<macrodef name="direct-deploy-theme-cmd">
-		<attribute name="direct.deploy.dir" />
-		<attribute name="module.dir" />
+		<attribute name="direct.deploy.dir" default="${app.server.deploy.dir}" />
 
 		<sequential>
-			<set-module-properties
-				module.dir="@{module.dir}"
-			/>
-
 			<java
 				classname="com.liferay.portal.tools.deploy.ThemeDeployer"
 				classpathref="portal.classpath"
@@ -1714,14 +1712,9 @@ Please find a solution that does not require portal-impl.jar.
 	</macrodef>
 
 	<macrodef name="direct-deploy-web-cmd">
-		<attribute name="direct.deploy.dir" />
-		<attribute name="module.dir" />
+		<attribute name="direct.deploy.dir" default="${app.server.deploy.dir}" />
 
 		<sequential>
-			<set-module-properties
-				module.dir="@{module.dir}"
-			/>
-
 			<java
 				classname="com.liferay.portal.tools.deploy.WebDeployer"
 				classpathref="portal.classpath"
@@ -1749,33 +1742,6 @@ Please find a solution that does not require portal-impl.jar.
 				<arg value="${app.server.lib.portal.dir}/util-java.jar" />
 				<arg value="${app.server.lib.portal.dir}/util-taglib.jar" />
 			</java>
-		</sequential>
-	</macrodef>
-
-	<macrodef name="javadoc-macro">
-		<attribute name="module.dir" />
-
-		<sequential>
-			<set-module-properties
-				module.dir="@{module.dir}"
-			/>
-
-			<resourcecount property="module.java.count">
-				<fileset dir="${plugin.source.dir}" includes="**/*.java" />
-			</resourcecount>
-
-			<if>
-				<not>
-					<equals arg1="${module.java.count}" arg2="0" />
-				</not>
-				<then>
-					<javadoc
-						classpathref="plugin.classpath"
-						destdir="javadoc"
-						sourcepath="${plugin.source.dir}"
-					/>
-				</then>
-			</if>
 		</sequential>
 	</macrodef>
 
@@ -1963,7 +1929,6 @@ Please find a solution that does not require portal-impl.jar.
 
 									<direct-deploy-portlet-cmd
 										direct.deploy.dir="${tstamp.value}"
-										module.dir="@{module.dir}"
 									/>
 
 									<var name="temp.deployed.plugin.dir" value="${tstamp.value}/${plugin.name}-${plugin.full.version}" />
@@ -2045,6 +2010,33 @@ Please find a solution that does not require portal-impl.jar.
 						jarfile="${plugin.sources.file}"
 					/>
 				</else>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="javadoc-macro">
+		<attribute name="module.dir" />
+
+		<sequential>
+			<set-module-properties
+				module.dir="@{module.dir}"
+			/>
+
+			<resourcecount property="module.java.count">
+				<fileset dir="${plugin.source.dir}" includes="**/*.java" />
+			</resourcecount>
+
+			<if>
+				<not>
+					<equals arg1="${module.java.count}" arg2="0" />
+				</not>
+				<then>
+					<javadoc
+						classpathref="plugin.classpath"
+						destdir="javadoc"
+						sourcepath="${plugin.source.dir}"
+					/>
+				</then>
 			</if>
 		</sequential>
 	</macrodef>
@@ -2132,6 +2124,30 @@ Please find a solution that does not require portal-impl.jar.
 		</sequential>
 	</macrodef>
 
+	<macrodef name="multiroot-subant">
+		<attribute name="build.file" />
+		<attribute name="excludes" />
+		<attribute name="includes" />
+		<attribute name="root.dir" />
+		<attribute name="target" />
+
+		<sequential>
+			<path id="includes.path">
+				<dirset dir="@{root.dir}" excludes="@{excludes}" includes="@{includes}" />
+			</path>
+
+			<local name="includes.path" />
+
+			<pathconvert pathsep="," property="includes.path" refid="includes.path" targetos="unix" />
+
+			<subant target="@{target}">
+				<multirootfileset basedirs="${includes.path}">
+					<include name="@{build.file}" />
+				</multirootfileset>
+			</subant>
+		</sequential>
+	</macrodef>
+
 	<macrodef name="release">
 		<attribute name="module.dir" />
 
@@ -2173,10 +2189,6 @@ Please find a solution that does not require portal-impl.jar.
 		<attribute name="module.dir" />
 
 		<sequential>
-			<delete file="@{module.dir}/dependency-settings.gradle" />
-
-			<touch file="@{module.dir}/dependency-settings.gradle" />
-
 			<delete file="@{module.dir}/build.gradle" />
 
 			<touch file="@{module.dir}/build.gradle" />
@@ -2860,6 +2872,13 @@ for (String path : paths) {
 		/>
 	</target>
 
+	<target name="build-soy">
+		<loop-macrodef-or-target
+			module.dirs="${plugins.includes.path}"
+			target.name="build-soy"
+		/>
+	</target>
+
 	<target name="build-wsdl">
 		<loop-macrodef-or-target
 			module.dirs="${plugins.includes.path}"
@@ -2940,6 +2959,30 @@ for (String path : paths) {
 		/>
 	</target>
 
+	<target name="direct-deploy-ext-cmd">
+		<direct-deploy-ext-cmd />
+	</target>
+
+	<target name="direct-deploy-hook-cmd">
+		<direct-deploy-hook-cmd />
+	</target>
+
+	<target name="direct-deploy-layouttpl-cmd">
+		<direct-deploy-layouttpl-cmd />
+	</target>
+
+	<target name="direct-deploy-portlet-cmd">
+		<direct-deploy-portlet-cmd />
+	</target>
+
+	<target name="direct-deploy-theme-cmd">
+		<direct-deploy-theme-cmd />
+	</target>
+
+	<target name="direct-deploy-web-cmd">
+		<direct-deploy-web-cmd />
+	</target>
+
 	<target name="format-javadoc">
 		<java
 			classname="com.liferay.portal.tools.JavadocFormatter"
@@ -2998,8 +3041,8 @@ for (String path : paths) {
 
 	<target name="reset-gradle">
 		<path id="reset.gradle.path">
-			<dirset dir="${basedir}" includes="**/docroot" />
-			<dirset dir="${basedir}" includes="**/src" excludes="**/docroot/WEB-INF/src" />
+			<dirset dir="${basedir}" excludes="tools/**" includes="**/docroot" />
+			<dirset dir="${basedir}" excludes="**/docroot/WEB-INF/src" includes="**/src" />
 		</path>
 
 		<pathconvert

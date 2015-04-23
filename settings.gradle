@@ -24,45 +24,7 @@ if (!hasProperty("lfrPluginsIncludes")) {
 	ext.lfrPluginsIncludes = antProperties["plugins.includes"]
 }
 
-gradle.ext.compileDependencies = []
-
-ext.includeTransitive = {
-	String[] projectPaths ->
-
-	include projectPaths
-
-	for (String projectPath : projectPaths) {
-		String projectDirName = projectPath.replaceAll(":", "/")
-
-		projectDirName = projectDirName.replaceFirst("^/", "")
-
-		File dependencySettingsFile = new File(rootDir.toString() + "/" + projectDirName, "dependency-settings.gradle")
-
-		if (!dependencySettingsFile.exists() || dependencySettingsFile.length() == 0) {
-			continue
-		}
-
-		apply from: dependencySettingsFile
-
-		String dependencySettingsContent = dependencySettingsFile.text
-
-		dependencySettingsContent = dependencySettingsContent.replaceAll("includeTransitive", "")
-		dependencySettingsContent = dependencySettingsContent.replaceAll(" ", "")
-		dependencySettingsContent = dependencySettingsContent.replaceAll("\"", "")
-		dependencySettingsContent = dependencySettingsContent.replaceAll("\\s\$", "")
-
-		String[] dependencySettingsArray = dependencySettingsContent.split("\\n")
-
-		gradle.compileDependencies << [
-			compile: dependencySettingsArray,
-			projectPath: projectPath
-		]
-	}
-}
-
-String userDirName = System.getProperty("user.dir")
-
-FileTree fileTree = fileTree(userDirName) {
+FileTree fileTree = fileTree(rootDir) {
 	if ((lfrPluginsIncludes != "") && (lfrPluginsIncludes != "*")) {
 		lfrPluginsIncludes = lfrPluginsIncludes.replaceAll(" ", "")
 		lfrPluginsIncludes = lfrPluginsIncludes.replaceAll(",+", ",")
@@ -107,10 +69,8 @@ FileTree fileTree = fileTree(userDirName) {
 		exclude("**/build.gradle")
 	}
 
-	if (userDirName.equals(rootDir.toString())) {
-		exclude("build.gradle")
-		exclude("tools/gradle/build.gradle")
-	}
+	exclude("build.gradle")
+	exclude("tools/**/build.gradle")
 }
 
 fileTree.each(
@@ -125,7 +85,7 @@ fileTree.each(
 
 		pluginDir = pluginDir.replaceFirst("/build.gradle", "")
 
-		includeTransitive(":" + pluginDir.replaceAll("[\\/]", ":"))
+		include(":" + pluginDir.replaceAll("[\\/]", ":"))
 	}
 )
 

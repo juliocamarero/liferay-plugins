@@ -52,21 +52,34 @@
 		</for>
 	</target>
 
+	<target name="compile-jsp">
+		<for param="module.web.dir">
+			<dirset dir=".">
+				<include name="**/*-web" />
+			</dirset>
+			<sequential>
+				<ant antfile="${sdk.dir}/build-common-plugin.xml" dir="@{module.web.dir}" target="compile-jsp" />
+			</sequential>
+		</for>
+	</target>
+
 	<target name="setup-eclipse">
-		<subant target="setup-eclipse-module">
-			<multirootfileset basedirs="${plugins.includes.path}">
-				<include name="build.xml" />
-			</multirootfileset>
-		</subant>
+		<multiroot-subant
+			build.file="build.xml"
+			root.dir="${basedir}"
+			excludes="${plugins.excludes}"
+			includes="${plugins.includes}"
+			target="setup-eclipse"
+		/>
 	</target>
 
 	<target name="test-class-group">
-		<subant target="test-class-group">
-			<multirootfileset basedirs="${plugins.includes.path}">
-				<include name="build.xml" />
-			</multirootfileset>
-		</subant>
-
-		<stop-test-app-server />
+		<multiroot-subant
+			build.file="build.xml"
+			root.dir="${basedir}"
+			excludes="${plugins.excludes}"
+			includes="${plugins.includes}"
+			target="test-class-group"
+		/>
 	</target>
 </project>

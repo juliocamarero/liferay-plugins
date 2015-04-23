@@ -24,6 +24,8 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
+import com.liferay.portal.kernel.portlet.PortletProvider;
+import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.util.ClassResolverUtil;
 import com.liferay.portal.kernel.util.Constants;
@@ -42,6 +44,7 @@ import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutConstants;
 import com.liferay.portal.model.LayoutSet;
 import com.liferay.portal.model.LayoutSetPrototype;
+import com.liferay.portal.model.MembershipRequest;
 import com.liferay.portal.model.MembershipRequestConstants;
 import com.liferay.portal.model.Organization;
 import com.liferay.portal.model.User;
@@ -262,31 +265,15 @@ public class SitesPortlet extends MVCPortlet {
 				themeDisplay.getUserId(), group.getGroupId());
 
 			if (group.hasPrivateLayouts() && member) {
-				PortletURL portletURL = liferayPortletResponse.createActionURL(
-					PortletKeys.SITE_REDIRECTOR);
-
-				portletURL.setParameter("struts_action", "/my_sites/view");
-				portletURL.setParameter(
-					"groupId", String.valueOf(group.getGroupId()));
-				portletURL.setParameter(
-					"privateLayout", Boolean.TRUE.toString());
-				portletURL.setWindowState(WindowState.NORMAL);
-
-				groupJSONObject.put("privateLayoutsURL", portletURL.toString());
+				groupJSONObject.put(
+					"privateLayoutsURL",
+					group.getDisplayURL(themeDisplay, true));
 			}
 
 			if (group.hasPublicLayouts()) {
-				PortletURL portletURL = liferayPortletResponse.createActionURL(
-					PortletKeys.SITE_REDIRECTOR);
-
-				portletURL.setParameter("struts_action", "/my_sites/view");
-				portletURL.setParameter(
-					"groupId", String.valueOf(group.getGroupId()));
-				portletURL.setParameter(
-					"privateLayout", Boolean.FALSE.toString());
-				portletURL.setWindowState(WindowState.NORMAL);
-
-				groupJSONObject.put("publicLayoutsURL", portletURL.toString());
+				groupJSONObject.put(
+					"publicLayoutsURL",
+					group.getDisplayURL(themeDisplay, false));
 			}
 
 			boolean socialOfficeGroup =
@@ -294,12 +281,14 @@ public class SitesPortlet extends MVCPortlet {
 
 			groupJSONObject.put("socialOfficeGroup", socialOfficeGroup);
 
+			String portletId = PortletProviderUtil.getPortletId(
+				MembershipRequest.class.getName(), PortletProvider.Action.VIEW);
+
 			PortletURL siteAssignmentsPortletURL =
-				liferayPortletResponse.createActionURL(
-					PortletKeys.SITE_MEMBERSHIPS_ADMIN);
+				liferayPortletResponse.createActionURL(portletId);
 
 			siteAssignmentsPortletURL.setParameter(
-				"struts_action", "/sites_admin/edit_site_assignments");
+				"mvcPath", "/edit_site_assignments.jsp");
 			siteAssignmentsPortletURL.setParameter(
 				Constants.CMD, "group_users");
 			siteAssignmentsPortletURL.setParameter(
@@ -359,7 +348,7 @@ public class SitesPortlet extends MVCPortlet {
 			}
 			else if (member &&
 					 !isOrganizationOrUserGroupMember(
-						themeDisplay.getUserId(), group)) {
+						 themeDisplay.getUserId(), group)) {
 
 				siteAssignmentsPortletURL.setParameter(
 					"removeUserIds", String.valueOf(themeDisplay.getUserId()));
