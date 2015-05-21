@@ -311,11 +311,10 @@ public class SitesPortlet extends MVCPortlet {
 
 					PortletURL membershipRequestURL =
 						liferayPortletResponse.createActionURL(
-							PortletKeys.SITES_ADMIN);
+							PortletKeys.SITE_ADMIN);
 
 					membershipRequestURL.setParameter(
-						"struts_action",
-						"/sites_admin/post_membership_request");
+						"javax.portlet.action", "postMembershipRequest");
 					membershipRequestURL.setParameter(
 						"redirect", themeDisplay.getURLCurrent());
 					membershipRequestURL.setParameter(
@@ -331,7 +330,6 @@ public class SitesPortlet extends MVCPortlet {
 						}, false);
 
 					membershipRequestURL.setParameter("comments", comments);
-
 					membershipRequestURL.setWindowState(WindowState.NORMAL);
 
 					groupJSONObject.put(
@@ -367,18 +365,15 @@ public class SitesPortlet extends MVCPortlet {
 				else {
 					PortletURL deletePortletURL =
 						liferayPortletResponse.createActionURL(
-							PortletKeys.SITES_ADMIN);
-
-					deletePortletURL.setWindowState(WindowState.NORMAL);
+							PortletKeys.SITE_ADMIN);
 
 					deletePortletURL.setParameter(
-						"struts_action", "/sites_admin/edit_site");
-					deletePortletURL.setParameter(
-						Constants.CMD, Constants.DELETE);
+						"javax.portlet.action", "deleteGroups");
 					deletePortletURL.setParameter(
 						"redirect", themeDisplay.getURLCurrent());
 					deletePortletURL.setParameter(
 						"groupId", String.valueOf(group.getGroupId()));
+					deletePortletURL.setWindowState(WindowState.NORMAL);
 
 					groupJSONObject.put(
 						"deleteURL", deletePortletURL.toString());
@@ -387,14 +382,13 @@ public class SitesPortlet extends MVCPortlet {
 
 			PortletURL favoritePortletURL = resourceResponse.createActionURL();
 
-			favoritePortletURL.setWindowState(WindowState.NORMAL);
-
 			favoritePortletURL.setParameter(
 				ActionRequest.ACTION_NAME, "updateFavorites");
 			favoritePortletURL.setParameter(
 				"redirect", themeDisplay.getURLCurrent());
 			favoritePortletURL.setParameter(
 				"groupId", String.valueOf(group.getGroupId()));
+			favoritePortletURL.setWindowState(WindowState.NORMAL);
 
 			if (!member && !group.hasPublicLayouts()) {
 				groupJSONObject.put("favoriteURL", StringPool.BLANK);

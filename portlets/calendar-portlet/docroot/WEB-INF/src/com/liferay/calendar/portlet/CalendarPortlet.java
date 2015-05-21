@@ -915,15 +915,18 @@ public class CalendarPortlet extends MVCPortlet {
 
 		long[] calendarIds = ParamUtil.getLongValues(
 			resourceRequest, "calendarIds");
-		long endTime = ParamUtil.getLong(resourceRequest, "endTime");
-		long startTime = ParamUtil.getLong(resourceRequest, "startTime");
+		java.util.Calendar endTimeJCalendar = getJCalendar(
+			resourceRequest, "endTime");
+		java.util.Calendar startTimeJCalendar = getJCalendar(
+			resourceRequest, "startTime");
 		int[] statuses = ParamUtil.getIntegerValues(
 			resourceRequest, "statuses");
 
 		List<CalendarBooking> calendarBookings =
 			CalendarBookingServiceUtil.search(
 				themeDisplay.getCompanyId(), new long[0], calendarIds,
-				new long[0], -1, null, startTime, endTime, true, statuses,
+				new long[0], -1, null, startTimeJCalendar.getTimeInMillis(),
+				endTimeJCalendar.getTimeInMillis(), true, statuses,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 
 		JSONArray jsonArray = CalendarUtil.toCalendarBookingsJSONArray(
@@ -1025,9 +1028,14 @@ public class CalendarPortlet extends MVCPortlet {
 		for (Document document : hits.getDocs()) {
 			long calendarId = GetterUtil.getLong(
 				document.get(Field.ENTRY_CLASS_PK));
+
 			Calendar calendar = CalendarServiceUtil.getCalendar(calendarId);
 
-			calendarsSet.add(calendar);
+			CalendarResource calendarResource = calendar.getCalendarResource();
+
+			if (calendarResource.isActive()) {
+				calendarsSet.add(calendar);
+			}
 		}
 
 		long groupClassNameId = PortalUtil.getClassNameId(Group.class);
