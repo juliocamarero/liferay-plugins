@@ -212,8 +212,7 @@ AUI.add(
 
 						var contacts = data.contacts;
 
-						AArray.map(
-							contacts,
+						contacts.map(
 							function(contact) {
 								instance.addContactResult(contact);
 							}
@@ -255,8 +254,7 @@ AUI.add(
 					deleteContactResults: function(userIds) {
 						var instance = this;
 
-						AArray.map(
-							userIds,
+						userIds.map(
 							function(userId) {
 								instance.deleteContactResult(userId);
 							}
@@ -329,8 +327,7 @@ AUI.add(
 							else {
 								instance._clearContactResult();
 
-								AArray.map(
-									contacts,
+								contacts.map(
 									function(contact) {
 										instance.addContactResult(contact);
 									}
@@ -762,8 +759,7 @@ AUI.add(
 							}
 
 							buffer.push(
-								AArray.map(
-									results,
+								results.map(
 									function(result) {
 										var displayLastNameAnchor = false;
 
@@ -797,7 +793,7 @@ AUI.add(
 											str = Lang.sub(
 												TPL_USER_DATA,
 												{
-													checked: AArray.indexOf(selectedUsersIds, result.userId) != -1 ? 'checked="true"' : '',
+													checked: selectedUsersIds.indexOf(result.userId) != -1 ? 'checked="true"' : '',
 													disabled: themeDisplay.getUserId() == result.userId ? 'disabled="true"' : '',
 													emailAddress: result.emailAddress ? result.emailAddress : '',
 													firstName: result.firstName ? result.firstName : '',
@@ -874,7 +870,7 @@ AUI.add(
 					_updateContactsResult: function(event) {
 						var instance = this;
 
-						var data = A.JSON.parse(event.data.responseText);
+						var data = JSON.parse(event.data.responseText);
 
 						var buffer = instance._renderResult(data, true, ' ');
 

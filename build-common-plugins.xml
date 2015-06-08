@@ -52,12 +52,22 @@
 		</for>
 	</target>
 
+	<target name="install">
+		<multiroot-subant
+			build.file="build.xml"
+			excludes="${plugins.excludes}"
+			includes="${plugins.includes}"
+			root.dir="${basedir}"
+			target="install"
+		/>
+	</target>
+
 	<target name="setup-eclipse">
 		<multiroot-subant
 			build.file="build.xml"
-			root.dir="${basedir}"
 			excludes="${plugins.excludes}"
 			includes="${plugins.includes}"
+			root.dir="${basedir}"
 			target="setup-eclipse"
 		/>
 	</target>
@@ -65,9 +75,9 @@
 	<target name="test-class-group">
 		<multiroot-subant
 			build.file="build.xml"
-			root.dir="${basedir}"
 			excludes="${plugins.excludes}"
 			includes="${plugins.includes}"
+			root.dir="${basedir}"
 			target="test-class-group"
 		/>
 	</target>
@@ -75,9 +85,9 @@
 	<target name="test-package">
 		<multiroot-subant
 			build.file="build.xml"
-			root.dir="${basedir}"
 			excludes="${plugins.excludes}"
 			includes="${plugins.includes}"
+			root.dir="${basedir}"
 			target="test-package"
 		/>
 	</target>

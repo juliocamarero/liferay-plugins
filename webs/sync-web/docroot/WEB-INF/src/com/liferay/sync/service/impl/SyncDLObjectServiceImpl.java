@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.plugin.PluginPackage;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.security.access.control.AccessControlled;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -44,7 +45,6 @@ import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Organization;
 import com.liferay.portal.model.Repository;
 import com.liferay.portal.model.User;
-import com.liferay.portal.security.ac.AccessControlled;
 import com.liferay.portal.security.auth.CompanyThreadLocal;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.security.permission.InlineSQLHelperUtil;
@@ -104,7 +104,9 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 
 			SyncUtil.checkSyncEnabled(group.getGroupId());
 
-			if (serviceContext.getGroupPermissions() == null) {
+			if (!group.isUser() &&
+				(serviceContext.getGroupPermissions() == null)) {
+
 				SyncUtil.setFilePermissions(group, false, serviceContext);
 			}
 
@@ -147,7 +149,9 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 
 			SyncUtil.checkSyncEnabled(group.getGroupId());
 
-			if (serviceContext.getGroupPermissions() == null) {
+			if (!group.isUser() &&
+				(serviceContext.getGroupPermissions() == null)) {
+
 				SyncUtil.setFilePermissions(group, true, serviceContext);
 			}
 

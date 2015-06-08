@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.UserNotificationDeliveryConstants;
 import com.liferay.portal.service.UserNotificationEventLocalServiceUtil;
 import com.liferay.portal.util.PortletKeys;
+import com.liferay.portal.workflow.kaleo.definition.NotificationReceptionType;
 import com.liferay.portal.workflow.kaleo.model.KaleoInstanceToken;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
 import com.liferay.portal.workflow.kaleo.runtime.ExecutionContext;
@@ -37,22 +38,28 @@ public class UserNotificationMessageSender
 
 	@Override
 	protected void doSendNotification(
-			Set<NotificationRecipient> notificationRecipients,
-			String defaultSubject, String notificationMessage,
-			ExecutionContext executionContext)
+			Map<NotificationReceptionType, Set<NotificationRecipient>>
+				notificationRecipients, String defaultSubject,
+			String notificationMessage, ExecutionContext executionContext)
 		throws Exception {
 
 		JSONObject jsonObject = populateJSONObject(
 			notificationMessage, executionContext);
 
-		for (NotificationRecipient notificationRecipient :
-				notificationRecipients) {
+		for (Map.Entry<NotificationReceptionType, Set<NotificationRecipient>>
+				entry : notificationRecipients.entrySet()) {
 
-			if (notificationRecipient.getUserId() > 0) {
+			for (NotificationRecipient notificationRecipient :
+					entry.getValue()) {
+
+				if (notificationRecipient.getUserId() <= 0) {
+					continue;
+				}
+
 				UserNotificationEventLocalServiceUtil.
 					sendUserNotificationEvents(
 						notificationRecipient.getUserId(),
-						PortletKeys.MY_WORKFLOW_TASKS,
+						PortletKeys.MY_WORKFLOW_TASK,
 						UserNotificationDeliveryConstants.TYPE_WEBSITE,
 						jsonObject);
 			}

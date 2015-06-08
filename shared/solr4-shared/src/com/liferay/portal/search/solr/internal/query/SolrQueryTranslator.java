@@ -15,59 +15,38 @@
 package com.liferay.portal.search.solr.internal.query;
 
 import com.liferay.portal.kernel.search.BooleanQuery;
-import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Query;
-import com.liferay.portal.kernel.search.QueryVisitor;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.TermQuery;
 import com.liferay.portal.kernel.search.TermRangeQuery;
 import com.liferay.portal.kernel.search.WildcardQuery;
 import com.liferay.portal.kernel.search.query.QueryTranslator;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.search.solr.SolrPostProcesor;
+import com.liferay.portal.kernel.search.query.QueryVisitor;
 import com.liferay.portal.search.solr.query.BooleanQueryTranslator;
 import com.liferay.portal.search.solr.query.TermQueryTranslator;
 import com.liferay.portal.search.solr.query.TermRangeQueryTranslator;
 import com.liferay.portal.search.solr.query.WildcardQueryTranslator;
 
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 /**
  * @author André de Oliveira
  * @author Miguel Angelo Caldas Gallindo
  */
+@Component(
+	immediate = true, property = {"search.engine.impl=Solr"},
+	service = QueryTranslator.class
+)
 public class SolrQueryTranslator
 	implements QueryTranslator<String>,
 			   QueryVisitor<org.apache.lucene.search.Query> {
-
-	public void setBooleanQueryTranslator(
-		BooleanQueryTranslator booleanQueryTranslator) {
-
-		_booleanQueryTranslator = booleanQueryTranslator;
-	}
-
-	public void setTermQueryTranslator(
-		TermQueryTranslator termQueryTranslator) {
-
-		_termQueryTranslator = termQueryTranslator;
-	}
-
-	public void setTermRangeQueryTranslator(
-		TermRangeQueryTranslator termRangeQueryTranslator) {
-
-		_termRangeQueryTranslator = termRangeQueryTranslator;
-	}
-
-	public void setWildcardQueryTranslator(
-		WildcardQueryTranslator wildcardQueryTranslator) {
-
-		_wildcardQueryTranslator = wildcardQueryTranslator;
-	}
 
 	@Override
 	public String translate(Query query, SearchContext searchContext) {
 		org.apache.lucene.search.Query luceneQuery = query.accept(this);
 
-		String queryString;
+		String queryString = null;
 
 		if (luceneQuery != null) {
 			queryString = luceneQuery.toString();
@@ -76,7 +55,7 @@ public class SolrQueryTranslator
 			queryString = _postProcess(query.toString(), searchContext);
 		}
 
-		return _includeCompanyId(queryString, searchContext);
+		return queryString;
 	}
 
 	@Override
@@ -105,22 +84,32 @@ public class SolrQueryTranslator
 		return _wildcardQueryTranslator.translate(wildcardQuery);
 	}
 
-	private String _includeCompanyId(
-		String queryString, SearchContext searchContext) {
+	@Reference(unbind = "-")
+	protected void setBooleanQueryTranslator(
+		BooleanQueryTranslator booleanQueryTranslator) {
 
-		StringBundler sb = new StringBundler(9);
+		_booleanQueryTranslator = booleanQueryTranslator;
+	}
 
-		sb.append(StringPool.PLUS);
-		sb.append(StringPool.OPEN_PARENTHESIS);
-		sb.append(queryString);
-		sb.append(StringPool.CLOSE_PARENTHESIS);
-		sb.append(StringPool.SPACE);
-		sb.append(StringPool.PLUS);
-		sb.append(Field.COMPANY_ID);
-		sb.append(StringPool.COLON);
-		sb.append(searchContext.getCompanyId());
+	@Reference(unbind = "-")
+	protected void setTermQueryTranslator(
+		TermQueryTranslator termQueryTranslator) {
 
-		return sb.toString();
+		_termQueryTranslator = termQueryTranslator;
+	}
+
+	@Reference(unbind = "-")
+	protected void setTermRangeQueryTranslator(
+		TermRangeQueryTranslator termRangeQueryTranslator) {
+
+		_termRangeQueryTranslator = termRangeQueryTranslator;
+	}
+
+	@Reference(unbind = "-")
+	protected void setWildcardQueryTranslator(
+		WildcardQueryTranslator wildcardQueryTranslator) {
+
+		_wildcardQueryTranslator = wildcardQueryTranslator;
 	}
 
 	private String _postProcess(

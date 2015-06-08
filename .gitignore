@@ -21,6 +21,7 @@ _sass_cache_*.css
 /.ivy
 
 /*/*/bin
+/*/*/build
 /*/*/classes
 /*/*/javadoc
 /*/*/temp
@@ -45,6 +46,8 @@ _sass_cache_*.css
 /themes/*/docroot/layouttpl
 /themes/*/docroot/templates
 /themes/*/docroot/WEB-INF/lib
+
+/tmp
 
 /tools/*/*/*/lib
 /tools/node*

@@ -20,10 +20,13 @@ import com.liferay.portal.search.solr.query.WildcardQueryTranslator;
 
 import org.apache.lucene.index.Term;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * @author André de Oliveira
  * @author Miguel Angelo Caldas Gallindo
  */
+@Component(immediate = true, service = WildcardQueryTranslator.class)
 public class WildcardQueryTranslatorImpl implements WildcardQueryTranslator {
 
 	@Override
@@ -32,8 +35,15 @@ public class WildcardQueryTranslatorImpl implements WildcardQueryTranslator {
 
 		QueryTerm queryTerm = wildcardQuery.getQueryTerm();
 
-		return new org.apache.lucene.search.WildcardQuery(
-			new Term(queryTerm.getField(), queryTerm.getValue()));
+		org.apache.lucene.search.WildcardQuery luceneWildcardQuery =
+			new org.apache.lucene.search.WildcardQuery(
+				new Term(queryTerm.getField(), queryTerm.getValue()));
+
+		if (!wildcardQuery.isDefaultBoost()) {
+			luceneWildcardQuery.setBoost(wildcardQuery.getBoost());
+		}
+
+		return luceneWildcardQuery;
 	}
 
 }

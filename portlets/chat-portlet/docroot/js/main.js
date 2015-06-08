@@ -14,7 +14,7 @@ AUI().use(
 		var LString = Lang.String;
 		var Notification = A.config.win.Notification;
 
-		var now = Lang.now;
+		var now = Date.now;
 
 		var DOC = A.config.doc;
 
@@ -142,25 +142,26 @@ AUI().use(
 				return offset;
 			},
 
-			TIMESTAMP_24: (24 * 60 * 60 * 1000)
+			TIMESTAMP_24: 24 * 60 * 60 * 1000
 		};
 
 		var Panel = function(options) {
 			var instance = this;
 
-			if (!options.container) {
-				instance._tabsContainer = Liferay.Chat.Manager.getContainer();
-			}
-			else {
+			instance._tabsContainer = Liferay.Chat.Manager.getContainer();
+
+			if (options.container) {
 				instance._tabsContainer = A.one(options.container);
 			}
 
 			instance._chatProperties = {};
 			instance._eventsSuspended = false;
 
-			instance._panelId = options.panelId;
-			instance._panelTitle = options.panelTitle;
+			var panelTitle = options.panelTitle;
+
 			instance._panelIcon = options.panelIcon;
+			instance._panelId = options.panelId;
+			instance._panelTitle = panelTitle;
 
 			var panelHTML = instance._setPanelHTML(options.panelHTML);
 
@@ -168,8 +169,8 @@ AUI().use(
 
 			instance._createPanel(options.fromMarkup);
 
-			if (options.panelTitle) {
-				instance.setTitle(options.panelTitle);
+			if (panelTitle) {
+				instance.setTitle(panelTitle);
 			}
 
 			instance._popupTrigger.unselectable();
@@ -247,19 +248,16 @@ AUI().use(
 			_createPanel: function(fromMarkup) {
 				var instance = this;
 
-				var panel;
+				var panel = A.Node.create(instance.get('panelHTML'));
 
 				if (fromMarkup) {
 					panel = A.one(fromMarkup);
 				}
-				else {
-					panel = A.Node.create(instance.get('panelHTML'));
-				}
 
 				instance._popup = panel.one('.chat-panel');
 				instance._popupTitle = panel.one('.panel-title');
-				instance._textBox = panel.one('textarea');
 				instance._popupTrigger = panel.one('.panel-trigger');
+				instance._textBox = panel.one('textarea');
 
 				instance._popupTrigger.on('click', instance.toggle, instance);
 
@@ -290,7 +288,7 @@ AUI().use(
 						'<div class="panel-trigger"><span class="trigger-name"></span></div>' +
 						'<div class="chat-panel">' +
 							'<div class="panel-window">' +
-								'<div class="panel-button minimize"></div>' +
+								'<div class="minimize panel-button "></div>' +
 								'<div class="panel-title"></div>' +
 								'<div class="search-buddies"><input class="search-buddies" type="text" /></div>' +
 								'<div class="panel-content"></div>' +
@@ -318,26 +316,30 @@ AUI().use(
 			instance._lastTypedTime = 0;
 			instance._typingDelay = 5000;
 			instance._unreadMessages = 0;
+
 			instance._originalPageTitle = DOC.title;
 
 			instance._stopTypingTask = A.debounce(instance.setTyping, instance._typingDelay, instance, false);
 
 			instance._heightMonitor = A.Node.create('<pre class="chat-height-monitor" />');
+
 			instance._heightMonitor.appendTo(DOC.body);
 
 			instance._unreadMessagesContainer = instance._panel.one('.unread');
 
 			if (!instance._unreadMessagesContainer) {
 				instance._unreadMessagesContainer = A.Node.create('<div class="hide unread" />');
+
 				instance._popupTrigger.append(instance._unreadMessagesContainer);
 			}
 
-			if (options.statusMessage) {
-				instance._statusMessage.text(options.statusMessage);
+			var statusMessage = options.statusMessage;
+
+			if (statusMessage) {
+				instance._statusMessage.text(statusMessage);
 			}
 
-			instance._chatInput.on('keyup', instance._keystroke, instance);
-			instance._chatInput.on('focus', instance._keystroke, instance);
+			instance._chatInput.on(['focus', 'keyup'], instance._keystroke, instance);
 		};
 
 		A.extend(
@@ -360,6 +362,7 @@ AUI().use(
 					instance._unreadMessages = 0;
 
 					instance.set('lastReadTime', Liferay.Chat.Util.getCurrentTimestamp());
+
 					DOC.title = instance._originalPageTitle;
 				},
 
@@ -367,17 +370,22 @@ AUI().use(
 					var instance = this;
 
 					if (!instance.get('selected')) {
-						if (instance._unreadMessages > 1) {
-							instance._unreadMessagesContainer.text(instance._unreadMessages);
-							instance._unreadMessagesContainer.show();
+						var unreadMessages = instance._unreadMessages;
+						var unreadMessagesContainer = instance._unreadMessagesContainer;
+
+						if (unreadMessages > 1) {
+							unreadMessagesContainer.text(unreadMessages);
+							unreadMessagesContainer.show();
 						}
 						else {
 							Liferay.Chat.Manager.triggerSound();
+
 							instance.setWaiting(true);
-							instance._unreadMessagesContainer.hide();
+
+							unreadMessagesContainer.hide();
 						}
 
-						DOC.title = instance._originalPageTitle + ' - Unread messages (' + instance._unreadMessages + ')';
+						DOC.title = instance._originalPageTitle + ' - Unread messages (' + unreadMessages + ')';
 					}
 				},
 
@@ -436,6 +444,7 @@ AUI().use(
 					var instance = this;
 
 					Liferay.Chat.Panel.prototype.show.call(instance);
+
 					instance.setAsRead();
 
 					var outputEl = instance._chatOutput.getDOM();
@@ -473,6 +482,7 @@ AUI().use(
 
 					if (entry.content.length) {
 						instance._updateMessageWindow(entry);
+
 						instance.setTyping(false);
 					}
 
@@ -518,15 +528,18 @@ AUI().use(
 					var height = Math.max(heightMonitorEl.offsetHeight, 14);
 
 					height = Math.min(height, 64);
-					chatInputEl.style.overflowY = 'auto';
+
+					var chatInputElStyle = chatInputEl.style;
+
+					chatInputElStyle.overflowY = 'auto';
 
 					if (height != instance._lastHeight) {
 						instance._lastHeight = height;
 
-						chatInputEl.style.height = height + 'px';
-						chatInputEl.style.overflowY = (height == 64) ? 'scroll' : 'hidden';
+						chatInputElStyle.height = height + 'px';
+						chatInputElStyle.overflowY = height == 64 ? 'scroll' : 'hidden';
 
-						chatInputEl.parentNode.style.height = (height + 5) + 'px';
+						chatInputEl.parentNode.style.height = height + 5 + 'px';
 					}
 				},
 
@@ -537,6 +550,7 @@ AUI().use(
 					var userId = instance._panelId;
 
 					var chatInputEl = chatInput.getDOM();
+
 					var content = chatInputEl.value.replace(/\n|\r/gim, '');
 
 					if (event.type == 'keyup') {
@@ -571,6 +585,7 @@ AUI().use(
 					var instance = this;
 
 					var createDate = Liferay.Chat.Util.getCurrentTimestamp();
+
 					var userId = instance._panelId;
 
 					var escapedHTML = LString.escapeHTML(content);
@@ -602,8 +617,8 @@ AUI().use(
 							'</div>' +
 							'<div class="chat-panel">' +
 								'<div class="panel-window">' +
-									'<div class="panel-button minimize"></div>' +
-									'<div class="panel-button close"></div>' +
+									'<div class="minimize panel-button "></div>' +
+									'<div class="close panel-button"></div>' +
 									'<img alt="" class="panel-icon" src="' + userImagePath + '" />' +
 									'<div class="panel-title">' + LString.escapeHTML(instance._panelTitle) + '</div>' +
 									'<div class="panel-profile">...</div>' +
@@ -621,15 +636,18 @@ AUI().use(
 				_updateMessageWindow: function(entry) {
 					var instance = this;
 
-					var output = instance._chatOutput;
 					var cssClass = 'outgoing';
+
+					var output = instance._chatOutput;
 
 					var content = entry.content;
 					var incoming = entry.incoming;
+
 					var userName = themeDisplay.getUserName();
 
 					if (incoming) {
 						cssClass = 'incoming';
+
 						userName = instance._panelTitle;
 					}
 
@@ -753,9 +771,9 @@ AUI().use(
 			registerBuddyService: function(options) {
 				var instance = this;
 
-				var name = options.name;
 				var fn = options.fn;
 				var icon = options.icon;
+				var name = options.name;
 
 				instance._buddyServices[name] = fn;
 
@@ -846,16 +864,15 @@ AUI().use(
 				var buddyListNode = buddyListPanel.getPanel();
 
 				var buddyList = buddyListNode.one('.online-users');
-
 				var searchBuddiesField = buddyListNode.one('.search-buddies');
 
 				var liveSearch = new A.LiveSearch(
 					{
-						input: searchBuddiesField,
-						nodes: '#chatBar .buddy-list .online-users li',
 						data: function(node) {
 							return node.one('.name').text();
-						}
+						},
+						input: searchBuddiesField,
+						nodes: '#chatBar .buddy-list .online-users li'
 					}
 				);
 
@@ -891,17 +908,18 @@ AUI().use(
 					);
 				}
 
-				instance._searchBuddiesField = searchBuddiesField;
 				instance._liveSearch = liveSearch;
-
 				instance._onlineBuddies = buddyList;
+				instance._searchBuddiesField = searchBuddiesField;
 			},
 
 			_createChatFromUser: function(user) {
 				var instance = this;
 
 				var buddy;
+
 				var buddies = instance._buddies;
+
 				var userId = user;
 
 				user = A.one(user);
@@ -950,7 +968,7 @@ AUI().use(
 					for (var i in entries) {
 						var entry = entries[i];
 
-						var incomingEntry = (entry.fromUserId == userId);
+						var incomingEntry = entry.fromUserId == userId;
 
 						chat.update(
 							{
@@ -1012,16 +1030,17 @@ AUI().use(
 				instance._addPanel('settings', settings);
 
 				var settingsPanel = settings.getPanel();
+
 				var saveSettings = settingsPanel.one('#saveSettings');
 
+				instance._showNotificationsObj = settingsPanel.one('#showNotifications');
 				instance._statusMessageObj = settingsPanel.one('#statusMessage');
 				instance._onlineObj = settingsPanel.one('#onlineStatus');
 				instance._playSoundObj = settingsPanel.one('#playSound');
-				instance._showNotificationsObj = settingsPanel.one('#showNotifications');
 
-				instance._statusMessage = instance._statusMessageObj.val() || '';
 				instance._online = instance._onlineObj.get('checked') ? 1 : 0;
 				instance._playSound = instance._playSoundObj.get('checked') ? 1 : 0;
+				instance._statusMessage = instance._statusMessageObj.val() || '';
 
 				if (Notification) {
 					var showNotificationsObj = instance._showNotificationsObj;
@@ -1029,7 +1048,7 @@ AUI().use(
 					var notifyPermission = instance._notifyPermission;
 
 					var attrs = {
-						checked: (notifyPermission === NOTIFICATIONS_PERMISSION_GRANTED)
+						checked: notifyPermission === NOTIFICATIONS_PERMISSION_GRANTED
 					};
 
 					if (notifyPermission === NOTIFICATIONS_PERMISSION_DEFAULT) {
@@ -1076,7 +1095,7 @@ AUI().use(
 				};
 
 				return {
-					activePanelIds: A.JSON.stringify(activePanelIds),
+					activePanelIds: JSON.stringify(activePanelIds),
 					online: instance._online,
 					playSound: instance._playSound,
 					statusMessage: instance._statusMessage
@@ -1089,7 +1108,7 @@ AUI().use(
 				var activePanelIds = A.one('#activePanelIds').val() || '';
 
 				try {
-					activePanelIds = A.JSON.parse(activePanelIds);
+					activePanelIds = JSON.parse(activePanelIds);
 				}
 				catch (e) {
 					activePanelIds = {
@@ -1119,16 +1138,16 @@ AUI().use(
 
 				var currentUserId = themeDisplay.getUserId();
 
-				var entriesLength = entries.length;
-
-				for (var i = 0; i < entriesLength; i++) {
+				for (var i = 0; i < entries.length; i++) {
 					var entry = entries[i];
 
 					var incoming = false;
+
 					var userId = entry.toUserId;
 
 					if (userId == currentUserId) {
 						incoming = true;
+
 						userId = entry.fromUserId;
 					}
 
@@ -1139,11 +1158,11 @@ AUI().use(
 						};
 					}
 
-					var userEntryCache = entryCache[userId];
-
 					var entryId = entry.entryId;
 
-					var entryProcessed = (entryIds.indexOf('|' + entryId) > -1);
+					var entryProcessed = entryIds.indexOf('|' + entryId) > -1;
+
+					var userEntryCache = entryCache[userId];
 
 					if (!entryProcessed) {
 						userEntryCache.entries[entryId] = entry;
@@ -1248,8 +1267,7 @@ AUI().use(
 
 				var minimizedPanelIds = instance._minimizedPanelIds;
 
-				A.Array.each(
-					minimized,
+				minimized.forEach(
 					function(item, index) {
 						minimizedPanelIds[item] = true;
 
@@ -1279,10 +1297,8 @@ AUI().use(
 			_updateBuddies: function(buddies) {
 				var instance = this;
 
-				var searchBuddiesField = instance._searchBuddiesField;
-				var search = searchBuddiesField.val().toLowerCase();
-
 				var buddyList = buddies || [];
+
 				var numBuddies = buddyList.length;
 
 				var currentBuddies = instance._buddies;
@@ -1329,11 +1345,13 @@ AUI().use(
 
 				instance._onlineBuddies.html(buffer.join(''));
 
-				if (
-					searchBuddiesField.test(':visible') &&
-					(search.length > 2 || searchBuddiesField.compareTo(DOC.activeElement))) {
+				var searchBuddiesField = instance._searchBuddiesField;
 
+				var search = searchBuddiesField.val().toLowerCase();
+
+				if (searchBuddiesField.test(':visible') && search.length > 2 || searchBuddiesField.compareTo(DOC.activeElement)) {
 					instance._liveSearch.refreshIndex();
+
 					instance._liveSearch.fire(
 						'search',
 						{
@@ -1362,23 +1380,23 @@ AUI().use(
 			_updateConversations: function(entries) {
 				var instance = this;
 
-				var entriesLength = entries.length;
-
 				var currentUserId = themeDisplay.getUserId();
 
 				var entryIds = instance._entryIds.join('|');
 
-				for (var i = 0; i < entriesLength; i++) {
+				for (var i = 0; i < entries.length; i++) {
 					var entry = entries[i];
 
-					var entryProcessed = (entryIds.indexOf('|' + entry.entryId) > -1);
+					var entryProcessed = entryIds.indexOf('|' + entry.entryId) > -1;
 
 					if (!entryProcessed) {
-						var userId = entry.toUserId;
 						var incoming = false;
+
+						var userId = entry.toUserId;
 
 						if (entry.fromUserId != currentUserId) {
 							userId = entry.fromUserId;
+
 							incoming = true;
 						}
 
@@ -1432,20 +1450,21 @@ AUI().use(
 				var instance = this;
 
 				var settings = instance._panels.settings;
+
 				var settingsPanel = settings.getPanel();
 
-				instance._statusMessage = instance._statusMessageObj.val();
 				instance._online = instance._onlineObj.get('checked') ? 1 : 0;
 				instance._playSound = instance._playSoundObj.get('checked') ? 1 : 0;
+				instance._statusMessage = instance._statusMessageObj.val();
 
 				var showNotificationsObj = instance._showNotificationsObj;
 
-				if (showNotificationsObj.attr('checked') && (instance._notifyPermission === NOTIFICATIONS_PERMISSION_DEFAULT)) {
+				if (showNotificationsObj.attr('checked') && instance._notifyPermission === NOTIFICATIONS_PERMISSION_DEFAULT) {
 					var notification = A.config.win.webkitNotifications || Notification;
 
 					notification.requestPermission(
 						function(notifyPermission) {
-							var allowed = (notifyPermission == NOTIFICATIONS_PERMISSION_GRANTED);
+							var allowed = notifyPermission == NOTIFICATIONS_PERMISSION_GRANTED;
 
 							showNotificationsObj.attr(
 								{

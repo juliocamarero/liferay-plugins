@@ -19,11 +19,13 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.lock.Lock;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.BaseRepositoryImpl;
 import com.liferay.portal.kernel.repository.RepositoryException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.repository.model.FileShortcut;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.search.Document;
@@ -46,7 +48,6 @@ import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.CompanyConstants;
-import com.liferay.portal.model.Lock;
 import com.liferay.portal.model.RepositoryEntry;
 import com.liferay.portal.model.User;
 import com.liferay.portal.security.auth.PrincipalThreadLocal;
@@ -103,6 +104,14 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 
 		return _toExtRepositoryObjectAdapter(
 			ExtRepositoryObjectAdapterType.FILE, extRepositoryFileEntry);
+	}
+
+	@Override
+	public FileShortcut addFileShortcut(
+		long userId, long folderId, long toFileEntryId,
+		ServiceContext serviceContext) {
+
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -232,6 +241,16 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 	}
 
 	@Override
+	public void deleteFileShortcut(long fileShortcutId) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void deleteFileShortcuts(long toFileEntryId) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public void deleteFolder(long folderId) throws PortalException {
 		String extRepositoryFolderKey = getExtRepositoryObjectKey(folderId);
 
@@ -275,6 +294,15 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 
 		return _toExtRepositoryFileVersionAdapters(
 			extRepositoryFileEntryAdapter, extRepositoryFileVersions);
+	}
+
+	@Override
+	public List<FileEntry> getFileEntries(
+			long folderId, int status, int start, int end,
+			OrderByComparator<FileEntry> obc)
+		throws PortalException {
+
+		return getFileEntries(folderId, start, end, obc);
 	}
 
 	@Override
@@ -342,6 +370,13 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 	}
 
 	@Override
+	public int getFileEntriesCount(long folderId, int status)
+		throws PortalException {
+
+		return getFileEntriesCount(folderId);
+	}
+
+	@Override
 	public int getFileEntriesCount(long folderId, long fileEntryTypeId)
 		throws PortalException {
 
@@ -406,6 +441,11 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 
 		return _toExtRepositoryObjectAdapter(
 			ExtRepositoryObjectAdapterType.FILE, extRepositoryFileEntry);
+	}
+
+	@Override
+	public FileShortcut getFileShortcut(long fileShortcutId) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -1009,6 +1049,21 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 
 		return _toExtRepositoryObjectAdapter(
 			ExtRepositoryObjectAdapterType.FILE, extRepositoryFileEntry);
+	}
+
+	@Override
+	public FileShortcut updateFileShortcut(
+		long userId, long fileShortcutId, long folderId, long toFileEntryId,
+		ServiceContext serviceContext) {
+
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void updateFileShortcuts(
+		long oldToFileEntryId, long newToFileEntryId) {
+
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

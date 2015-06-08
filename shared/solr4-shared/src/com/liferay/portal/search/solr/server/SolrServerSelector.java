@@ -14,6 +14,8 @@
 
 package com.liferay.portal.search.solr.server;
 
+import com.liferay.portal.search.solr.internal.server.SolrServerWrapper;
+
 import java.util.List;
 
 /**

@@ -18,15 +18,18 @@ import com.liferay.portal.kernel.search.BooleanClause;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
 import com.liferay.portal.kernel.search.BooleanQuery;
 import com.liferay.portal.kernel.search.Query;
-import com.liferay.portal.kernel.search.QueryVisitor;
+import com.liferay.portal.kernel.search.query.QueryVisitor;
 import com.liferay.portal.search.solr.query.BooleanQueryTranslator;
 
 import org.apache.lucene.search.BooleanClause.Occur;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @author André de Oliveira
  * @author Miguel Angelo Caldas Gallindo
  */
+@Component(immediate = true, service = BooleanQueryTranslator.class)
 public class BooleanQueryTranslatorImpl implements BooleanQueryTranslator {
 
 	@Override
@@ -37,22 +40,26 @@ public class BooleanQueryTranslatorImpl implements BooleanQueryTranslator {
 		org.apache.lucene.search.BooleanQuery luceneBooleanQuery =
 			new org.apache.lucene.search.BooleanQuery();
 
-		for (BooleanClause booleanClause : booleanQuery.clauses()) {
+		for (BooleanClause<Query> booleanClause : booleanQuery.clauses()) {
 			_addClause(booleanClause, luceneBooleanQuery, queryVisitor);
+		}
+
+		if (!booleanQuery.isDefaultBoost()) {
+			luceneBooleanQuery.setBoost(booleanQuery.getBoost());
 		}
 
 		return luceneBooleanQuery;
 	}
 
 	private void _addClause(
-		BooleanClause booleanClause,
+		BooleanClause<Query> booleanClause,
 		org.apache.lucene.search.BooleanQuery booleanQuery,
 		QueryVisitor<org.apache.lucene.search.Query> queryVisitor) {
 
 		BooleanClauseOccur booleanClauseOccur =
 			booleanClause.getBooleanClauseOccur();
 
-		Query query = booleanClause.getQuery();
+		Query query = booleanClause.getClause();
 
 		org.apache.lucene.search.Query luceneQuery = query.accept(queryVisitor);
 
