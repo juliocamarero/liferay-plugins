@@ -48,6 +48,11 @@ public class KBArticleAssetRenderer extends BaseJSPAssetRenderer {
 	}
 
 	@Override
+	public Object getAsset() {
+		return _kbArticle;
+	}
+
+	@Override
 	public String getClassName() {
 		return KBArticle.class.getName();
 	}

@@ -51,6 +51,11 @@ public class MicroblogsEntryAssetRenderer extends BaseJSPAssetRenderer {
 	}
 
 	@Override
+	public Object getAsset() {
+		return _entry;
+	}
+
+	@Override
 	public String getClassName() {
 		return MicroblogsEntry.class.getName();
 	}
