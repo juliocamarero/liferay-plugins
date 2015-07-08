@@ -55,6 +55,11 @@ public class CalendarBookingAssetRenderer
 	}
 
 	@Override
+	public Object getAsset() {
+		return _calendarBooking;
+	}
+
+	@Override
 	public String getClassName() {
 		return CalendarBooking.class.getName();
 	}

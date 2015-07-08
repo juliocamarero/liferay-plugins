@@ -50,6 +50,11 @@ public class TasksEntryAssetRenderer extends BaseJSPAssetRenderer {
 	}
 
 	@Override
+	public Object getAsset() {
+		return _entry;
+	}
+
+	@Override
 	public String getClassName() {
 		return TasksEntry.class.getName();
 	}
