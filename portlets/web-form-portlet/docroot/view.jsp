@@ -32,7 +32,11 @@ String successURL = portletPreferences.getValue("successURL", StringPool.BLANK);
 		<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 	</c:if>
 
-	<aui:fieldset label="<%= HtmlUtil.escape(title) %>">
+	<aui:fieldset>
+		<c:if test="<%= Validator.isNotNull(title) %>">
+			<p class="title"><%= HtmlUtil.escape(title) %></p>
+		</c:if>
+
 		<c:if test="<%= Validator.isNotNull(description) %>">
 			<p class="description"><%= HtmlUtil.escape(description) %></p>
 		</c:if>
@@ -78,52 +82,52 @@ String successURL = portletPreferences.getValue("successURL", StringPool.BLANK);
 					<span class="alert alert-danger"><liferay-ui:message key="this-field-is-mandatory" /></span>
 				</div>
 			</c:if>
-
-			<c:choose>
-				<c:when test='<%= fieldType.equals("paragraph") %>'>
-					<p class="format-paragraph" id="<portlet:namespace /><%= fieldName %>"><%= HtmlUtil.escape(fieldParagraph) %></p>
-				</c:when>
-				<c:when test='<%= fieldType.equals("text") %>'>
-					<aui:input cssClass='<%= fieldOptional ? "optional" : StringPool.BLANK %>' label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>" value="<%= HtmlUtil.escape(fieldValue) %>" />
-				</c:when>
-				<c:when test='<%= fieldType.equals("textarea") %>'>
-					<aui:input cssClass='<%= (fieldOptional ? "optional" : StringPool.BLANK) %>' label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>" type="textarea" value="<%= HtmlUtil.escape(fieldValue) %>" wrap="soft" wrapperCssClass="lfr-textarea-container" />
-				</c:when>
-				<c:when test='<%= fieldType.equals("checkbox") %>'>
-					<aui:input cssClass='<%= fieldOptional ? "optional" : StringPool.BLANK %>' label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>" type="checkbox" value="<%= GetterUtil.getBoolean(fieldValue) %>" />
-				</c:when>
-				<c:when test='<%= fieldType.equals("radio") %>'>
-					<aui:field-wrapper cssClass='<%= fieldOptional ? "optional" : StringPool.BLANK %>' label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>">
-
-						<%
-						for (String fieldOptionValue : WebFormUtil.split(fieldOptions)) {
-						%>
-
-							<aui:input checked="<%= fieldValue.equals(fieldOptionValue) %>" label="<%= HtmlUtil.escape(fieldOptionValue) %>" name="<%= fieldName %>" type="radio" value="<%= HtmlUtil.escape(fieldOptionValue) %>" />
-
-						<%
-						}
-						%>
-
-					</aui:field-wrapper>
-				</c:when>
-				<c:when test='<%= fieldType.equals("options") %>'>
-					<aui:select cssClass='<%= fieldOptional ? "optional" : StringPool.BLANK %>' label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>">
-
-						<%
-						for (String fieldOptionValue : WebFormUtil.split(fieldOptions)) {
-						%>
-
-							<aui:option selected="<%= fieldValue.equals(fieldOptionValue) %>" value="<%= HtmlUtil.escape(fieldOptionValue) %>"><%= HtmlUtil.escape(fieldOptionValue) %></aui:option>
-
-						<%
-						}
-						%>
-
-					</aui:select>
-				</c:when>
-			</c:choose>
-
+			<div class="format-fields">
+				<c:choose>
+					<c:when test='<%= fieldType.equals("paragraph") %>'>
+						<p class="format-paragraph" id="<portlet:namespace /><%= fieldName %>"><%= HtmlUtil.escape(fieldParagraph) %></p>
+					</c:when>
+					<c:when test='<%= fieldType.equals("text") %>'>
+						<aui:input cssClass='<%= fieldOptional ? "optional" : StringPool.BLANK %>' label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>" value="<%= HtmlUtil.escape(fieldValue) %>" />
+					</c:when>
+					<c:when test='<%= fieldType.equals("textarea") %>'>
+						<aui:input cssClass='<%= (fieldOptional ? "optional" : StringPool.BLANK) %>' label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>" type="textarea" value="<%= HtmlUtil.escape(fieldValue) %>" wrap="soft" wrapperCssClass="lfr-textarea-container" />
+					</c:when>
+					<c:when test='<%= fieldType.equals("checkbox") %>'>
+						<aui:input cssClass='<%= fieldOptional ? "optional" : StringPool.BLANK %>' label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>" type="checkbox" value="<%= GetterUtil.getBoolean(fieldValue) %>" />
+					</c:when>
+					<c:when test='<%= fieldType.equals("radio") %>'>
+						<aui:field-wrapper cssClass='<%= fieldOptional ? "optional" : StringPool.BLANK %>' label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>">
+	
+							<%
+							for (String fieldOptionValue : WebFormUtil.split(fieldOptions)) {
+							%>
+	
+								<aui:input checked="<%= fieldValue.equals(fieldOptionValue) %>" label="<%= HtmlUtil.escape(fieldOptionValue) %>" name="<%= fieldName %>" type="radio" value="<%= HtmlUtil.escape(fieldOptionValue) %>" />
+	
+							<%
+							}
+							%>
+	
+						</aui:field-wrapper>
+					</c:when>
+					<c:when test='<%= fieldType.equals("options") %>'>
+						<aui:select cssClass='<%= fieldOptional ? "optional" : StringPool.BLANK %>' label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>">
+	
+							<%
+							for (String fieldOptionValue : WebFormUtil.split(fieldOptions)) {
+							%>
+	
+								<aui:option selected="<%= fieldValue.equals(fieldOptionValue) %>" value="<%= HtmlUtil.escape(fieldOptionValue) %>"><%= HtmlUtil.escape(fieldOptionValue) %></aui:option>
+	
+							<%
+							}
+							%>
+	
+						</aui:select>
+					</c:when>
+				</c:choose>
+			</div>
 		<%
 			i++;
 
