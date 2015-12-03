@@ -98,36 +98,37 @@ String successURL = portletPreferences.getValue("successURL", StringPool.BLANK);
 					</c:when>
 					<c:when test='<%= fieldType.equals("radio") %>'>
 						<aui:field-wrapper cssClass='<%= fieldOptional ? "optional" : StringPool.BLANK %>' label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>">
-	
+
 							<%
 							for (String fieldOptionValue : WebFormUtil.split(fieldOptions)) {
 							%>
-	
+
 								<aui:input checked="<%= fieldValue.equals(fieldOptionValue) %>" label="<%= HtmlUtil.escape(fieldOptionValue) %>" name="<%= fieldName %>" type="radio" value="<%= HtmlUtil.escape(fieldOptionValue) %>" />
-	
+
 							<%
 							}
 							%>
-	
+
 						</aui:field-wrapper>
 					</c:when>
 					<c:when test='<%= fieldType.equals("options") %>'>
 						<aui:select cssClass='<%= fieldOptional ? "optional" : StringPool.BLANK %>' label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>">
-	
+
 							<%
 							for (String fieldOptionValue : WebFormUtil.split(fieldOptions)) {
 							%>
-	
+
 								<aui:option selected="<%= fieldValue.equals(fieldOptionValue) %>" value="<%= HtmlUtil.escape(fieldOptionValue) %>"><%= HtmlUtil.escape(fieldOptionValue) %></aui:option>
-	
+
 							<%
 							}
 							%>
-	
+
 						</aui:select>
 					</c:when>
 				</c:choose>
 			</div>
+
 		<%
 			i++;
 
