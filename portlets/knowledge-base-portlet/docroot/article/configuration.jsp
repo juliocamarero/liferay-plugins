@@ -89,7 +89,7 @@ if (PortalUtil.isRSSFeedsEnabled()) {
 				/>
 			</c:when>
 			<c:when test='<%= tabs2.equals("rss") %>'>
-				<liferay-ui:rss-settings
+				<liferay-rss:rss-settings
 					delta="<%= rssDelta %>"
 					displayStyle="<%= rssDisplayStyle %>"
 					enabled="<%= enableRSS %>"
