@@ -283,15 +283,6 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 		return _kbArticle.getAncestorResourcePrimaryKeys();
 	}
 
-	/**
-	* @deprecated As of 6.1.0, replaced by {@link #isApproved()}
-	*/
-	@Deprecated
-	@Override
-	public boolean getApproved() {
-		return _kbArticle.getApproved();
-	}
-
 	@Override
 	public java.util.List<com.liferay.portal.kernel.repository.model.FileEntry> getAttachmentsFileEntries()
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -1196,14 +1187,6 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 	@Override
 	public StagedModelType getStagedModelType() {
 		return _kbArticle.getStagedModelType();
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
-	 */
-	@Deprecated
-	public KBArticle getWrappedKBArticle() {
-		return _kbArticle;
 	}
 
 	@Override

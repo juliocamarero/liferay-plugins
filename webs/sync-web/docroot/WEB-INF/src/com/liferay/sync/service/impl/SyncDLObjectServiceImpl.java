@@ -133,13 +133,10 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 					FileEntry fileEntry = dlAppService.getFileEntry(
 						repositoryId, folderId, title);
 
-					fileEntry = dlAppService.updateFileEntry(
+					return updateFileEntry(
 						fileEntry.getFileEntryId(), sourceFileName, mimeType,
-						title, description, changeLog, false, file,
+						title, description, changeLog, false, file, checksum,
 						serviceContext);
-
-					return toSyncDLObject(
-						fileEntry, SyncConstants.EVENT_UPDATE);
 				}
 			}
 
@@ -178,11 +175,9 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 					Folder folder = dlAppService.getFolder(
 						repositoryId, parentFolderId, name);
 
-					folder = dlAppService.updateFolder(
+					return updateFolder(
 						folder.getFolderId(), name, description,
 						serviceContext);
-
-					return toSyncDLObject(folder, SyncConstants.EVENT_UPDATE);
 				}
 			}
 
@@ -758,7 +753,7 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 			if (!TrashUtil.isInTrash(
 					DLFileEntryConstants.getClassName(), fileEntryId)) {
 
-				fileEntry = dlAppService.moveFileEntryToTrash(fileEntryId);
+				fileEntry = dlTrashService.moveFileEntryToTrash(fileEntryId);
 			}
 
 			return toSyncDLObject(fileEntry, SyncConstants.EVENT_TRASH);
@@ -800,7 +795,7 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 			if (!TrashUtil.isInTrash(
 					DLFolderConstants.getClassName(), folderId)) {
 
-				folder = dlAppService.moveFolderToTrash(folderId);
+				folder = dlTrashService.moveFolderToTrash(folderId);
 			}
 
 			return toSyncDLObject(folder, SyncConstants.EVENT_TRASH);
@@ -938,6 +933,12 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 				}
 				catch (Exception e) {
 					String message = e.getMessage();
+
+					if (message == null) {
+						_log.error(e, e);
+
+						message = e.toString();
+					}
 
 					if (!message.startsWith(StringPool.QUOTE) &&
 						!message.endsWith(StringPool.QUOTE)) {
