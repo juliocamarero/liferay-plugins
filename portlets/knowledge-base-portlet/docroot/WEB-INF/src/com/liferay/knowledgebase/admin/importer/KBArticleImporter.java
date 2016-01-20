@@ -14,7 +14,7 @@
 
 package com.liferay.knowledgebase.admin.importer;
 
-import com.liferay.knowledgebase.KBArticleImportException;
+import com.liferay.knowledgebase.exception.KBArticleImportException;
 import com.liferay.knowledgebase.admin.importer.util.KBArticleMarkdownConverter;
 import com.liferay.knowledgebase.model.KBArticle;
 import com.liferay.knowledgebase.model.KBArticleConstants;
@@ -314,7 +314,7 @@ public class KBArticleImporter {
 					if (_log.isWarnEnabled()) {
 						_log.warn(
 							"Missing Markdown in file entry " +
-							sectionFileEntryName);
+								sectionFileEntryName);
 					}
 				}
 

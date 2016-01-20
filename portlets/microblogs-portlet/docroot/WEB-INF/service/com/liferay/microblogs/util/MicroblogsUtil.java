@@ -20,7 +20,7 @@ package com.liferay.microblogs.util;
 import com.liferay.microblogs.model.MicroblogsEntry;
 import com.liferay.microblogs.model.MicroblogsEntryConstants;
 import com.liferay.microblogs.service.MicroblogsEntryLocalServiceUtil;
-import com.liferay.portal.NoSuchUserException;
+import com.liferay.portal.exception.NoSuchUserException;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -136,10 +136,10 @@ public class MicroblogsUtil {
 			}
 			else if (hasReplied(rootMicroblogsEntryId, userId) &&
 					 UserNotificationManagerUtil.isDeliver(
-						userId, PortletKeys.MICROBLOGS, 0,
-						MicroblogsEntryConstants.
-							NOTIFICATION_TYPE_REPLY_TO_REPLIED,
-						deliveryType)) {
+						 userId, PortletKeys.MICROBLOGS, 0,
+						 MicroblogsEntryConstants.
+							 NOTIFICATION_TYPE_REPLY_TO_REPLIED,
+						 deliveryType)) {
 
 				return MicroblogsEntryConstants.
 					NOTIFICATION_TYPE_REPLY_TO_REPLIED;
@@ -147,10 +147,10 @@ public class MicroblogsUtil {
 			else if (MicroblogsUtil.isTaggedUser(
 						rootMicroblogsEntryId, true, userId) &&
 					 UserNotificationManagerUtil.isDeliver(
-						userId, PortletKeys.MICROBLOGS, 0,
-						MicroblogsEntryConstants.
-							NOTIFICATION_TYPE_REPLY_TO_TAGGED,
-						deliveryType)) {
+						 userId, PortletKeys.MICROBLOGS, 0,
+						 MicroblogsEntryConstants.
+							 NOTIFICATION_TYPE_REPLY_TO_TAGGED,
+						 deliveryType)) {
 
 				return MicroblogsEntryConstants.
 					NOTIFICATION_TYPE_REPLY_TO_TAGGED;

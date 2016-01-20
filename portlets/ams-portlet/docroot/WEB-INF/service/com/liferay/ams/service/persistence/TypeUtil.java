@@ -142,7 +142,7 @@ public class TypeUtil {
 	* @throws NoSuchTypeException if a type with the primary key could not be found
 	*/
 	public static Type remove(long typeId)
-		throws com.liferay.ams.NoSuchTypeException {
+		throws com.liferay.ams.exception.NoSuchTypeException {
 		return getPersistence().remove(typeId);
 	}
 
@@ -158,7 +158,7 @@ public class TypeUtil {
 	* @throws NoSuchTypeException if a type with the primary key could not be found
 	*/
 	public static Type findByPrimaryKey(long typeId)
-		throws com.liferay.ams.NoSuchTypeException {
+		throws com.liferay.ams.exception.NoSuchTypeException {
 		return getPersistence().findByPrimaryKey(typeId);
 	}
 
@@ -262,13 +262,6 @@ public class TypeUtil {
 		}
 
 		return _persistence;
-	}
-
-	/**
-	 * @deprecated As of 6.2.0
-	 */
-	@Deprecated
-	public void setPersistence(TypePersistence persistence) {
 	}
 
 	private static TypePersistence _persistence;

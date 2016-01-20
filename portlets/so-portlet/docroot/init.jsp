@@ -27,7 +27,7 @@ taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %><%@
 taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
 
-<%@ page import="com.liferay.portal.NoSuchRoleException" %><%@
+<%@ page import="com.liferay.portal.exception.NoSuchRoleException" %><%@
 page import="com.liferay.portal.kernel.dao.orm.QueryUtil" %><%@
 page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
 page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil" %><%@
@@ -70,14 +70,14 @@ page import="com.liferay.portal.util.comparator.RoleNameComparator" %><%@
 page import="com.liferay.portlet.social.model.SocialActivityFeedEntry" %><%@
 page import="com.liferay.portlet.social.model.SocialRelationConstants" %><%@
 page import="com.liferay.portlet.social.service.SocialActivityInterpreterLocalServiceUtil" %><%@
-page import="com.liferay.portlet.usersadmin.util.UsersAdminUtil" %><%@
 page import="com.liferay.so.model.ProjectsEntry" %><%@
 page import="com.liferay.so.model.impl.ProjectsEntryImpl" %><%@
 page import="com.liferay.so.service.ProjectsEntryLocalServiceUtil" %><%@
 page import="com.liferay.so.sites.util.SitesUtil" %><%@
 page import="com.liferay.so.util.GroupConstants" %><%@
 page import="com.liferay.so.util.PortletKeys" %><%@
-page import="com.liferay.so.util.RoleConstants" %>
+page import="com.liferay.so.util.RoleConstants" %><%@
+page import="com.liferay.users.admin.kernel.util.UsersAdminUtil" %>
 
 <%@ page import="java.text.DateFormat" %><%@
 page import="java.text.Format" %>

@@ -16,7 +16,7 @@ package com.liferay.mail.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.mail.NoSuchAccountException;
+import com.liferay.mail.exception.NoSuchAccountException;
 import com.liferay.mail.model.Account;
 import com.liferay.mail.model.impl.AccountImpl;
 import com.liferay.mail.model.impl.AccountModelImpl;
@@ -44,6 +44,7 @@ import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.persistence.CompanyProvider;
+import com.liferay.portal.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
 import java.io.Serializable;
@@ -998,6 +999,8 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 		account.setNew(true);
 		account.setPrimaryKey(accountId);
 
+		account.setCompanyId(companyProvider.getCompanyId());
+
 		return account;
 	}
 
@@ -1212,7 +1215,7 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 	}
 
 	/**
-	 * Returns the account with the primary key or throws a {@link com.liferay.portal.NoSuchModelException} if it could not be found.
+	 * Returns the account with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the account
 	 * @return the account
@@ -1609,7 +1612,7 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@BeanReference(type = CompanyProvider.class)
+	@BeanReference(type = CompanyProviderWrapper.class)
 	protected CompanyProvider companyProvider;
 	protected EntityCache entityCache = EntityCacheUtil.getEntityCache();
 	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();

@@ -118,7 +118,9 @@ public class AlloyFriendlyURLMapper extends DefaultFriendlyURLMapper {
 			return;
 		}
 
-		String portletId = getPortletId(routeParameters);
+		long userId = PortalUtil.getUserId(request);
+
+		String portletId = getPortletId(userId, routeParameters);
 
 		if (portletId == null) {
 			return;

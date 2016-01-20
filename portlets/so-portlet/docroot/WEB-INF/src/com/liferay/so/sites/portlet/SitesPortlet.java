@@ -17,8 +17,8 @@
 
 package com.liferay.so.sites.portlet;
 
-import com.liferay.portal.DuplicateGroupException;
-import com.liferay.portal.GroupKeyException;
+import com.liferay.portal.exception.DuplicateGroupException;
+import com.liferay.portal.exception.GroupKeyException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -72,7 +72,10 @@ import com.liferay.so.util.GroupConstants;
 import com.liferay.so.util.PortletKeys;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -258,7 +261,8 @@ public class SitesPortlet extends MVCPortlet {
 			groupJSONObject.put(
 				"description", HtmlUtil.escape(group.getDescription()));
 			groupJSONObject.put(
-				"name", HtmlUtil.escape(
+				"name",
+				HtmlUtil.escape(
 					group.getDescriptiveName(themeDisplay.getLocale())));
 
 			boolean member = GroupLocalServiceUtil.hasUserGroup(
@@ -327,7 +331,8 @@ public class SitesPortlet extends MVCPortlet {
 						themeDisplay.getLocale(), "x-wishes-to-join-x",
 						new Object[] {
 							user.getFullName(), group.getDescriptiveName()
-						}, false);
+						},
+						false);
 
 					membershipRequestURL.setParameter("comments", comments);
 					membershipRequestURL.setWindowState(WindowState.NORMAL);
@@ -526,8 +531,21 @@ public class SitesPortlet extends MVCPortlet {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
+		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		Map<Locale, String> nameMap = new HashMap<>();
+
 		String name = ParamUtil.getString(actionRequest, "name");
+
+		nameMap.put(themeDisplay.getLocale(), name);
+
+		Map<Locale, String> descriptionMap = new HashMap<>();
+
 		String description = ParamUtil.getString(actionRequest, "description");
+
+		descriptionMap.put(themeDisplay.getLocale(), description);
+
 		long layoutSetPrototypeId = ParamUtil.getLong(
 			actionRequest, "layoutSetPrototypeId");
 
@@ -551,8 +569,10 @@ public class SitesPortlet extends MVCPortlet {
 			Group.class.getName(), actionRequest);
 
 		Group group = GroupServiceUtil.addGroup(
-			name, description, type, StringPool.BLANK, true, true,
-			serviceContext);
+			GroupConstants.DEFAULT_PARENT_GROUP_ID,
+			GroupConstants.DEFAULT_LIVE_GROUP_ID, nameMap, descriptionMap, type,
+			true, GroupConstants.DEFAULT_MEMBERSHIP_RESTRICTION,
+			StringPool.BLANK, true, true, serviceContext);
 
 		long publicLayoutSetPrototypeId = 0;
 		long privateLayoutSetPrototypeId = 0;
@@ -665,7 +685,7 @@ public class SitesPortlet extends MVCPortlet {
 	}
 
 	private static final String _CLASS_NAME =
-		"com.liferay.portlet.sites.util.SitesUtil";
+		"com.liferay.sites.kernel.util.SitesUtil";
 
 	private static MethodKey _mergeLayoutSetPrototypeLayoutsMethodKey =
 		new MethodKey(

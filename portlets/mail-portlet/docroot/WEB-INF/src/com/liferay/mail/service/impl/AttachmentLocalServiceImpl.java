@@ -25,8 +25,8 @@ import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.model.User;
-import com.liferay.portlet.documentlibrary.DuplicateDirectoryException;
-import com.liferay.portlet.documentlibrary.DuplicateFileException;
+import com.liferay.portlet.documentlibrary.exception.DuplicateDirectoryException;
+import com.liferay.portlet.documentlibrary.exception.DuplicateFileException;
 import com.liferay.portlet.documentlibrary.store.DLStoreUtil;
 
 import java.io.File;
@@ -79,7 +79,7 @@ public class AttachmentLocalServiceImpl extends AttachmentLocalServiceBaseImpl {
 				DLStoreUtil.addDirectory(
 					attachment.getCompanyId(), _REPOSITORY_ID, directoryPath);
 			}
-				catch (DuplicateDirectoryException dde) {
+			catch (DuplicateDirectoryException dde) {
 			}
 
 			String filePath = getFilePath(attachment.getMessageId(), fileName);

@@ -47,6 +47,7 @@ import com.liferay.site.navigation.breadcrumb.web.constants.BreadcrumbPortletKey
 import com.liferay.util.portlet.PortletProps;
 import com.liferay.wiki.constants.WikiPortletKeys;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -64,12 +65,17 @@ public class LayoutUtil {
 			String layoutTemplateId)
 		throws Exception {
 
+		Map<Locale, String> friendlyURLMap = new HashMap<>();
+
+		friendlyURLMap.put(LocaleUtil.getDefault(), friendlyURL);
+
 		ServiceContext serviceContext = new ServiceContext();
 
 		Layout layout = LayoutLocalServiceUtil.addLayout(
 			group.getCreatorUserId(), group.getGroupId(), privateLayout,
 			parentLayoutId, nameMap, null, null, null, null,
-			LayoutConstants.TYPE_PORTLET, false, friendlyURL, serviceContext);
+			LayoutConstants.TYPE_PORTLET, StringPool.BLANK, false,
+			friendlyURLMap, serviceContext);
 
 		LayoutTypePortlet layoutTypePortlet =
 			(LayoutTypePortlet)layout.getLayoutType();
@@ -160,9 +166,7 @@ public class LayoutUtil {
 			else if (portletId.startsWith(BreadcrumbPortletKeys.BREADCRUMB)) {
 				removePortletBorder(layout, portletId);
 			}
-			else if (portletId.startsWith(
-						MBPortletKeys.MESSAGE_BOARDS)) {
-
+			else if (portletId.startsWith(MBPortletKeys.MESSAGE_BOARDS)) {
 				configureMessageBoards(layout);
 				removePortletBorder(layout, portletId);
 			}

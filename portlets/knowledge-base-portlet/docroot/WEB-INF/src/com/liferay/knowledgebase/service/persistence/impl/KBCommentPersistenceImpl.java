@@ -16,7 +16,7 @@ package com.liferay.knowledgebase.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.knowledgebase.NoSuchCommentException;
+import com.liferay.knowledgebase.exception.NoSuchCommentException;
 import com.liferay.knowledgebase.model.KBComment;
 import com.liferay.knowledgebase.model.impl.KBCommentImpl;
 import com.liferay.knowledgebase.model.impl.KBCommentModelImpl;
@@ -46,6 +46,7 @@ import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.persistence.CompanyProvider;
+import com.liferay.portal.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
 import java.io.Serializable;
@@ -5223,6 +5224,8 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 
 		kbComment.setUuid(uuid);
 
+		kbComment.setCompanyId(companyProvider.getCompanyId());
+
 		return kbComment;
 	}
 
@@ -5579,7 +5582,7 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 	}
 
 	/**
-	 * Returns the k b comment with the primary key or throws a {@link com.liferay.portal.NoSuchModelException} if it could not be found.
+	 * Returns the k b comment with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the k b comment
 	 * @return the k b comment
@@ -5978,7 +5981,7 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@BeanReference(type = CompanyProvider.class)
+	@BeanReference(type = CompanyProviderWrapper.class)
 	protected CompanyProvider companyProvider;
 	protected EntityCache entityCache = EntityCacheUtil.getEntityCache();
 	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();
