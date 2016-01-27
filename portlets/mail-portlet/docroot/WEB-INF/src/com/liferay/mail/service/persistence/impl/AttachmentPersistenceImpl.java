@@ -16,7 +16,7 @@ package com.liferay.mail.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.mail.NoSuchAttachmentException;
+import com.liferay.mail.exception.NoSuchAttachmentException;
 import com.liferay.mail.model.Attachment;
 import com.liferay.mail.model.impl.AttachmentImpl;
 import com.liferay.mail.model.impl.AttachmentModelImpl;
@@ -40,6 +40,7 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.service.persistence.CompanyProvider;
+import com.liferay.portal.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
 import java.io.Serializable;
@@ -683,6 +684,8 @@ public class AttachmentPersistenceImpl extends BasePersistenceImpl<Attachment>
 		attachment.setNew(true);
 		attachment.setPrimaryKey(attachmentId);
 
+		attachment.setCompanyId(companyProvider.getCompanyId());
+
 		return attachment;
 	}
 
@@ -857,7 +860,7 @@ public class AttachmentPersistenceImpl extends BasePersistenceImpl<Attachment>
 	}
 
 	/**
-	 * Returns the attachment with the primary key or throws a {@link com.liferay.portal.NoSuchModelException} if it could not be found.
+	 * Returns the attachment with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the attachment
 	 * @return the attachment
@@ -1256,7 +1259,7 @@ public class AttachmentPersistenceImpl extends BasePersistenceImpl<Attachment>
 		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@BeanReference(type = CompanyProvider.class)
+	@BeanReference(type = CompanyProviderWrapper.class)
 	protected CompanyProvider companyProvider;
 	protected EntityCache entityCache = EntityCacheUtil.getEntityCache();
 	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();

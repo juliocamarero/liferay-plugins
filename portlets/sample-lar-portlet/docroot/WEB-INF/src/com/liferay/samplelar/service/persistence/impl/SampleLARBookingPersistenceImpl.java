@@ -38,9 +38,10 @@ import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.persistence.CompanyProvider;
+import com.liferay.portal.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
-import com.liferay.samplelar.NoSuchBookingException;
+import com.liferay.samplelar.exception.NoSuchBookingException;
 import com.liferay.samplelar.model.SampleLARBooking;
 import com.liferay.samplelar.model.impl.SampleLARBookingImpl;
 import com.liferay.samplelar.model.impl.SampleLARBookingModelImpl;
@@ -2150,6 +2151,8 @@ public class SampleLARBookingPersistenceImpl extends BasePersistenceImpl<SampleL
 
 		sampleLARBooking.setUuid(uuid);
 
+		sampleLARBooking.setCompanyId(companyProvider.getCompanyId());
+
 		return sampleLARBooking;
 	}
 
@@ -2397,7 +2400,7 @@ public class SampleLARBookingPersistenceImpl extends BasePersistenceImpl<SampleL
 	}
 
 	/**
-	 * Returns the sample l a r booking with the primary key or throws a {@link com.liferay.portal.NoSuchModelException} if it could not be found.
+	 * Returns the sample l a r booking with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the sample l a r booking
 	 * @return the sample l a r booking
@@ -2798,7 +2801,7 @@ public class SampleLARBookingPersistenceImpl extends BasePersistenceImpl<SampleL
 		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@BeanReference(type = CompanyProvider.class)
+	@BeanReference(type = CompanyProviderWrapper.class)
 	protected CompanyProvider companyProvider;
 	protected EntityCache entityCache = EntityCacheUtil.getEntityCache();
 	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();

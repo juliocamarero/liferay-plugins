@@ -182,7 +182,7 @@ public class BarUtil {
 	*/
 	public static Bar findByText_First(java.lang.String text,
 		OrderByComparator<Bar> orderByComparator)
-		throws com.liferay.testtransaction.NoSuchBarException {
+		throws com.liferay.testtransaction.exception.NoSuchBarException {
 		return getPersistence().findByText_First(text, orderByComparator);
 	}
 
@@ -208,7 +208,7 @@ public class BarUtil {
 	*/
 	public static Bar findByText_Last(java.lang.String text,
 		OrderByComparator<Bar> orderByComparator)
-		throws com.liferay.testtransaction.NoSuchBarException {
+		throws com.liferay.testtransaction.exception.NoSuchBarException {
 		return getPersistence().findByText_Last(text, orderByComparator);
 	}
 
@@ -235,7 +235,7 @@ public class BarUtil {
 	*/
 	public static Bar[] findByText_PrevAndNext(long barId,
 		java.lang.String text, OrderByComparator<Bar> orderByComparator)
-		throws com.liferay.testtransaction.NoSuchBarException {
+		throws com.liferay.testtransaction.exception.NoSuchBarException {
 		return getPersistence()
 				   .findByText_PrevAndNext(barId, text, orderByComparator);
 	}
@@ -295,7 +295,7 @@ public class BarUtil {
 	* @throws NoSuchBarException if a bar with the primary key could not be found
 	*/
 	public static Bar remove(long barId)
-		throws com.liferay.testtransaction.NoSuchBarException {
+		throws com.liferay.testtransaction.exception.NoSuchBarException {
 		return getPersistence().remove(barId);
 	}
 
@@ -311,7 +311,7 @@ public class BarUtil {
 	* @throws NoSuchBarException if a bar with the primary key could not be found
 	*/
 	public static Bar findByPrimaryKey(long barId)
-		throws com.liferay.testtransaction.NoSuchBarException {
+		throws com.liferay.testtransaction.exception.NoSuchBarException {
 		return getPersistence().findByPrimaryKey(barId);
 	}
 
@@ -419,13 +419,6 @@ public class BarUtil {
 		}
 
 		return _persistence;
-	}
-
-	/**
-	 * @deprecated As of 6.2.0
-	 */
-	@Deprecated
-	public void setPersistence(BarPersistence persistence) {
 	}
 
 	private static BarPersistence _persistence;

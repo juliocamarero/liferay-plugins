@@ -116,7 +116,7 @@ public class FeedUtil {
 	*/
 	public static Feed findByU_TSN(long userId,
 		java.lang.String twitterScreenName)
-		throws com.liferay.twitter.NoSuchFeedException {
+		throws com.liferay.twitter.exception.NoSuchFeedException {
 		return getPersistence().findByU_TSN(userId, twitterScreenName);
 	}
 
@@ -155,7 +155,7 @@ public class FeedUtil {
 	*/
 	public static Feed removeByU_TSN(long userId,
 		java.lang.String twitterScreenName)
-		throws com.liferay.twitter.NoSuchFeedException {
+		throws com.liferay.twitter.exception.NoSuchFeedException {
 		return getPersistence().removeByU_TSN(userId, twitterScreenName);
 	}
 
@@ -207,7 +207,7 @@ public class FeedUtil {
 	* @throws NoSuchFeedException if a feed with the primary key could not be found
 	*/
 	public static Feed remove(long feedId)
-		throws com.liferay.twitter.NoSuchFeedException {
+		throws com.liferay.twitter.exception.NoSuchFeedException {
 		return getPersistence().remove(feedId);
 	}
 
@@ -223,7 +223,7 @@ public class FeedUtil {
 	* @throws NoSuchFeedException if a feed with the primary key could not be found
 	*/
 	public static Feed findByPrimaryKey(long feedId)
-		throws com.liferay.twitter.NoSuchFeedException {
+		throws com.liferay.twitter.exception.NoSuchFeedException {
 		return getPersistence().findByPrimaryKey(feedId);
 	}
 
@@ -327,13 +327,6 @@ public class FeedUtil {
 		}
 
 		return _persistence;
-	}
-
-	/**
-	 * @deprecated As of 6.2.0
-	 */
-	@Deprecated
-	public void setPersistence(FeedPersistence persistence) {
 	}
 
 	private static FeedPersistence _persistence;

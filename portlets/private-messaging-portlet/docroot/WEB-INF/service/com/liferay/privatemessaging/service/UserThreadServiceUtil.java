@@ -69,7 +69,7 @@ public class UserThreadServiceUtil {
 
 	public static java.util.List<com.liferay.privatemessaging.model.UserThread> getUserUserThreads(
 		boolean deleted)
-		throws com.liferay.portal.security.auth.PrincipalException {
+		throws com.liferay.portal.kernel.security.auth.PrincipalException {
 		return getService().getUserUserThreads(deleted);
 	}
 
@@ -100,13 +100,6 @@ public class UserThreadServiceUtil {
 		}
 
 		return _service;
-	}
-
-	/**
-	 * @deprecated As of 6.2.0
-	 */
-	@Deprecated
-	public void setService(UserThreadService service) {
 	}
 
 	private static UserThreadService _service;

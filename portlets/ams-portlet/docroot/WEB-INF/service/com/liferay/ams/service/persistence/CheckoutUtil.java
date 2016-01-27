@@ -144,7 +144,7 @@ public class CheckoutUtil {
 	* @throws NoSuchCheckoutException if a checkout with the primary key could not be found
 	*/
 	public static Checkout remove(long checkoutId)
-		throws com.liferay.ams.NoSuchCheckoutException {
+		throws com.liferay.ams.exception.NoSuchCheckoutException {
 		return getPersistence().remove(checkoutId);
 	}
 
@@ -160,7 +160,7 @@ public class CheckoutUtil {
 	* @throws NoSuchCheckoutException if a checkout with the primary key could not be found
 	*/
 	public static Checkout findByPrimaryKey(long checkoutId)
-		throws com.liferay.ams.NoSuchCheckoutException {
+		throws com.liferay.ams.exception.NoSuchCheckoutException {
 		return getPersistence().findByPrimaryKey(checkoutId);
 	}
 
@@ -265,13 +265,6 @@ public class CheckoutUtil {
 		}
 
 		return _persistence;
-	}
-
-	/**
-	 * @deprecated As of 6.2.0
-	 */
-	@Deprecated
-	public void setPersistence(CheckoutPersistence persistence) {
 	}
 
 	private static CheckoutPersistence _persistence;

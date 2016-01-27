@@ -19,9 +19,9 @@ import com.liferay.knowledgebase.model.KBArticleConstants;
 import com.liferay.knowledgebase.service.KBArticleLocalServiceUtil;
 import com.liferay.knowledgebase.util.ActionKeys;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.security.auth.PrincipalException;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.security.auth.PrincipalException;
-import com.liferay.portal.security.permission.PermissionChecker;
 
 /**
  * @author Adolfo Pérez
@@ -60,8 +60,16 @@ public class SuggestionPermission {
 				"Only KB articles support suggestions");
 		}
 
-		KBArticle kbArticle = KBArticleLocalServiceUtil.getLatestKBArticle(
-			classPK, WorkflowConstants.STATUS_ANY);
+		KBArticle kbArticle = KBArticleLocalServiceUtil.fetchKBArticle(classPK);
+
+		if (kbArticle != null) {
+			kbArticle = KBArticleLocalServiceUtil.getLatestKBArticle(
+				kbArticle.getResourcePrimKey(), WorkflowConstants.STATUS_ANY);
+		}
+		else {
+			kbArticle = KBArticleLocalServiceUtil.getLatestKBArticle(
+				classPK, WorkflowConstants.STATUS_ANY);
+		}
 
 		return contains(permissionChecker, groupId, kbArticle, actionId);
 	}

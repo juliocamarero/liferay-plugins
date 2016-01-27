@@ -38,9 +38,10 @@ import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.persistence.CompanyProvider;
+import com.liferay.portal.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
-import com.liferay.sampleservicebuilder.NoSuchFooException;
+import com.liferay.sampleservicebuilder.exception.NoSuchFooException;
 import com.liferay.sampleservicebuilder.model.Foo;
 import com.liferay.sampleservicebuilder.model.impl.FooImpl;
 import com.liferay.sampleservicebuilder.model.impl.FooModelImpl;
@@ -2101,6 +2102,8 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 		foo.setUuid(uuid);
 
+		foo.setCompanyId(companyProvider.getCompanyId());
+
 		return foo;
 	}
 
@@ -2339,7 +2342,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	}
 
 	/**
-	 * Returns the foo with the primary key or throws a {@link com.liferay.portal.NoSuchModelException} if it could not be found.
+	 * Returns the foo with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the foo
 	 * @return the foo
@@ -2733,7 +2736,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@BeanReference(type = CompanyProvider.class)
+	@BeanReference(type = CompanyProviderWrapper.class)
 	protected CompanyProvider companyProvider;
 	protected EntityCache entityCache = EntityCacheUtil.getEntityCache();
 	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();

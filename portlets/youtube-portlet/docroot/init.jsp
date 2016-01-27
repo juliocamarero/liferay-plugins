@@ -18,10 +18,10 @@
 
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
 
-<%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %>
-<%@ taglib uri="http://liferay.com/tld/portlet" prefix="liferay-portlet" %>
-<%@ taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
-<%@ taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
+<%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
+taglib uri="http://liferay.com/tld/portlet" prefix="liferay-portlet" %><%@
+taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %><%@
+taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
 
 <%@ page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
 page import="com.liferay.portal.kernel.util.Constants" %><%@
@@ -50,7 +50,7 @@ String id = url.replaceAll("^.*?v=([a-zA-Z0-9_-]+).*$", "$1");
 
 String presetSize = width + "x" + height;
 
+String embedURL = HttpUtil.getProtocol(request) + "://www.youtube.com/embed/";
 String imageURL = HttpUtil.getProtocol(request) + "://img.youtube.com/vi/" + id + "/0.jpg";
-String swfURL = HttpUtil.getProtocol(request) + "://www.youtube.com/v/";
 String watchURL = HttpUtil.getProtocol(request) + "://www.youtube.com/watch?v=";
 %>

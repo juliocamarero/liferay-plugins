@@ -33,9 +33,10 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.service.persistence.CompanyProvider;
+import com.liferay.portal.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
-import com.liferay.so.NoSuchFavoriteSiteException;
+import com.liferay.so.exception.NoSuchFavoriteSiteException;
 import com.liferay.so.model.FavoriteSite;
 import com.liferay.so.model.impl.FavoriteSiteImpl;
 import com.liferay.so.model.impl.FavoriteSiteModelImpl;
@@ -960,6 +961,8 @@ public class FavoriteSitePersistenceImpl extends BasePersistenceImpl<FavoriteSit
 		favoriteSite.setNew(true);
 		favoriteSite.setPrimaryKey(favoriteSiteId);
 
+		favoriteSite.setCompanyId(companyProvider.getCompanyId());
+
 		return favoriteSite;
 	}
 
@@ -1133,7 +1136,7 @@ public class FavoriteSitePersistenceImpl extends BasePersistenceImpl<FavoriteSit
 	}
 
 	/**
-	 * Returns the favorite site with the primary key or throws a {@link com.liferay.portal.NoSuchModelException} if it could not be found.
+	 * Returns the favorite site with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the favorite site
 	 * @return the favorite site
@@ -1527,7 +1530,7 @@ public class FavoriteSitePersistenceImpl extends BasePersistenceImpl<FavoriteSit
 		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@BeanReference(type = CompanyProvider.class)
+	@BeanReference(type = CompanyProviderWrapper.class)
 	protected CompanyProvider companyProvider;
 	protected EntityCache entityCache = EntityCacheUtil.getEntityCache();
 	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();

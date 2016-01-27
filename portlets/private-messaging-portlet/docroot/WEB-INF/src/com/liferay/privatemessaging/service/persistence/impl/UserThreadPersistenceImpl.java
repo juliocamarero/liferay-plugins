@@ -37,9 +37,10 @@ import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.persistence.CompanyProvider;
+import com.liferay.portal.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
-import com.liferay.privatemessaging.NoSuchUserThreadException;
+import com.liferay.privatemessaging.exception.NoSuchUserThreadException;
 import com.liferay.privatemessaging.model.UserThread;
 import com.liferay.privatemessaging.model.impl.UserThreadImpl;
 import com.liferay.privatemessaging.model.impl.UserThreadModelImpl;
@@ -2601,6 +2602,8 @@ public class UserThreadPersistenceImpl extends BasePersistenceImpl<UserThread>
 		userThread.setNew(true);
 		userThread.setPrimaryKey(userThreadId);
 
+		userThread.setCompanyId(companyProvider.getCompanyId());
+
 		return userThread;
 	}
 
@@ -2862,7 +2865,7 @@ public class UserThreadPersistenceImpl extends BasePersistenceImpl<UserThread>
 	}
 
 	/**
-	 * Returns the user thread with the primary key or throws a {@link com.liferay.portal.NoSuchModelException} if it could not be found.
+	 * Returns the user thread with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the user thread
 	 * @return the user thread
@@ -3261,7 +3264,7 @@ public class UserThreadPersistenceImpl extends BasePersistenceImpl<UserThread>
 		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@BeanReference(type = CompanyProvider.class)
+	@BeanReference(type = CompanyProviderWrapper.class)
 	protected CompanyProvider companyProvider;
 	protected EntityCache entityCache = EntityCacheUtil.getEntityCache();
 	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();

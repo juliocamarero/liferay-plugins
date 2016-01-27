@@ -17,7 +17,7 @@
 
 package com.liferay.microblogs.service.impl;
 
-import com.liferay.microblogs.UnsupportedMicroblogsEntryException;
+import com.liferay.microblogs.exception.UnsupportedMicroblogsEntryException;
 import com.liferay.microblogs.microblogs.social.MicroblogsActivityKeys;
 import com.liferay.microblogs.model.MicroblogsEntry;
 import com.liferay.microblogs.model.MicroblogsEntryConstants;
@@ -448,7 +448,7 @@ public class MicroblogsEntryLocalServiceImpl
 			"entryTitle",
 			MicroblogsUtil.getProcessedContent(
 				StringUtil.shorten(microblogsEntry.getContent(), 50),
-			serviceContext));
+				serviceContext));
 
 		AssetRendererFactory assetRendererFactory =
 			AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClassName(

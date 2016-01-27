@@ -41,6 +41,8 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.Query;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchException;
+import com.liferay.portal.kernel.security.auth.PrincipalException;
+import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.servlet.PortalSessionThreadLocal;
 import com.liferay.portal.kernel.util.AutoResetThreadLocal;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -52,11 +54,9 @@ import com.liferay.portal.kernel.util.TransientValue;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.User;
-import com.liferay.portal.security.auth.PrincipalException;
-import com.liferay.portal.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.service.UserLocalServiceUtil;
-import com.liferay.portlet.documentlibrary.NoSuchFileEntryException;
-import com.liferay.portlet.documentlibrary.NoSuchFolderException;
+import com.liferay.portlet.documentlibrary.exception.NoSuchFileEntryException;
+import com.liferay.portlet.documentlibrary.exception.NoSuchFolderException;
 import com.liferay.portlet.expando.model.ExpandoBridge;
 import com.liferay.repository.external.CredentialsProvider;
 import com.liferay.repository.external.ExtRepository;
@@ -672,7 +672,7 @@ public class GoogleDriveRepository
 
 					ExtRepositorySearchResult<GoogleDriveFolder>
 						extRepositorySearchResult =
-							new ExtRepositorySearchResult<GoogleDriveFolder>(
+							new ExtRepositorySearchResult<>(
 								googleDriveFolder, 1.0f, StringPool.BLANK);
 
 					extRepositorySearchResults.add(extRepositorySearchResult);
@@ -683,7 +683,7 @@ public class GoogleDriveRepository
 
 					ExtRepositorySearchResult<GoogleDriveFileEntry>
 						extRepositorySearchResult =
-							new ExtRepositorySearchResult<GoogleDriveFileEntry>(
+							new ExtRepositorySearchResult<>(
 								googleDriveFileEntry, 1.0f, StringPool.BLANK);
 
 					extRepositorySearchResults.add(extRepositorySearchResult);
@@ -986,6 +986,6 @@ public class GoogleDriveRepository
 		GoogleDriveRepository.class);
 
 	private ThreadLocal<GoogleDriveSession> _googleDriveSessionThreadLocal =
-		new AutoResetThreadLocal<GoogleDriveSession>(Drive.class.getName());
+		new AutoResetThreadLocal<>(Drive.class.getName());
 
 }

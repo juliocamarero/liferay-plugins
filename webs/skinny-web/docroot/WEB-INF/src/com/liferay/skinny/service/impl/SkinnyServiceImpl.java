@@ -23,6 +23,8 @@ import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.journal.exception.NoSuchArticleException;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.portal.kernel.security.access.control.AccessControlled;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -30,8 +32,6 @@ import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.model.Group;
-import com.liferay.portal.security.permission.ActionKeys;
-import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.skinny.model.SkinnyDDLRecord;
 import com.liferay.skinny.model.SkinnyJournalArticle;
 import com.liferay.skinny.service.base.SkinnyServiceBaseImpl;
@@ -145,15 +145,17 @@ public class SkinnyServiceImpl extends SkinnyServiceBaseImpl {
 	}
 
 	protected SkinnyJournalArticle getSkinnyJournalArticle(
-			JournalArticle journalArticle, String locale)
+			JournalArticle journalArticle, String languageId)
 		throws Exception {
 
 		SkinnyJournalArticle skinnyJournalArticle = new SkinnyJournalArticle();
 
 		String content = null;
 
-		if (ArrayUtil.contains(journalArticle.getAvailableLocales(), locale)) {
-			content = journalArticle.getContentByLocale(locale);
+		if (ArrayUtil.contains(
+				journalArticle.getAvailableLanguageIds(), languageId)) {
+
+			content = journalArticle.getContentByLocale(languageId);
 		}
 		else {
 			content = journalArticle.getContent();
